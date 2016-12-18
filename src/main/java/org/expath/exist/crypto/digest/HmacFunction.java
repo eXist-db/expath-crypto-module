@@ -98,6 +98,7 @@ public class HmacFunction extends BasicFunction {
 
 		String algorithm = args[2].getStringValue();
 		logger.debug("algorithm = " + algorithm);
+		
 		String format = "base64";
 		if (args.length == 4) {
 			format = args[3].getStringValue();
@@ -110,7 +111,6 @@ public class HmacFunction extends BasicFunction {
 
 			result = BinaryValueFromInputStream.getInstance(context, new Base64BinaryValueType(),
 					new ByteArrayInputStream(hmacResult.getBytes(StandardCharsets.UTF_8)));
-			logger.debug("result = " + result);
 		} catch (Exception ex) {
 			throw new XPathException(ex.getMessage());
 		}
@@ -120,8 +120,6 @@ public class HmacFunction extends BasicFunction {
 
 	private byte[] data2byte(Sequence data, int datatype) throws XPathException {
 		byte[] processedData = null;
-
-		logger.debug("datatype = " + datatype);
 
 		try {
 			switch (datatype) {
