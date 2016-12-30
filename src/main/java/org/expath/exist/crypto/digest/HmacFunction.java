@@ -143,10 +143,10 @@ public class HmacFunction extends BasicFunction {
 				case Type.STRING:
 				case Type.ELEMENT:
 				case Type.DOCUMENT:
-					result = sequence.getStringValue().getBytes(StandardCharsets.UTF_8);
+					result = sequence.itemAt(0).getStringValue().getBytes(StandardCharsets.UTF_8);
 					break;
 				case Type.BASE64_BINARY:
-					result = binaryValueToByte((BinaryValue) sequence);
+					result = binaryValueToByte((BinaryValue) sequence.itemAt(0));
 					break;
 				}
 			} else {
