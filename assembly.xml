@@ -18,13 +18,13 @@
 		<dependencySet>
 			<groupId>org.expath.exist</groupId>
 			<artifactId>crypto</artifactId>
-			<version>0.3.5</version>
+			<version>${project.version}</version>
 			<outputFileNameMapping>crypto-exist-java-lib.jar</outputFileNameMapping>
 		</dependencySet>
 		<dependencySet>
 			<groupId>ro.kuberam.libs.java</groupId>
 			<artifactId>crypto</artifactId>
-			<version>1.3.1</version>
+			<version>1.3.2</version>
 			<outputFileNameMapping>crypto-java-lib.jar</outputFileNameMapping>
 		</dependencySet>
 	</dependencySets>

@@ -8,11 +8,11 @@
 	<parent>
 		<groupId>org.expath.exist</groupId>
 		<artifactId>base</artifactId>
-		<version>1.1</version>
+		<version>1.2.0</version>
 	</parent>
 
 	<artifactId>crypto</artifactId>
-	<version>0.3.4</version>
+	<version>0.3.5</version>
 	<name>eXist wrapper for EXPath Cryptographic library</name>
 	<url>http://expath.org</url>
 
@@ -37,6 +37,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>ro.kuberam.maven.plugins</groupId>
+				<artifactId>kuberam-expath-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
