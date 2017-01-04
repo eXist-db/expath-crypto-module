@@ -20,6 +20,10 @@
 		<java-package-name>crypto</java-package-name>
 		<java-package-main-class-name>ExistExpathCryptoModule</java-package-main-class-name>
 		<module-prefix>${java-package-name}</module-prefix>
+		<package-title>EXPath Cryptographic Module Implementation</package-title>
+		<package-name>http://expath.org/ns/${project.artifactId}</package-name>
+		<package-abbrev>expath-${project.artifactId}-exist-lib</package-abbrev>
+		<package-final-name>expath-${project.artifactId}-exist-lib-${project.version}</package-final-name>
 	</properties>
 
 	<dependencies>
