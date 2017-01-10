@@ -24,7 +24,7 @@
 		<dependencySet>
 			<groupId>ro.kuberam.libs.java</groupId>
 			<artifactId>crypto</artifactId>
-			<version>1.3.2</version>
+			<version>${java-lib-version}</version>
 			<outputFileNameMapping>crypto-java-lib.jar</outputFileNameMapping>
 		</dependencySet>
 	</dependencySets>

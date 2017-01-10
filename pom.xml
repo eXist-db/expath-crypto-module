@@ -19,6 +19,7 @@
 	<properties>
 		<java-package-name>crypto</java-package-name>
 		<java-package-main-class-name>ExistExpathCryptoModule</java-package-main-class-name>
+		<java-lib-version>1.3.2</java-lib-version>
 		<module-prefix>${java-package-name}</module-prefix>
 		<package-title>EXPath Cryptographic Module Implementation</package-title>
 		<package-name>http://expath.org/ns/${project.artifactId}</package-name>
@@ -30,7 +31,7 @@
 		<dependency>
 			<groupId>ro.kuberam.libs.java</groupId>
 			<artifactId>crypto</artifactId>
-			<version>1.3.1</version>
+			<version>${java-lib-version}</version>
 			<scope>provided</scope>
 			<type>jar</type>
 		</dependency>
