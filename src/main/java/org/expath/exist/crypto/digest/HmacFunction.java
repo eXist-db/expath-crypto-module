@@ -45,9 +45,9 @@ public class HmacFunction extends BasicFunction {
 					"Hashes the input message.",
 					new SequenceType[] {
 							new FunctionParameterSequenceType("data", Type.ATOMIC, Cardinality.ZERO_OR_MORE,
-									"The data to be authenticated. This parameter can be of type xs:string, xs:base64Binary, or xs:hexBinary."),
-							new FunctionParameterSequenceType("secret-key", Type.ATOMIC, Cardinality.ZERO_OR_MORE,
-									"The secret key used for calculating the authentication code. This parameter can be of type xs:string, xs:base64Binary, or xs:hexBinary."),
+									"The data to be authenticated. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary."),
+							new FunctionParameterSequenceType("key", Type.ATOMIC, Cardinality.ZERO_OR_MORE,
+									"The secret key used for calculating the authentication code. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary."),
 							new FunctionParameterSequenceType("algorithm", Type.STRING, Cardinality.EXACTLY_ONE,
 									"The cryptographic hashing algorithm.") },
 					new FunctionReturnSequenceType(Type.BYTE, Cardinality.ZERO_OR_MORE,
@@ -57,13 +57,13 @@ public class HmacFunction extends BasicFunction {
 					"Hashes the input message.",
 					new SequenceType[] {
 							new FunctionParameterSequenceType("data", Type.ATOMIC, Cardinality.ZERO_OR_MORE,
-									"The data to be authenticated. This parameter can be of type xs:string, xs:base64Binary, or xs:hexBinary."),
-							new FunctionParameterSequenceType("secret-key", Type.ATOMIC, Cardinality.ZERO_OR_MORE,
-									"The secret key used for calculating the authentication code. This parameter can be of type xs:string, xs:base64Binary, or xs:hexBinary."),
+									"The data to be authenticated. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary."),
+							new FunctionParameterSequenceType("key", Type.ATOMIC, Cardinality.ZERO_OR_MORE,
+									"The secret key used for calculating the authentication code. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary."),
 							new FunctionParameterSequenceType("algorithm", Type.STRING, Cardinality.EXACTLY_ONE,
 									"The cryptographic hashing algorithm."),
-							new FunctionParameterSequenceType("format", Type.STRING, Cardinality.EXACTLY_ONE,
-									"The format of the output. The legal values are \"hex\" and \"base64\". The default value is \"base64\".") },
+							new FunctionParameterSequenceType("encoding", Type.STRING, Cardinality.EXACTLY_ONE,
+									"The encoding of the output. The legal values are \"hex\" and \"base64\". The result is generated accordingly as xs:base64Binary string or xs:hexBinary string.") },
 					new FunctionReturnSequenceType(Type.STRING, Cardinality.ZERO_OR_ONE,
 							"hash-based message authentication code, as xs:base64Binary string or xs:hexBinary string.")) };
 
