@@ -68,9 +68,9 @@ public class HashFunction extends BasicFunction {
 									Cardinality.EXACTLY_ONE, "The data to be hashed."),
 							new FunctionParameterSequenceType("algorithm", Type.STRING,
 									Cardinality.EXACTLY_ONE, "The cryptographic hashing algorithm."),
-							new FunctionParameterSequenceType("format", Type.STRING,
+							new FunctionParameterSequenceType("encoding", Type.STRING,
 									Cardinality.EXACTLY_ONE,
-									"The format of the output. The legal values are \"hex\" and \"base64\". The default value is \"base64\".") },
+									"The encoding of the output. The legal values are \"hex\" and \"base64\". The default value is \"base64\".") },
 					new FunctionReturnSequenceType(Type.BYTE, Cardinality.ONE_OR_MORE,
 							"resulting hash value, as string.")) };
 
@@ -84,14 +84,14 @@ public class HashFunction extends BasicFunction {
 
 		int inputType = args[0].itemAt(0).getType();
 		String hashAlgorithm = args[1].getStringValue();
-		String format = "base64";
+		String encoding = "base64";
 		if (args.length == 3) {
-			format = args[2].getStringValue();
+			encoding = args[2].getStringValue();
 		}
 
 		if (inputType == Type.STRING || inputType == Type.ELEMENT || inputType == Type.DOCUMENT) {
 			try {
-				resultString = Hash.hashString(args[0].getStringValue(), hashAlgorithm, format);
+				resultString = Hash.hashString(args[0].getStringValue(), hashAlgorithm, encoding);
 			} catch (Exception ex) {
 				throw new XPathException(ex.getMessage());
 			}
@@ -100,7 +100,7 @@ public class HashFunction extends BasicFunction {
 				byte[] binary = (byte[]) ((BinaryValue) args[0].itemAt(0)).toJavaObject(byte[].class);
 				BinaryValue data = BinaryValueFromInputStream.getInstance(context,
 						new Base64BinaryValueType(), new ByteArrayInputStream(binary));
-				resultString = Hash.hashBinary(data.getInputStream(), hashAlgorithm, format);
+				resultString = Hash.hashBinary(data.getInputStream(), hashAlgorithm, encoding);
 			} catch (Exception ex) {
 				throw new XPathException(ex.getMessage());
 			}
