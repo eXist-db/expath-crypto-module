@@ -21,9 +21,11 @@ package org.expath.exist.crypto.digest;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import com.evolvedbinary.j8fu.Either;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.exist.xquery.BasicFunction;
@@ -41,6 +43,8 @@ import org.exist.xquery.value.Type;
 import org.exist.xquery.value.ValueSequence;
 
 import ro.kuberam.libs.java.crypto.digest.Hmac;
+
+import javax.annotation.Nullable;
 
 import static org.exist.xquery.FunctionDSL.*;
 import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
@@ -86,34 +90,41 @@ public class HmacFunction extends BasicFunction {
             LOG.debug("data item count = " + args[0].getItemCount());
         }
 
-        final byte[] data = sequence2byteArray(args[0]);
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("data = " + Arrays.toString(data));
-            LOG.debug("secretKey item count = " + args[1].getItemCount());
-        }
-
-        final byte[] secretKey = sequence2byteArray(args[1]);
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("secretKey = " + Arrays.toString(secretKey));
-        }
-
-        final String algorithm = args[2].getStringValue();
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("algorithm = " + algorithm);
-        }
-
-        String encoding = "base64";
-        if (args.length == 4) {
-            encoding = args[3].getStringValue();
-        }
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("encoding = " + encoding);
-        }
-
         final Sequence result;
         try {
+            final Either<InputStream, byte[]> data = sequence2javaTypes(args[0]);
+
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("secretKey item count = " + args[1].getItemCount());
+            }
+
+            final byte[] secretKey = toByteArray(sequence2javaTypes(args[1]));
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("secretKey item count = " + args[1].getItemCount());
+            }
+
+            final String algorithm = args[2].getStringValue();
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("algorithm = " + algorithm);
+            }
+
+            String encoding = "base64";
+            if (args.length == 4) {
+                encoding = args[3].getStringValue();
+            }
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("encoding = " + encoding);
+            }
+
             if (argsLength == 3) {
-                final byte[] resultBytes = Hmac.hmac(data, secretKey, algorithm);
+                final byte[] resultBytes;
+                if(data.isLeft()) {
+                    try(final InputStream is = data.left().get()) {
+                        resultBytes = Hmac.hmac(is, secretKey, algorithm);
+                    }
+                } else {
+                    resultBytes =  Hmac.hmac(data.right().get(), secretKey, algorithm);
+                }
                 final int resultBytesLength = resultBytes.length;
 
                 if(LOG.isDebugEnabled()) {
@@ -126,7 +137,15 @@ public class HmacFunction extends BasicFunction {
                     result.add(new IntegerValue(resultBytes[i]));
                 }
             } else if (argsLength == 4) {
-                final String resultString = Hmac.hmac(data, secretKey, algorithm, encoding);
+                final String resultString;
+
+                if(data.isLeft()) {
+                    try(final InputStream is = data.left().get()) {
+                        resultString = Hmac.hmac(is, secretKey, algorithm, encoding);
+                    }
+                } else {
+                    resultString = Hmac.hmac(data.right().get(), secretKey, algorithm, encoding);
+                }
 
                 if(LOG.isDebugEnabled()) {
                     LOG.debug("resultString = " + resultString);
@@ -143,13 +162,12 @@ public class HmacFunction extends BasicFunction {
         return result;
     }
 
-    private byte[] sequence2byteArray(final Sequence sequence) throws XPathException {
+    private @Nullable Either<InputStream, byte[]> sequence2javaTypes(final Sequence sequence) throws XPathException {
         final int itemCount = sequence.getItemCount();
         if(LOG.isDebugEnabled()) {
             LOG.debug("itemCount = " + itemCount);
         }
 
-        final byte[] result;
         try {
             if (itemCount == 1) {
                 final int itemType = sequence.itemAt(0).getType();
@@ -168,34 +186,49 @@ public class HmacFunction extends BasicFunction {
                             LOG.debug("itemStringValue length = " + itemStringValue.trim().length());
                         }
 
-                        result = itemStringValue.getBytes(StandardCharsets.UTF_8);
-                        break;
+                        return Either.Right(itemStringValue.getBytes(StandardCharsets.UTF_8));
 
                     case Type.BASE64_BINARY:
-                        result = binaryValueToByte((BinaryValue) sequence.itemAt(0));
-                        break;
+                    case Type.HEX_BINARY:
+                        final BinaryValue binaryValue = (BinaryValue) sequence.itemAt(0);
+                        return Either.Left(binaryValue.getInputStream());
 
                     default:
-                        result = null;
-                        break;
+                        return null;
                 }
             } else {
                 try(final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
                     for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext(); ) {
                         baos.write(((NumericValue) iterator.nextItem()).getInt());
                     }
-                    result = baos.toByteArray();
+                    return Either.Right(baos.toByteArray());
                 }
             }
         } catch (final Exception ex) {
             throw new XPathException(ex.getMessage());
         }
+    }
 
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("result = " + Arrays.toString(result));
+    private @Nullable byte[] toByteArray(@Nullable final Either<InputStream, byte[]> data) throws IOException {
+        if(data == null) {
+            return null;
         }
 
-        return result;
+        if(data.isRight()) {
+            return data.right().get();
+        } else {
+            try(final InputStream is = data.left().get();
+                    final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
+                final byte[] buf = new byte[1024];
+                int read = -1;
+                while((read = is.read(buf)) > -1) {
+                    baos.write(buf, 0, read);
+                }
+
+                return baos.toByteArray();
+            }
+        }
     }
 
     private byte[] binaryValueToByte(final BinaryValue binary) throws XPathException {

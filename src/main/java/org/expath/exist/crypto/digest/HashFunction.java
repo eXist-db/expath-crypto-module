@@ -25,7 +25,7 @@ package org.expath.exist.crypto.digest;
  * @author Claudius Teodorescu <claudius.teodorescu@gmail.com>
  */
 
-import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,9 +33,7 @@ import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.XQueryContext;
-import org.exist.xquery.value.Base64BinaryValueType;
 import org.exist.xquery.value.BinaryValue;
-import org.exist.xquery.value.BinaryValueFromInputStream;
 import org.exist.xquery.value.FunctionParameterSequenceType;
 import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.StringValue;
@@ -94,20 +92,16 @@ public class HashFunction extends BasicFunction {
             }
         } else if (inputType == Type.BASE64_BINARY || inputType == Type.HEX_BINARY) {
             try {
-                final byte[] binary = (byte[]) ((BinaryValue) args[0].itemAt(0)).toJavaObject(byte[].class);
-                final BinaryValue data = BinaryValueFromInputStream.getInstance(context,
-                        new Base64BinaryValueType(), new ByteArrayInputStream(binary));
-                result = new StringValue(Hash.hashBinary(data.getInputStream(), hashAlgorithm, encoding));
-            } catch (Exception ex) {
+                final BinaryValue binaryValue = (BinaryValue) args[0].itemAt(0);
+                try(final InputStream is = binaryValue.getInputStream()) {
+                    result = new StringValue(Hash.hashBinary(is, hashAlgorithm, encoding));
+                }
+            } catch (final Exception ex) {
                 throw new XPathException(ex.getMessage());
             }
         } else {
             result = Sequence.EMPTY_SEQUENCE;
         }
-        // ValueSequence result = new ValueSequence();
-        // for (int i = 0, il = resultBytes.length; i < il; i++) {
-        // result.add(new IntegerValue(resultBytes[i]));
-        // }
 
         return result;
     }

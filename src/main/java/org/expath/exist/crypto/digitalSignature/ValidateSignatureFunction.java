@@ -20,6 +20,7 @@
 package org.expath.exist.crypto.digitalSignature;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Properties;
 
@@ -106,8 +107,8 @@ public class ValidateSignatureFunction extends BasicFunction {
 
         //process the input string to DOM document
         Document inputDOMDoc = null;
-        try {
-            inputDOMDoc = db.parse(new InputSource(new StringReader(serializer.serialize((NodeValue) args[0].itemAt(0)))));
+        try(final Reader reader = new StringReader(serializer.serialize((NodeValue) args[0].itemAt(0)))) {
+            inputDOMDoc = db.parse(new InputSource(reader));
         } catch (final SAXException | IOException ex) {
             LOG.error(ex.getMessage(), ex);
         }

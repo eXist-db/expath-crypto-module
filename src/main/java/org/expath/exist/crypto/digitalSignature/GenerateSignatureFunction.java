@@ -136,8 +136,12 @@ public class GenerateSignatureFunction extends BasicFunction {
     public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
         final Serializer serializer = context.getBroker().getSerializer();
         final NodeValue inputNode = (NodeValue) args[0].itemAt(0);
-        final InputStream inputNodeStream = new NodeInputStream(serializer, inputNode);
-        final Document inputDOMDoc = inputStreamToDocument(inputNodeStream);
+        final Document inputDOMDoc;
+        try(final InputStream inputNodeStream = new NodeInputStream(serializer, inputNode)) {
+            inputDOMDoc = inputStreamToDocument(inputNodeStream);
+        } catch (final IOException ex) {
+            throw new XPathException(ex.getMessage());
+        }
 
         final String canonicalizationAlgorithm = args[1].getStringValue();
         final String digestAlgorithm = args[2].getStringValue();
@@ -184,6 +188,14 @@ public class GenerateSignatureFunction extends BasicFunction {
                     xpathExprString, certificateDetails, keyStoreInputStream);
         } catch (final Exception ex) {
             throw new XPathException(ex.getMessage());
+        } finally {
+            if(keyStoreInputStream != null) {
+                try {
+                    keyStoreInputStream.close();
+                } catch (final IOException ex) {
+                    throw new XPathException(ex.getMessage());
+                }
+            }
         }
 
         try {
