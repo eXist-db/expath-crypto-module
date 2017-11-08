@@ -3,7 +3,7 @@
 	<title>${package-title}</title>
 	<author id="cteodorescu">Claudius Teodorescu</author>
 	<website>${project.url}</website>
-	<license>GNU-LGPL</license>
+	<license>GNU LGPL v2.1</license>
 	<copyright>true</copyright>
 	<type>library</type>
 	<status>stable</status>
@@ -13,19 +13,19 @@
 	<tag>exist</tag>
 	<category id="libs">Libraries</category>
 	<category id="exist">eXist extensions</category>
-	<dependency processor="http://exist-db.org" semver-min="2.3.0" />
+	<dependency processor="http://exist-db.org" semver-min="3.5.0" />
 	<dependencySets>
 		<dependencySet>
-			<groupId>org.expath.exist</groupId>
-			<artifactId>crypto</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${project.artifactId}</artifactId>
 			<version>${project.version}</version>
-			<outputFileNameMapping>crypto-exist-java-lib.jar</outputFileNameMapping>
+			<outputFileNameMapping>${project.artifactId}-exist-java-lib-${project.version}.jar</outputFileNameMapping>
 		</dependencySet>
 		<dependencySet>
 			<groupId>ro.kuberam.libs.java</groupId>
 			<artifactId>crypto</artifactId>
-			<version>${java-lib-version}</version>
-			<outputFileNameMapping>crypto-java-lib.jar</outputFileNameMapping>
+			<version>${crypto.java.lib.version}</version>
+			<outputFileNameMapping>crypto-java-lib-${crypto.java.lib.version}.jar</outputFileNameMapping>
 		</dependencySet>
 	</dependencySets>
 </package>

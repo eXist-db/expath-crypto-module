@@ -1,38 +1,45 @@
-/*
- *  eXist Java Cryptographic Extension
- *  Copyright (C) 2010 Claudius Teodorescu at http://kuberam.ro
- *  
- *  Released under LGPL License - http://gnu.org/licenses/lgpl.html.
- *  
+/**
+ * eXist-db EXPath Cryptographic library
+ * eXist-db wrapper for EXPath Cryptographic Java library
+ * Copyright (C) 2016 Kuberam
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1
+ * of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation,
+ * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 package org.expath.exist.crypto.digitalSignature;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 
-import org.apache.log4j.Logger;
-import org.exist.dom.QName;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.exist.storage.serializers.Serializer;
 import org.exist.xquery.BasicFunction;
-import org.exist.xquery.Cardinality;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.XQueryContext;
 import org.exist.xquery.value.BooleanValue;
-import org.exist.xquery.value.FunctionParameterSequenceType;
-import org.exist.xquery.value.FunctionReturnSequenceType;
 import org.exist.xquery.value.NodeValue;
 import org.exist.xquery.value.Sequence;
-import org.exist.xquery.value.SequenceType;
 import org.exist.xquery.value.Type;
-import org.expath.exist.crypto.ExistExpathCryptoModule;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -41,78 +48,80 @@ import org.xml.sax.SAXNotSupportedException;
 
 import ro.kuberam.libs.java.crypto.digitalSignature.ValidateXmlSignature;
 
+import static org.exist.xquery.FunctionDSL.*;
+import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
+
 /**
  * Cryptographic extension functions.
- * 
+ *
  * @author Claudius Teodorescu <claudius.teodorescu@gmail.com>
  */
 public class ValidateSignatureFunction extends BasicFunction {
 
-	private final static Logger logger = Logger.getLogger(ValidateSignatureFunction.class);
+    private static final Logger LOG = LogManager.getLogger(ValidateSignatureFunction.class);
 
-	public final static FunctionSignature signature =
-		new FunctionSignature(
-			new QName("validate-signature", ExistExpathCryptoModule.NAMESPACE_URI, ExistExpathCryptoModule.PREFIX),
-			"This function validates an XML Digital Signature.",
-			new SequenceType[] {
-                            new FunctionParameterSequenceType("data", Type.NODE, Cardinality.EXACTLY_ONE, "The enveloped, enveloping, or detached signature.")                        },
-			new FunctionReturnSequenceType(Type.BOOLEAN, Cardinality.EXACTLY_ONE, "boolean value true() if the signature is valid, otherwise return value false()."));
+    public final static FunctionSignature FS_VALIDATE_SIGNATURE = functionSignature(
+        "validate-signature",
+        "This function validates an XML Digital Signature.",
+        returns(Type.BOOLEAN, "boolean value true() if the signature is valid, otherwise return value false()."),
+        param("data", Type.NODE, "The enveloped, enveloping, or detached signature.")
+    );
 
-	public ValidateSignatureFunction(XQueryContext context, FunctionSignature signature) {
-		super(context, signature);
-	}
+    public ValidateSignatureFunction(final XQueryContext context, final FunctionSignature signature) {
+        super(context, signature);
+    }
 
-	protected final static Properties defaultOutputKeysProperties = new Properties();
-	static {
-		defaultOutputKeysProperties.setProperty(OutputKeys.INDENT, "no");
-		defaultOutputKeysProperties.setProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-		defaultOutputKeysProperties.setProperty(OutputKeys.ENCODING, "UTF-8");
-	}
+    private static final Properties defaultOutputKeysProperties = new Properties();
+    static {
+        defaultOutputKeysProperties.setProperty(OutputKeys.INDENT, "no");
+        defaultOutputKeysProperties.setProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        defaultOutputKeysProperties.setProperty(OutputKeys.ENCODING, "UTF-8");
+    }
 
-	public Sequence eval(Sequence[] args, Sequence contextSequence) throws XPathException {
-            if( args[0].isEmpty() ){
-                return Sequence.EMPTY_SEQUENCE;
-            }
+    @Override
+    public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
+        if (args[0].isEmpty()) {
+            return Sequence.EMPTY_SEQUENCE;
+        }
 
-            //get and process the input document or node to InputStream, in order to be transformed into DOM Document
-            Serializer serializer = context.getBroker().getSerializer();
-            serializer.reset();
-            Properties outputProperties = new Properties( defaultOutputKeysProperties );
-            try {
-                serializer.setProperties(outputProperties);
-            } catch (SAXNotRecognizedException ex) {
-            java.util.logging.Logger.getLogger(ValidateSignatureFunction.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SAXNotSupportedException ex) {
-            java.util.logging.Logger.getLogger(ValidateSignatureFunction.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        //get and process the input document or node to InputStream, in order to be transformed into DOM Document
+        final Serializer serializer = context.getBroker().getSerializer();
+        serializer.reset();
 
-            //initialize the document builder
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-            DocumentBuilder db = null;
-            try {
-                db = dbf.newDocumentBuilder();
-            } catch (ParserConfigurationException ex) {}
+        final Properties outputProperties = new Properties(defaultOutputKeysProperties);
+        try {
+            serializer.setProperties(outputProperties);
+        } catch (final SAXNotRecognizedException | SAXNotSupportedException ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
 
-            //process the input string to DOM document
-            Document inputDOMDoc = null;
-            try {
-                inputDOMDoc = db.parse(new InputSource(new StringReader(serializer.serialize((NodeValue)args[0].itemAt(0)))));
-            } catch (SAXException ex) {
-                ex.getMessage();
-            } catch (IOException ex) {
-                ex.getMessage();
-            }
+        //initialize the document builder
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        DocumentBuilder db = null;
+        try {
+            db = dbf.newDocumentBuilder();
+        } catch (final ParserConfigurationException ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
 
-            //validate the signature
-            Boolean isValid = false;
-            try {
-                isValid = ValidateXmlSignature.validate(inputDOMDoc);
+        //process the input string to DOM document
+        Document inputDOMDoc = null;
+        try(final Reader reader = new StringReader(serializer.serialize((NodeValue) args[0].itemAt(0)))) {
+            inputDOMDoc = db.parse(new InputSource(reader));
+        } catch (final SAXException | IOException ex) {
+            LOG.error(ex.getMessage(), ex);
+        }
+
+        //validate the signature
+        Boolean isValid = false;
+        try {
+            isValid = ValidateXmlSignature.validate(inputDOMDoc);
 //            	isValid = ValidateXmlSignature.validate((Document)args[0].itemAt(0));
-            } catch (Exception ex) {
-                throw new XPathException(ex.getMessage());
-            }
+        } catch (final Exception ex) {
+            throw new XPathException(ex.getMessage());
+        }
 
-            return new BooleanValue(isValid);
-     }
+        return new BooleanValue(isValid);
+    }
 }
