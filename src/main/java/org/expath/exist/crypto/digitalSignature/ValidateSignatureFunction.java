@@ -54,7 +54,7 @@ import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
 /**
  * Cryptographic extension functions.
  *
- * @author Claudius Teodorescu <claudius.teodorescu@gmail.com>
+ * @author <a href="mailto:claudius.teodorescu@gmail.com">Claudius Teodorescu</a>
  */
 public class ValidateSignatureFunction extends BasicFunction {
 

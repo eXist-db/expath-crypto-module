@@ -42,7 +42,7 @@ import static org.exist.xquery.FunctionDSL.functionDefs;
 /**
  * Implements the module definition.
  *
- * @author Claudius Teodorescu <claudius.teodorescu@gmail.com>
+ * @author <a href="mailto:claudius.teodorescu@gmail.com">Claudius Teodorescu</a>
  */
 public class ExistExpathCryptoModule extends AbstractInternalModule {
 
