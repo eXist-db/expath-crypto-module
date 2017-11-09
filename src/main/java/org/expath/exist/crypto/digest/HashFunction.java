@@ -22,7 +22,7 @@ package org.expath.exist.crypto.digest;
 /**
  * Implements the crypto:hash() function for eXist.
  *
- * @author Claudius Teodorescu <claudius.teodorescu@gmail.com>
+ * @author <a href="mailto:claudius.teodorescu@gmail.com">Claudius Teodorescu</a>
  */
 
 import java.io.InputStream;

@@ -38,7 +38,7 @@ import static org.exist.xquery.FunctionDSL.*;
 import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
 
 /**
- * @author Claudius Teodorescu <claudius.teodorescu@gmail.com>
+ * @author <a href="mailto:claudius.teodorescu@gmail.com">Claudius Teodorescu</a>
  */
 
 public class EncryptionFunctions extends BasicFunction {
