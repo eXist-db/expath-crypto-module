@@ -48,7 +48,7 @@ public class HashFunction extends BasicFunction {
 
     private static final Logger LOG = LogManager.getLogger(HashFunction.class);
 
-    private static final String FS_HASH_NAME = "name";
+    private static final String FS_HASH_NAME = "hash";
     private static final FunctionParameterSequenceType FS_HASH_PARAM_DATA = param("data", Type.ANY_TYPE, "The data to be hashed.");
     private static final FunctionParameterSequenceType FS_HASH_PARAM_ALGORITHM = param("algorithm", Type.STRING, "The cryptographic hashing algorithm.");
 
