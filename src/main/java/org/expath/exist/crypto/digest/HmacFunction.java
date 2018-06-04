@@ -91,8 +91,10 @@ public class HmacFunction extends BasicFunction {
         }
 
         final Sequence result;
+        Either<InputStream, byte[]> data = null;
+        boolean dataStreamClosed = false;
         try {
-            final Either<InputStream, byte[]> data = sequence2javaTypes(args[0]);
+            data = sequence2javaTypes(args[0]);
 
             if(LOG.isDebugEnabled()) {
                 LOG.debug("secretKey item count = " + args[1].getItemCount());
@@ -122,6 +124,7 @@ public class HmacFunction extends BasicFunction {
                     try(final InputStream is = data.left().get()) {
                         resultBytes = Hmac.hmac(is, secretKey, algorithm);
                     }
+                    dataStreamClosed = true;
                 } else {
                     resultBytes =  Hmac.hmac(data.right().get(), secretKey, algorithm);
                 }
@@ -157,6 +160,14 @@ public class HmacFunction extends BasicFunction {
             }
         } catch (final Exception ex) {
             throw new XPathException(ex.getMessage());
+        } finally {
+            if (data != null && data.isLeft() && !dataStreamClosed) {
+                try {
+                    data.left().get().close();
+                } catch (final IOException e) {
+                    throw new XPathException(e.getMessage());
+                }
+            }
         }
 
         return result;
