@@ -19,7 +19,6 @@
  */
 package org.expath.exist.crypto.digest;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +27,7 @@ import java.util.Arrays;
 import com.evolvedbinary.j8fu.Either;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.exist.util.io.FastByteArrayOutputStream;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
@@ -212,12 +212,11 @@ public class HmacFunction extends BasicFunction {
                         return null;
                 }
             } else {
-                try(final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                    for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext(); ) {
-                        baos.write(((NumericValue) iterator.nextItem()).getInt());
-                    }
-                    return Either.Right(baos.toByteArray());
+                final FastByteArrayOutputStream baos = new FastByteArrayOutputStream();
+                for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext(); ) {
+                    baos.write(((NumericValue) iterator.nextItem()).getInt());
                 }
+                return Either.Left(baos.toFastByteInputStream());
             }
         } catch (final Exception ex) {
             throw new XPathException(ex.getMessage());
@@ -233,7 +232,7 @@ public class HmacFunction extends BasicFunction {
             return data.right().get();
         } else {
             try(final InputStream is = data.left().get();
-                    final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    final FastByteArrayOutputStream baos = new FastByteArrayOutputStream()) {
 
                 final byte[] buf = new byte[Buffer.TRANSFER_SIZE];
                 int read = -1;
@@ -243,15 +242,6 @@ public class HmacFunction extends BasicFunction {
 
                 return baos.toByteArray();
             }
-        }
-    }
-
-    private byte[] binaryValueToByte(final BinaryValue binary) throws XPathException {
-        try(final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            binary.streamBinaryTo(os);
-            return os.toByteArray();
-        } catch (final IOException ioe) {
-            throw new XPathException(this, ioe);
         }
     }
 }
