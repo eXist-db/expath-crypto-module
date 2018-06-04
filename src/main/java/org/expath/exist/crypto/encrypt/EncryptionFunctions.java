@@ -25,14 +25,15 @@ import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.XQueryContext;
-import org.exist.xquery.value.FunctionParameterSequenceType;
-import org.exist.xquery.value.Sequence;
-import org.exist.xquery.value.Type;
-import org.exist.xquery.value.StringValue;
+import org.exist.xquery.value.*;
 
-import ro.kuberam.libs.java.crypto.ErrorMessages;
 import ro.kuberam.libs.java.crypto.encrypt.AsymmetricEncryption;
 import ro.kuberam.libs.java.crypto.encrypt.SymmetricEncryption;
+
+import javax.annotation.Nullable;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.exist.xquery.FunctionDSL.*;
 import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
@@ -49,20 +50,20 @@ public class EncryptionFunctions extends BasicFunction {
     private static final String FS_DECRYPT_NAME = "decrypt";
     private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_DATA = param("data", Type.ATOMIC, "The data to be encrypted or decrypted. This parameter can be of type xs:string, xs:base64Binary, or xs:hexBinary.");
     private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_SECRET_KEY = param("secret-key", Type.STRING, "The secret key used for encryption or decryption, as string.");
-    private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_CRYPTOGRAPHIC_ALGORITHM = param("secret-key", Type.STRING, "The cryptographic algorithm used for encryption or decryption.");
-    private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_IV = optParam("secret-key", Type.STRING, "The initialization vector.");
+    private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_CRYPTOGRAPHIC_ALGORITHM = param("algorithm", Type.STRING, "The cryptographic algorithm used for encryption or decryption.");
+    private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_IV = optParam("iv", Type.STRING, "The initialization vector.");
     private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_PROVIDER = optParam("provider", Type.STRING, "The cryptographic provider.");
 
     public final static FunctionSignature FS_ENCRYPT = functionSignature(
-        FS_ENCRYPT_NAME,
-        "Encrypts the input string.",
-        returns(Type.STRING, "the encrypted data."),
-        FS_ENCRYPT_PARAM_DATA,
-        param("encryption-type", Type.STRING, "The type of encryption. Legal values: 'symmetric', and 'asymmetric'."),
-        FS_ENCRYPT_PARAM_SECRET_KEY,
-        FS_ENCRYPT_PARAM_CRYPTOGRAPHIC_ALGORITHM,
-        FS_ENCRYPT_PARAM_IV,
-        FS_ENCRYPT_PARAM_PROVIDER
+            FS_ENCRYPT_NAME,
+            "Encrypts the input string.",
+            returns(Type.STRING, "the encrypted data."),
+            FS_ENCRYPT_PARAM_DATA,
+            param("encryption-type", Type.STRING, "The type of encryption. Legal values: 'symmetric', and 'asymmetric'."),
+            FS_ENCRYPT_PARAM_SECRET_KEY,
+            FS_ENCRYPT_PARAM_CRYPTOGRAPHIC_ALGORITHM,
+            FS_ENCRYPT_PARAM_IV,
+            FS_ENCRYPT_PARAM_PROVIDER
     );
 
     public final static FunctionSignature FS_DECRYPT = functionSignature(
@@ -83,36 +84,103 @@ public class EncryptionFunctions extends BasicFunction {
 
     @Override
     public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
-        String result = null;
-        final String functionName = getSignature().getName().getLocalPart();
+        final Item data = args[0].itemAt(0);
+        final CryptType cryptType = CryptType.valueOf(args[1].getStringValue().toUpperCase());
+        final String secretKey = args[2].getStringValue();
+        final String algorithm = args[3].getStringValue();
+        @Nullable final String iv = args.length >= 5 && !args[4].isEmpty() ? args[4].getStringValue() : null;
+        @Nullable final String provider = args.length >= 6 && !args[5].isEmpty() ? args[5].getStringValue() : null;
 
-        try {
-            if ("encrypt".equals(functionName)) {
-                if ("symmetric".equals(args[1].getStringValue())) {
-                    result = SymmetricEncryption.encryptString(args[0].getStringValue(),
-                            args[2].getStringValue(), args[3].getStringValue(), args[4].getStringValue(),
-                            args[5].getStringValue());
-                } else if ("asymmetric".equals(args[1].getStringValue())) {
-                    result = AsymmetricEncryption.encryptString(args[0].getStringValue(),
-                            args[2].getStringValue(), args[3].getStringValue());
-                } else {
-                    throw new XPathException(ErrorMessages.error_encType);
-                }
-            } else if ("decrypt".equals(functionName)) {
-                if ("symmetric".equals(args[1].getStringValue())) {
-                    result = SymmetricEncryption.decryptString(args[0].getStringValue(),
-                            args[2].getStringValue(), args[3].getStringValue(), args[4].getStringValue(),
-                            args[5].getStringValue());
-                } else if ("asymmetric".equals(args[1].getStringValue())) {
+        switch (getName().getLocalPart()) {
+            case FS_ENCRYPT_NAME:
+                return encrypt(data, cryptType, secretKey, algorithm, iv, provider);
 
-                } else {
-                    throw new XPathException(ErrorMessages.error_decryptionType);
+            case FS_DECRYPT_NAME:
+                return decrypt(data, cryptType, secretKey, algorithm, iv, provider);
+
+            default:
+                throw new XPathException(this, "No function: " + getName() + "#" + getSignature().getArgumentCount());
+        }
+    }
+
+    private Sequence encrypt(final Item data, final CryptType encryptType, final String secretKey, final String algorith, @Nullable final String iv, @Nullable final String provider) throws IOException, XPathException {
+        final String encrypted;
+        if (data.getType() == Type.BASE64_BINARY || data.getType() == Type.HEX_BINARY) {
+            final BinaryValue binaryValue = (BinaryValue) data;
+            try(final InputStream is = binaryValue.getInputStream()) {
+                switch (encryptType) {
+                    case SYMMETRIC:
+                        encrypted = SymmetricEncryption.encrypt(is, secretKey, algorith, iv, provider);
+                        break;
+
+                    case ASYMMETRIC:
+                        encrypted = AsymmetricEncryption.encrypt(is, secretKey, algorith, iv, provider);
+                        break;
+
+                    default:
+                        //throw new XPathException(ErrorMessages.error_encType);
+                        throw new XPathException(this, "Invalid encrypt type");
                 }
             }
-        } catch (final Exception ex) {
-            throw new XPathException(ex.getMessage());
+        } else {
+            switch (encryptType) {
+                case SYMMETRIC:
+                    encrypted = SymmetricEncryption.encryptString(data.getStringValue(), secretKey, algorith, iv, provider);
+                    break;
+
+                case ASYMMETRIC:
+                    encrypted = AsymmetricEncryption.encryptString(data.getStringValue(), secretKey, algorith, iv, provider);
+                    break;
+
+                default:
+                    //throw new XPathException(ErrorMessages.error_encType);
+                    throw new XPathException(this, "Invalid encrypt type");
+            }
         }
 
-        return new StringValue(result);
+        return new StringValue(encrypted);
+    }
+
+    private Sequence decrypt(final Item data, final CryptType decryptType, final String secretKey, final String algorith, @Nullable final String iv, @Nullable final String provider) throws IOException, XPathException {
+        final String decrypted;
+        if (data.getType() == Type.BASE64_BINARY || data.getType() == Type.HEX_BINARY) {
+            final BinaryValue binaryValue = (BinaryValue) data;
+            try(final InputStream is = binaryValue.getInputStream()) {
+                switch (decryptType) {
+                    case SYMMETRIC:
+                        decrypted = SymmetricEncryption.decrypt(is, secretKey, algorith, iv, provider);
+                        break;
+
+                    case ASYMMETRIC:
+                        decrypted = AsymmetricEncryption.decrypt(is, secretKey, algorith, iv, provider);
+                        break;
+
+                    default:
+                        //throw new XPathException(ErrorMessages.error_decryptionType);
+                        throw new XPathException(this, "Invalid encrypt type");
+                }
+            }
+        } else {
+            switch (decryptType) {
+                case SYMMETRIC:
+                    decrypted = SymmetricEncryption.decryptString(data.getStringValue(), secretKey, algorith, iv, provider);
+                    break;
+
+                case ASYMMETRIC:
+                    decrypted = AsymmetricEncryption.decryptString(data.getStringValue(), secretKey, algorith, iv, provider);
+                    break;
+
+                default:
+                    //throw new XPathException(ErrorMessages.error_decryptionType);
+                    throw new XPathException(this, "Invalid encrypt type");
+            }
+        }
+
+        return new StringValue(decrypted);
+    }
+
+    private enum CryptType {
+        SYMMETRIC,
+        ASYMMETRIC
     }
 }
