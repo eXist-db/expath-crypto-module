@@ -44,6 +44,7 @@ import org.exist.xquery.value.ValueSequence;
 
 import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digest.Hmac;
+import ro.kuberam.libs.java.crypto.utils.Buffer;
 
 import javax.annotation.Nullable;
 
@@ -234,7 +235,7 @@ public class HmacFunction extends BasicFunction {
             try(final InputStream is = data.left().get();
                     final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
-                final byte[] buf = new byte[1024];
+                final byte[] buf = new byte[Buffer.TRANSFER_SIZE];
                 int read = -1;
                 while((read = is.read(buf)) > -1) {
                     baos.write(buf, 0, read);
