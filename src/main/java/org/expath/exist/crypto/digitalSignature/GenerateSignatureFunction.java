@@ -257,8 +257,9 @@ public class GenerateSignatureFunction extends BasicFunction {
     private InputStream getKeyStoreInputStream(final String keystoreURI) throws CryptoException {
         // get the keystore as InputStream
         try {
+            DocumentImpl keyStoreDoc = null;
             try {
-                final DocumentImpl keyStoreDoc = context.getBroker().getXMLResource(XmldbURI.xmldbUriFor(keystoreURI), Lock.LockMode.READ_LOCK);
+                keyStoreDoc = context.getBroker().getXMLResource(XmldbURI.xmldbUriFor(keystoreURI), Lock.LockMode.READ_LOCK);
                 if (keyStoreDoc == null) {
                     throw new CryptoException(CryptoError.UNREADABLE_KEYSTORE);
                     // TODO: here was err:CX07 The keystore is null.
@@ -274,6 +275,8 @@ public class GenerateSignatureFunction extends BasicFunction {
             } catch (final PermissionDeniedException e) {
                 LOG.error(CryptoError.DENIED_KEYSTORE.asMessage());
                 return null;
+            } finally {
+                keyStoreDoc.getUpdateLock().release(Lock.LockMode.READ_LOCK);
             }
         } catch (final URISyntaxException e) {
             LOG.error(CryptoError.KEYSTORE_URL.asMessage());
