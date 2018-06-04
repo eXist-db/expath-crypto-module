@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Properties;
 
+import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -46,6 +47,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
+import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digitalSignature.ValidateXmlSignature;
 
 import static org.exist.xquery.FunctionDSL.*;
@@ -118,8 +120,10 @@ public class ValidateSignatureFunction extends BasicFunction {
         try {
             isValid = ValidateXmlSignature.validate(inputDOMDoc);
 //            	isValid = ValidateXmlSignature.validate((Document)args[0].itemAt(0));
-        } catch (final Exception ex) {
-            throw new XPathException(ex.getMessage());
+        } catch (final CryptoException e) {
+            throw new XPathException(this, e.getCryptoError().asMessage(), e);
+        } catch (final IOException | XMLSignatureException e) {
+            throw new XPathException(this, e);
         }
 
         return new BooleanValue(isValid);

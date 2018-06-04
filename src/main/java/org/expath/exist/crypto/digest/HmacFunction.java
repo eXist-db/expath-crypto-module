@@ -42,6 +42,7 @@ import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.exist.xquery.value.ValueSequence;
 
+import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digest.Hmac;
 
 import javax.annotation.Nullable;
@@ -158,8 +159,10 @@ public class HmacFunction extends BasicFunction {
             } else {
                 result = Sequence.EMPTY_SEQUENCE;
             }
-        } catch (final Exception ex) {
-            throw new XPathException(ex.getMessage());
+        } catch (final CryptoException e) {
+            throw new XPathException(this, e.getCryptoError().asMessage(), e);
+        } catch (final IOException e) {
+            throw new XPathException(this, e);
         } finally {
             if (data != null && data.isLeft() && !dataStreamClosed) {
                 try {
