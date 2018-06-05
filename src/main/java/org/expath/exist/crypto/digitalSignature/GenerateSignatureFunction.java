@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URISyntaxException;
 
+import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -56,7 +57,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import ro.kuberam.libs.java.crypto.ErrorMessages;
+import ro.kuberam.libs.java.crypto.CryptoError;
+import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.ExpathCryptoModule;
 import ro.kuberam.libs.java.crypto.digitalSignature.GenerateXmlSignature;
 
@@ -158,36 +160,44 @@ public class GenerateSignatureFunction extends BasicFunction {
         certificateDetails[0] = "";
         InputStream keyStoreInputStream = null;
 
-        // function with 7 arguments
-        if (args.length == 7) {
-            if (args[6].itemAt(0).getType() == 22) {
+        try {
+
+            // function with 7 arguments
+            if (args.length == 7) {
+                if (args[6].itemAt(0).getType() == 22) {
+                    xpathExprString = args[6].getStringValue();
+                } else if (args[6].itemAt(0).getType() == 1) {
+                    final Node certificateDetailsNode = ((NodeValue) args[6].itemAt(0)).getNode();
+                    // get the certificate details
+                    certificateDetails = getDigitalCertificateDetails(certificateDetails,
+                            certificateDetailsNode);
+                    // get the keystore InputStream
+                    keyStoreInputStream = getKeyStoreInputStream(certificateDetails[4]);
+                }
+            }
+
+            // function with 8 arguments
+            if (args.length == 8) {
                 xpathExprString = args[6].getStringValue();
-            } else if (args[6].itemAt(0).getType() == 1) {
-                final Node certificateDetailsNode = ((NodeValue) args[6].itemAt(0)).getNode();
+                final Node certificateDetailsNode = ((NodeValue) args[7].itemAt(0)).getNode();
                 // get the certificate details
-                certificateDetails = getDigitalCertificateDetails(certificateDetails,
-                        certificateDetailsNode);
+                certificateDetails = getDigitalCertificateDetails(certificateDetails, certificateDetailsNode);
                 // get the keystore InputStream
                 keyStoreInputStream = getKeyStoreInputStream(certificateDetails[4]);
             }
-        }
 
-        // function with 8 arguments
-        if (args.length == 8) {
-            xpathExprString = args[6].getStringValue();
-            final Node certificateDetailsNode = ((NodeValue) args[7].itemAt(0)).getNode();
-            // get the certificate details
-            certificateDetails = getDigitalCertificateDetails(certificateDetails, certificateDetailsNode);
-            // get the keystore InputStream
-            keyStoreInputStream = getKeyStoreInputStream(certificateDetails[4]);
-        }
 
-        try {
             signatureString = GenerateXmlSignature.generate(inputDOMDoc, canonicalizationAlgorithm,
                     digestAlgorithm, signatureAlgorithm, signatureNamespacePrefix, signatureType,
                     xpathExprString, certificateDetails, keyStoreInputStream);
-        } catch (final Exception ex) {
-            throw new XPathException(ex.getMessage());
+
+            signatureDocument = stringToDocument(signatureString);
+
+            return (Sequence) signatureDocument;
+        } catch (final CryptoException e) {
+            throw new XPathException(this, e.getCryptoError().asMessage(), e);
+        } catch (final IOException | XMLSignatureException e) {
+            throw new XPathException(this, e);
         } finally {
             if(keyStoreInputStream != null) {
                 try {
@@ -198,16 +208,9 @@ public class GenerateSignatureFunction extends BasicFunction {
             }
         }
 
-        try {
-            signatureDocument = stringToDocument(signatureString);
-        } catch (final Exception ex) {
-            throw new XPathException(ex.getMessage());
-        }
-
-        return (Sequence) signatureDocument;
     }
 
-    private Document stringToDocument(final String signatureString) throws Exception {
+    private Document stringToDocument(final String signatureString) throws XPathException {
         // process the output (signed) document from string to node()
         try {
             final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -222,16 +225,16 @@ public class GenerateSignatureFunction extends BasicFunction {
             return adapter.getDocument();
 
         } catch (final ParserConfigurationException e) {
-            throw new XPathException("Error while constructing XML parser: " + e.getMessage());
+            throw new XPathException(this, "Error while constructing XML parser: " + e.getMessage());
         } catch (final SAXException | IOException e) {
-            throw new XPathException("Error while parsing XML: " + e.getMessage());
+            throw new XPathException(this, "Error while parsing XML: " + e.getMessage());
         }
     }
 
     private String[] getDigitalCertificateDetails(final String[] certificateDetails, final Node certificateDetailsNode)
-            throws XPathException {
+            throws CryptoException {
         if (!certificateDetailsNode.getNodeName().equals(certificateRootElementName)) {
-            throw new XPathException(ErrorMessages.error_sigElem);
+            throw new CryptoException(CryptoError.SIGNATURE_ELEMENT);
             // TODO: here was err:CX05 The root element of argument
             // $digital-certificate must have the name 'digital-certificate'.
         }
@@ -242,7 +245,7 @@ public class GenerateSignatureFunction extends BasicFunction {
             if (child.getNodeName().equals(certificateChildElementNames[i])) {
                 certificateDetails[i] = child.getFirstChild().getNodeValue();
             } else {
-                throw new XPathException(ErrorMessages.error_sigElem);
+                throw new CryptoException(CryptoError.SIGNATURE_ELEMENT);
                 // TODO: here was err:CX05 The root element of argument
                 // $digital-certificate must have the name
                 // 'digital-certificate'.
@@ -251,29 +254,32 @@ public class GenerateSignatureFunction extends BasicFunction {
         return certificateDetails;
     }
 
-    private InputStream getKeyStoreInputStream(final String keystoreURI) throws XPathException {
+    private InputStream getKeyStoreInputStream(final String keystoreURI) throws CryptoException {
         // get the keystore as InputStream
         try {
+            DocumentImpl keyStoreDoc = null;
             try {
-                final DocumentImpl keyStoreDoc = context.getBroker().getXMLResource(XmldbURI.xmldbUriFor(keystoreURI), Lock.LockMode.READ_LOCK);
+                keyStoreDoc = context.getBroker().getXMLResource(XmldbURI.xmldbUriFor(keystoreURI), Lock.LockMode.READ_LOCK);
                 if (keyStoreDoc == null) {
-                    throw new XPathException(ErrorMessages.error_readKeystore);
+                    throw new CryptoException(CryptoError.UNREADABLE_KEYSTORE);
                     // TODO: here was err:CX07 The keystore is null.
                 }
 
                 final BinaryDocument keyStoreBinaryDoc = (BinaryDocument) keyStoreDoc;
                 try {
                     return context.getBroker().getBinaryResource(keyStoreBinaryDoc);
-                } catch (final IOException ex) {
-                    throw new XPathException(ErrorMessages.error_readKeystore);
+                } catch (final IOException e) {
+                    throw new CryptoException(CryptoError.UNREADABLE_KEYSTORE, e);
                 }
 
-            } catch (final PermissionDeniedException ex) {
-                LOG.error(ErrorMessages.error_deniedKeystore);
+            } catch (final PermissionDeniedException e) {
+                LOG.error(CryptoError.DENIED_KEYSTORE.asMessage());
                 return null;
+            } finally {
+                keyStoreDoc.getUpdateLock().release(Lock.LockMode.READ_LOCK);
             }
-        } catch (final URISyntaxException ex) {
-            LOG.error(ErrorMessages.error_keystoreUrl);
+        } catch (final URISyntaxException e) {
+            LOG.error(CryptoError.KEYSTORE_URL.asMessage());
             return null;
         }
     }

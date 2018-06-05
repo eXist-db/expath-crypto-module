@@ -25,6 +25,7 @@ package org.expath.exist.crypto.digest;
  * @author <a href="mailto:claudius.teodorescu@gmail.com">Claudius Teodorescu</a>
  */
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,6 +40,7 @@ import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 
+import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digest.Hash;
 
 import static org.exist.xquery.FunctionDSL.*;
@@ -87,8 +89,8 @@ public class HashFunction extends BasicFunction {
         if (inputType == Type.STRING || inputType == Type.ELEMENT || inputType == Type.DOCUMENT) {
             try {
                 result = new StringValue(Hash.hashString(args[0].getStringValue(), hashAlgorithm, encoding));
-            } catch (final Exception ex) {
-                throw new XPathException(ex.getMessage());
+            } catch (final CryptoException e) {
+                throw new XPathException(this, e.getCryptoError().asMessage(), e);
             }
         } else if (inputType == Type.BASE64_BINARY || inputType == Type.HEX_BINARY) {
             try {
@@ -96,8 +98,10 @@ public class HashFunction extends BasicFunction {
                 try(final InputStream is = binaryValue.getInputStream()) {
                     result = new StringValue(Hash.hashBinary(is, hashAlgorithm, encoding));
                 }
-            } catch (final Exception ex) {
-                throw new XPathException(ex.getMessage());
+            } catch (final CryptoException e) {
+                throw new XPathException(this, e.getCryptoError().asMessage(), e);
+            } catch (final IOException e) {
+                throw new XPathException(this, e);
             }
         } else {
             result = Sequence.EMPTY_SEQUENCE;
