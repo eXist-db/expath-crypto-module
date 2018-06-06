@@ -19,7 +19,6 @@
  */
 package org.expath.exist.crypto.digest;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +27,7 @@ import java.util.Arrays;
 import com.evolvedbinary.j8fu.Either;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.exist.util.io.FastByteArrayOutputStream;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
@@ -42,7 +42,9 @@ import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.exist.xquery.value.ValueSequence;
 
+import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digest.Hmac;
+import ro.kuberam.libs.java.crypto.utils.Buffer;
 
 import javax.annotation.Nullable;
 
@@ -91,8 +93,10 @@ public class HmacFunction extends BasicFunction {
         }
 
         final Sequence result;
+        Either<InputStream, byte[]> data = null;
+        boolean dataStreamClosed = false;
         try {
-            final Either<InputStream, byte[]> data = sequence2javaTypes(args[0]);
+            data = sequence2javaTypes(args[0]);
 
             if(LOG.isDebugEnabled()) {
                 LOG.debug("secretKey item count = " + args[1].getItemCount());
@@ -122,6 +126,7 @@ public class HmacFunction extends BasicFunction {
                     try(final InputStream is = data.left().get()) {
                         resultBytes = Hmac.hmac(is, secretKey, algorithm);
                     }
+                    dataStreamClosed = true;
                 } else {
                     resultBytes =  Hmac.hmac(data.right().get(), secretKey, algorithm);
                 }
@@ -155,8 +160,18 @@ public class HmacFunction extends BasicFunction {
             } else {
                 result = Sequence.EMPTY_SEQUENCE;
             }
-        } catch (final Exception ex) {
-            throw new XPathException(ex.getMessage());
+        } catch (final CryptoException e) {
+            throw new XPathException(this, e.getCryptoError().asMessage(), e);
+        } catch (final IOException e) {
+            throw new XPathException(this, e);
+        } finally {
+            if (data != null && data.isLeft() && !dataStreamClosed) {
+                try {
+                    data.left().get().close();
+                } catch (final IOException e) {
+                    throw new XPathException(e.getMessage());
+                }
+            }
         }
 
         return result;
@@ -197,12 +212,11 @@ public class HmacFunction extends BasicFunction {
                         return null;
                 }
             } else {
-                try(final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                    for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext(); ) {
-                        baos.write(((NumericValue) iterator.nextItem()).getInt());
-                    }
-                    return Either.Right(baos.toByteArray());
+                final FastByteArrayOutputStream baos = new FastByteArrayOutputStream();
+                for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext(); ) {
+                    baos.write(((NumericValue) iterator.nextItem()).getInt());
                 }
+                return Either.Left(baos.toFastByteInputStream());
             }
         } catch (final Exception ex) {
             throw new XPathException(ex.getMessage());
@@ -218,9 +232,9 @@ public class HmacFunction extends BasicFunction {
             return data.right().get();
         } else {
             try(final InputStream is = data.left().get();
-                    final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    final FastByteArrayOutputStream baos = new FastByteArrayOutputStream()) {
 
-                final byte[] buf = new byte[1024];
+                final byte[] buf = new byte[Buffer.TRANSFER_SIZE];
                 int read = -1;
                 while((read = is.read(buf)) > -1) {
                     baos.write(buf, 0, read);
@@ -228,15 +242,6 @@ public class HmacFunction extends BasicFunction {
 
                 return baos.toByteArray();
             }
-        }
-    }
-
-    private byte[] binaryValueToByte(final BinaryValue binary) throws XPathException {
-        try(final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            binary.streamBinaryTo(os);
-            return os.toByteArray();
-        } catch (final IOException ioe) {
-            throw new XPathException(this, ioe);
         }
     }
 }
