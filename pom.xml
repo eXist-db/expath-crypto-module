@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -8,7 +7,7 @@
 	<parent>
 		<groupId>org.expath.exist</groupId>
 		<artifactId>base</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.4.0</version>
 	</parent>
 
 	<artifactId>crypto</artifactId>
@@ -20,8 +19,7 @@
 	<inceptionYear>2016</inceptionYear>
 
 	<properties>
-		<crypto.java.lib.version>1.4-SNAPSHOT</crypto.java.lib.version>
-
+		<crypto.java.lib.version>1.5</crypto.java.lib.version>
 		<crypto.module.namespace>http://expath.org/ns/${project.artifactId}</crypto.module.namespace>
 		<java-package-name>org.expath.exist.crypto</java-package-name>
 		<java-package-main-class-name>ExistExpathCryptoModule</java-package-main-class-name>
@@ -124,8 +122,7 @@
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 
-							<!-- following is needed by kuberam-expath-plugin to successfully
-                            generate its components.xml -->
+							<!-- following is needed by kuberam-expath-plugin to successfully generate its components.xml -->
 							<mainClass>${java-package-name}.${java-package-main-class-name}</mainClass>
 							<packageName>${java-package-name}</packageName>
 						</manifest>
@@ -139,8 +136,7 @@
 							<Description>${project.description}</Description>
 							<Implementation-URL>${project.url}</Implementation-URL>
 
-							<!-- following is needed by kuberam-expath-plugin to successfully
-                            generate its components.xml -->
+							<!-- following is needed by kuberam-expath-plugin to successfully generate its components.xml -->
 							<ModuleNamespace>${crypto.module.namespace}</ModuleNamespace>
 						</manifestEntries>
 					</archive>
