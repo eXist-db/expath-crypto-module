@@ -7,18 +7,20 @@
 	<parent>
 		<groupId>org.expath.exist</groupId>
 		<artifactId>base</artifactId>
-		<version>1.4.0</version>
+		<version>1.5.0</version>
 	</parent>
 
 	<artifactId>crypto</artifactId>
-	<version>0.4-SNAPSHOT</version>
-
+	<version>0.5</version>
 	<name>eXist-db EXPath Cryptographic library</name>
 	<description>eXist-db wrapper for EXPath Cryptographic Java library</description>
 	<url>http://expath.org/spec/crypto</url>
 	<inceptionYear>2016</inceptionYear>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<crypto.java.lib.version>1.5</crypto.java.lib.version>
 		<crypto.module.namespace>http://expath.org/ns/${project.artifactId}</crypto.module.namespace>
 		<java-package-name>org.expath.exist.crypto</java-package-name>
@@ -40,7 +42,6 @@
 		<dependency>
 			<groupId>org.exist-db</groupId>
 			<artifactId>exist-core</artifactId>
-			<version>4.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -112,10 +113,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
@@ -146,7 +143,6 @@
 			<plugin>
 				<groupId>ro.kuberam.maven.plugins</groupId>
 				<artifactId>kuberam-expath-plugin</artifactId>
-				<version>0.4.9</version>
 				<executions>
 					<execution>
 						<id>create-xar</id>
