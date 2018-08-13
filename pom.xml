@@ -51,7 +51,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.version>3.5.2</maven.version>
+		<maven.version>3.5.4</maven.version>
 		<crypto.java.lib.version>1.5</crypto.java.lib.version>
 		<crypto.module.namespace>http://expath.org/ns/${project.artifactId}</crypto.module.namespace>
 		<java-package-name>org.expath.exist.crypto</java-package-name>
