@@ -16,11 +16,42 @@
 	<description>eXist-db wrapper for EXPath Cryptographic Java library</description>
 	<url>http://expath.org/spec/crypto</url>
 	<inceptionYear>2016</inceptionYear>
+	<licenses>
+		<license>
+			<name>GNU Lesser General Public License version 2.1</name>
+			<url>https://opensource.org/licenses/LGPL-2.1</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>Kuberam</name>
+		<url>http://kuberam.ro</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>claudius</id>
+			<name>Claudius Teodorescu</name>
+			<email>claudius.teodorescu@gmail.com</email>
+		</developer>
+	</developers>
+
+	<contributors>
+		<contributor>
+			<name>Adam Retter</name>
+		</contributor>
+	</contributors>
+
+	<prerequisites>
+		<maven>${mavenVersion}</maven>
+	</prerequisites>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.version>3.5.2</maven.version>
 		<crypto.java.lib.version>1.5</crypto.java.lib.version>
 		<crypto.module.namespace>http://expath.org/ns/${project.artifactId}</crypto.module.namespace>
 		<java-package-name>org.expath.exist.crypto</java-package-name>
