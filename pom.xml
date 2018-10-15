@@ -130,7 +130,6 @@
 						<exclude>README.md</exclude>
 						<exclude>LICENSE</exclude>
 						<exclude>xquery-license-style.xml</exclude>
-						<exclude>xar-assembly.xml</exclude>
 						<exclude>org.expath.exist.crypto.launch</exclude>
 						<exclude>src/test/resources/**/*.txt</exclude>
 						<exclude>src/test/resources/**/*.xml</exclude>
@@ -172,6 +171,23 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>com.ruleoftech</groupId>
+				<artifactId>markdown-page-generator-plugin</artifactId>
+				<version>2.1.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<headerHtmlFile>${project.basedir}/build/header.html</headerHtmlFile>
+					<footerHtmlFile>${project.basedir}/build/footer.html</footerHtmlFile>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>ro.kuberam.maven.plugins</groupId>
 				<artifactId>kuberam-expath-plugin</artifactId>
 				<executions>
@@ -182,7 +198,7 @@
 							<goal>make-xar</goal>
 						</goals>
 						<configuration>
-							<descriptor>xar-assembly.xml</descriptor>
+							<descriptor>build/xar-assembly.xml</descriptor>
 							<finalName>${package-final-name}</finalName>
 						</configuration>
 					</execution>
