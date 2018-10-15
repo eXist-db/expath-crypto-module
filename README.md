@@ -1,6 +1,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-    	<title />
+    	<title>eXist implementation for EXPath Cryptographic Module</title>
 	</head>
 	<body>
 		<h2>eXist implementation for EXPath Cryptographic Module</h2>
@@ -19,7 +19,7 @@
 			<li>For crypto:hmac(): "HMAC-MD5", "HMAC-SHA-1", "HMAC-SHA-256", "HMAC-SHA-384", "HMAC-SHA-512".</li>
 		</ul>				
 		<h3>Documentation</h3>
-		<p>For the latest version of the specification for this module see <a href="http://kuberam.ro/specs/expath/crypto/crypto.html">here</a>.</p>
+		<p>For the latest version of the specification for this module see <a href="http://expath.org/spec/crypto/editor">here</a>.</p>
 		<p>The implementation follows this specification.</p>
 		<h3>Examples of usage</h3>
 		<p>For examples of usage, see section Unit Tests.</p>
