@@ -28,4 +28,4 @@ For examples of usage, see [this folder in github](src/test/java/org/expath/exis
 
 Unit Tests can be found in [this folder in github](src/test/java/org/expath/exist/crypto/xquery/) or in [this collection](/apps/expath-crypto/tests/unit-tests) when this library is installed in eXist.
 
-For a simple test runner, showing description and status (passed / failed) for each unit test, go [here](tests/test-plan.xq).
+When this library is installed in eXist, to get a simple test runner, showing description and status (passed / failed) for each unit test, go [here](/apps/expath-crypto/tests/test-plan.xq).
