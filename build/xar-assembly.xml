@@ -1,5 +1,5 @@
-<package xmlns="http://expath.org/ns/pkg" name="${package-name}"
-	abbrev="${package-abbrev}" version="${project.version}" spec="1.0">
+<package xmlns="http://expath.org/ns/pkg" name="${package-name}" abbrev="${package-abbrev}"
+	version="${project.version}" spec="1.0">
 	<title>${package-title}</title>
 	<author id="cteodorescu">Claudius Teodorescu</author>
 	<website>${project.url}</website>
@@ -13,8 +13,7 @@
 	<tag>exist</tag>
 	<category id="libs">Libraries</category>
 	<category id="exist">eXist extensions</category>
-	<dependency processor="http://exist-db.org"
-		semver-min="3.5.0" />
+	<dependency processor="http://exist-db.org" semver-min="4.4.0" />
 	<dependencySets>
 		<dependencySet>
 			<groupId>${project.groupId}</groupId>
@@ -34,8 +33,16 @@
 	<components>
 		<resource>
 			<public-uri>http://expath.org/ns/crypto</public-uri>
-			<file>urn:java:class:org.expath.exist.crypto.ExistExpathCryptoModule
-			</file>
+			<file>urn:java:class:org.expath.exist.crypto.ExistExpathCryptoModule</file>
 		</resource>
 	</components>
+	<fileSets>
+		<fileSet>
+			<directory>${project.build.directory}/html</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>index.html</include>
+			</includes>
+		</fileSet>
+	</fileSets>
 </package>

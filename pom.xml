@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>crypto</artifactId>
-	<version>0.5</version>
+	<version>0.6</version>
 	<name>eXist-db EXPath Cryptographic library</name>
 	<description>eXist-db wrapper for EXPath Cryptographic Java library</description>
 	<url>http://expath.org/spec/crypto</url>
@@ -55,7 +55,6 @@
 		<crypto.java.lib.version>1.5</crypto.java.lib.version>
 		<crypto.module.namespace>http://expath.org/ns/${project.artifactId}</crypto.module.namespace>
 		<java-package-name>org.expath.exist.crypto</java-package-name>
-		<java-package-main-class-name>ExistExpathCryptoModule</java-package-main-class-name>
 		<module-prefix>${java-package-name}</module-prefix>
 		<package-title>EXPath Cryptographic Module Implementation</package-title>
 		<package-name>${crypto.module.namespace}</package-name>
@@ -149,10 +148,6 @@
 						<manifest>
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-
-							<!-- following is needed by kuberam-expath-plugin to successfully generate its components.xml -->
-							<mainClass>${java-package-name}.${java-package-main-class-name}</mainClass>
-							<packageName>${java-package-name}</packageName>
 						</manifest>
 						<manifestEntries>
 							<Build-Tag>${build-tag}</Build-Tag>
@@ -183,9 +178,28 @@
 					</execution>
 				</executions>
 				<configuration>
+					<inputDirectory>${project.basedir}</inputDirectory>
 					<headerHtmlFile>${project.basedir}/build/header.html</headerHtmlFile>
 					<footerHtmlFile>${project.basedir}/build/footer.html</footerHtmlFile>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<executions>
+					<execution>
+						<id>rename-readme-file</id>
+						<phase>package</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${project.build.directory}/html/README.html</sourceFile>
+							<destinationFile>${project.build.directory}/html/index.html</destinationFile>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>ro.kuberam.maven.plugins</groupId>
