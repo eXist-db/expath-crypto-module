@@ -22,7 +22,7 @@ The implementation follows this specification.
 
 ### Examples of usage
 
-For examples of usage, see (src/test/java/org/expath/exist/crypto/xquery/) or '/apps/expath-crypto/tests/unit-tests' collection (when this library is installed in eXist).
+For examples of usage, see [src/test/java/org/expath/exist/crypto/xquery/] or [/apps/expath-crypto/tests/unit-tests] collection (when this library is installed in eXist).
 
 ### Unit Tests
 
