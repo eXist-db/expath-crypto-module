@@ -27,6 +27,7 @@ import org.exist.xquery.AbstractInternalModule;
 import org.exist.xquery.FunctionDSL;
 import org.exist.xquery.FunctionDef;
 import org.exist.xquery.FunctionSignature;
+import org.exist.xquery.ErrorCodes.ErrorCode;
 import org.exist.xquery.value.FunctionParameterSequenceType;
 import org.exist.xquery.value.FunctionReturnSequenceType;
 import org.expath.exist.crypto.digest.HashFunction;
@@ -42,56 +43,65 @@ import static org.exist.xquery.FunctionDSL.functionDefs;
 /**
  * Implements the module definition.
  *
- * @author <a href="mailto:claudius.teodorescu@gmail.com">Claudius Teodorescu</a>
+ * @author <a href="mailto:claudius.teodorescu@gmail.com">Claudius
+ *         Teodorescu</a>
  */
 public class ExistExpathCryptoModule extends AbstractInternalModule {
 
-    public static final String NAMESPACE_URI = ExpathCryptoModule.NAMESPACE_URI;
-    public static final String PREFIX = ExpathCryptoModule.PREFIX;
+	public static final String NAMESPACE_URI = ExpathCryptoModule.NAMESPACE_URI;
+	public static final String PREFIX = ExpathCryptoModule.PREFIX;
 
-    public final static String INCLUSION_DATE = "2011-03-24";
-    public final static String RELEASED_IN_VERSION = "eXist-1.5";
+	public final static String INCLUSION_DATE = "2011-03-24";
+	public final static String RELEASED_IN_VERSION = "eXist-1.5";
 
-    private final static FunctionDef[] functions = functionDefs(
-            functionDefs(HashFunction.class, HashFunction.FS_HASH),
-            functionDefs(HmacFunction.class, HmacFunction.FS_HMAC),
-            functionDefs(GenerateSignatureFunction.class, GenerateSignatureFunction.FS_GENERATE_SIGNATURE),
-            functionDefs(ValidateSignatureFunction.class, ValidateSignatureFunction.FS_VALIDATE_SIGNATURE),
-            functionDefs(EncryptionFunctions.class,
-                    EncryptionFunctions.FS_ENCRYPT,
-                    EncryptionFunctions.FS_DECRYPT
-            )
-    );
+	public final static ErrorCode EXXQDYFT0001 = new ExpathCryptoErrorCode("EXXQDYFT0001", "Permission denied.");
 
-    public ExistExpathCryptoModule(final Map<String, List<? extends Object>> parameters) throws Exception {
-        super(functions, parameters);
-    }
+	private final static FunctionDef[] functions = functionDefs(functionDefs(HashFunction.class, HashFunction.FS_HASH),
+			functionDefs(HmacFunction.class, HmacFunction.FS_HMAC),
+			functionDefs(GenerateSignatureFunction.class, GenerateSignatureFunction.FS_GENERATE_SIGNATURE),
+			functionDefs(ValidateSignatureFunction.class, ValidateSignatureFunction.FS_VALIDATE_SIGNATURE),
+			functionDefs(EncryptionFunctions.class, EncryptionFunctions.FS_ENCRYPT, EncryptionFunctions.FS_DECRYPT));
 
-    @Override
-    public String getNamespaceURI() {
-        return NAMESPACE_URI;
-    }
+	public ExistExpathCryptoModule(final Map<String, List<? extends Object>> parameters) throws Exception {
+		super(functions, parameters);
+	}
 
-    @Override
-    public String getDefaultPrefix() {
-        return PREFIX;
-    }
+	@Override
+	public String getNamespaceURI() {
+		return NAMESPACE_URI;
+	}
 
-    @Override
-    public String getDescription() {
-        return ExpathCryptoModule.MODULE_DESCRIPTION;
-    }
+	@Override
+	public String getDefaultPrefix() {
+		return PREFIX;
+	}
 
-    @Override
-    public String getReleaseVersion() {
-        return RELEASED_IN_VERSION;
-    }
+	@Override
+	public String getDescription() {
+		return ExpathCryptoModule.MODULE_DESCRIPTION;
+	}
 
-    public static FunctionSignature functionSignature(final String name, final String description, final FunctionReturnSequenceType returnType, final FunctionParameterSequenceType... paramTypes) {
-        return FunctionDSL.functionSignature(new QName(name, NAMESPACE_URI), description, returnType, paramTypes);
-    }
+	@Override
+	public String getReleaseVersion() {
+		return RELEASED_IN_VERSION;
+	}
 
-    public static FunctionSignature[] functionSignatures(final String name, final String description, final FunctionReturnSequenceType returnType, final FunctionParameterSequenceType[][] variableParamTypes) {
-        return FunctionDSL.functionSignatures(new QName(name, NAMESPACE_URI), description, returnType, variableParamTypes);
-    }
+	public static FunctionSignature functionSignature(final String name, final String description,
+			final FunctionReturnSequenceType returnType, final FunctionParameterSequenceType... paramTypes) {
+		return FunctionDSL.functionSignature(new QName(name, NAMESPACE_URI), description, returnType, paramTypes);
+	}
+
+	public static FunctionSignature[] functionSignatures(final String name, final String description,
+			final FunctionReturnSequenceType returnType, final FunctionParameterSequenceType[][] variableParamTypes) {
+		return FunctionDSL.functionSignatures(new QName(name, NAMESPACE_URI), description, returnType,
+				variableParamTypes);
+	}
+
+	protected final static class ExpathCryptoErrorCode extends ErrorCode {
+
+		public ExpathCryptoErrorCode(String code, String description) {
+			super(new QName(code, NAMESPACE_URI, PREFIX), description);
+		}
+
+	}
 }

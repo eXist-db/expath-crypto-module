@@ -24,6 +24,7 @@ import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.XQueryContext;
 import org.exist.xquery.value.*;
+import org.expath.exist.crypto.ExistExpathCryptoModule;
 
 import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.encrypt.AsymmetricEncryption;
@@ -95,7 +96,7 @@ public class EncryptionFunctions extends BasicFunction {
                 return decrypt(data, cryptType, secretKey, algorithm, iv, provider);
 
             default:
-                throw new XPathException(this, "No function: " + getName() + "#" + getSignature().getArgumentCount());
+                throw new XPathException(this, ExistExpathCryptoModule.EXXQDYFT0001, "No function: " + getName() + "#" + getSignature().getArgumentCount());
         }
     }
 
@@ -107,7 +108,7 @@ public class EncryptionFunctions extends BasicFunction {
                 try (final InputStream is = binaryValue.getInputStream()) {
                     switch (encryptType) {
                         case SYMMETRIC:
-                            encrypted = SymmetricEncryption.encrypt(is, secretKey, algorithm, iv, provider);
+                            encrypted = SymmetricEncryption.encryptBinary(is, secretKey, algorithm, iv, provider);
                             break;
 
                         case ASYMMETRIC:
@@ -151,7 +152,7 @@ public class EncryptionFunctions extends BasicFunction {
                 try (final InputStream is = binaryValue.getInputStream()) {
                     switch (decryptType) {
                         case SYMMETRIC:
-                            decrypted = SymmetricEncryption.decrypt(is, secretKey, algorithm, iv, provider);
+                            decrypted = SymmetricEncryption.decryptBinary(is, secretKey, algorithm, iv, provider);
                             break;
 
                         case ASYMMETRIC:

@@ -27,6 +27,7 @@ package org.expath.exist.crypto.digest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,10 +81,8 @@ public class HashFunction extends BasicFunction {
 
         final int inputType = args[0].itemAt(0).getType();
         final String hashAlgorithm = args[1].getStringValue();
-        String encoding = "base64";
-        if (args.length == 3) {
-            encoding = args[2].getStringValue();
-        }
+		final String encoding = Optional.ofNullable(args[2].getStringValue()).filter(str -> !str.isEmpty()).orElse("base64");;
+		LOG.debug("encoding = {}", () -> encoding);
 
         final Sequence result;
         if (inputType == Type.STRING || inputType == Type.ELEMENT || inputType == Type.DOCUMENT) {

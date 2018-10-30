@@ -19,12 +19,20 @@
  */
 package org.expath.exist.crypto.digest;
 
+import static org.exist.xquery.FunctionDSL.arities;
+import static org.exist.xquery.FunctionDSL.arity;
+import static org.exist.xquery.FunctionDSL.optManyParam;
+import static org.exist.xquery.FunctionDSL.param;
+import static org.exist.xquery.FunctionDSL.returnsOptMany;
+import static org.expath.exist.crypto.ExistExpathCryptoModule.functionSignatures;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.Optional;
 
-import com.evolvedbinary.j8fu.Either;
+import javax.annotation.Nullable;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.exist.util.io.FastByteArrayOutputStream;
@@ -42,206 +50,166 @@ import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.exist.xquery.value.ValueSequence;
 
+import com.evolvedbinary.j8fu.Either;
+
 import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digest.Hmac;
 import ro.kuberam.libs.java.crypto.utils.Buffer;
 
-import javax.annotation.Nullable;
-
-import static org.exist.xquery.FunctionDSL.*;
-import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
-
 public class HmacFunction extends BasicFunction {
 
-    private static final Logger LOG = LogManager.getLogger(HmacFunction.class);
+	private static final Logger LOG = LogManager.getLogger(HmacFunction.class);
 
-    private static final String FS_HMAC_NAME = "hmac";
-    private static final FunctionParameterSequenceType FS_HMAC_PARAM_DATA = optManyParam("data", Type.ATOMIC, "The data to be authenticated. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary.");
-    private static final FunctionParameterSequenceType FS_HMAC_PARAM_KEY = optManyParam("key", Type.ATOMIC, "The secret key used for calculating the authentication code. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary.");
-    private static final FunctionParameterSequenceType FS_HMAC_PARAM_ALGORITHM = param("algorithm", Type.STRING, "The cryptographic hashing algorithm.");
+	private static final String FS_HMAC_NAME = "hmac";
+	private static final FunctionParameterSequenceType FS_HMAC_PARAM_DATA = optManyParam("data", Type.ATOMIC,
+			"The data to be authenticated. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary.");
+	private static final FunctionParameterSequenceType FS_HMAC_PARAM_KEY = optManyParam("key", Type.ATOMIC,
+			"The secret key used for calculating the authentication code. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary.");
+	private static final FunctionParameterSequenceType FS_HMAC_PARAM_ALGORITHM = param("algorithm", Type.STRING,
+			"The cryptographic hashing algorithm.");
 
-    public final static FunctionSignature FS_HMAC[] = functionSignatures(
-        FS_HMAC_NAME,
-        "Hashes the input message.",
-        returnsOptMany(Type.BYTE),
-        arities(
-            arity(
-                FS_HMAC_PARAM_DATA,
-                FS_HMAC_PARAM_KEY,
-                FS_HMAC_PARAM_ALGORITHM
-            ),
-            arity(
-                FS_HMAC_PARAM_DATA,
-                FS_HMAC_PARAM_KEY,
-                FS_HMAC_PARAM_ALGORITHM,
-                param("encoding", Type.STRING, "The encoding of the output. The legal values are \"hex\" and \"base64\". The result is generated accordingly as xs:base64Binary string or xs:hexBinary string.")
-            )
-        )
-    );
+	public final static FunctionSignature FS_HMAC[] = functionSignatures(FS_HMAC_NAME, "Hashes the input message.",
+			returnsOptMany(Type.BYTE),
+			arities(arity(FS_HMAC_PARAM_DATA, FS_HMAC_PARAM_KEY, FS_HMAC_PARAM_ALGORITHM),
+					arity(FS_HMAC_PARAM_DATA, FS_HMAC_PARAM_KEY, FS_HMAC_PARAM_ALGORITHM, param("encoding", Type.STRING,
+							"The encoding of the output. The legal values are \"hex\" and \"base64\". The result is generated accordingly as xs:base64Binary string or xs:hexBinary string."))));
 
-    public HmacFunction(final XQueryContext context, final FunctionSignature signature) {
-        super(context, signature);
-    }
+	public HmacFunction(final XQueryContext context, final FunctionSignature signature) {
+		super(context, signature);
+	}
 
-    @Override
-    public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
-        final int argsLength = args.length;
+	@Override
+	public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
+		final int argsLength = args.length;
 
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("argsLength = " + argsLength);
-            LOG.debug("data item count = " + args[0].getItemCount());
-        }
+		LOG.debug("argsLength = {}", () -> argsLength);
+		LOG.debug("data item count = {}", () -> args[0].getItemCount());
 
-        final Sequence result;
-        Either<InputStream, byte[]> data = null;
-        boolean dataStreamClosed = false;
-        try {
-            data = sequence2javaTypes(args[0]);
+		final Sequence result;
+		Either<InputStream, byte[]> data = null;
+		boolean dataStreamClosed = false;
+		
+		try {
+			data = sequence2javaTypes(args[0]);
 
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("secretKey item count = " + args[1].getItemCount());
-            }
+			final byte[] secretKey = toByteArray(sequence2javaTypes(args[1]));
+			LOG.debug("secretKey item count = {}", () -> args[1].getItemCount());
 
-            final byte[] secretKey = toByteArray(sequence2javaTypes(args[1]));
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("secretKey item count = " + args[1].getItemCount());
-            }
+			final String algorithm = args[2].getStringValue();
+			LOG.debug("algorithm = {}", () -> algorithm);
 
-            final String algorithm = args[2].getStringValue();
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("algorithm = " + algorithm);
-            }
+			final String encoding = Optional.ofNullable(args[3].getStringValue()).filter(str -> !str.isEmpty()).orElse("base64");;
+			LOG.debug("encoding = {}", () -> encoding);
 
-            String encoding = "base64";
-            if (args.length == 4) {
-                encoding = args[3].getStringValue();
-            }
-            if(LOG.isDebugEnabled()) {
-                LOG.debug("encoding = " + encoding);
-            }
+			if (argsLength == 3) {
+				final byte[] resultBytes;
+				if (data.isLeft()) {
+					try (final InputStream is = data.left().get()) {
+						resultBytes = Hmac.hmac(is, secretKey, algorithm);
+					}
+					dataStreamClosed = true;
+				} else {
+					resultBytes = Hmac.hmac(data.right().get(), secretKey, algorithm);
+				}
+				final int resultBytesLength = resultBytes.length;
+				LOG.debug("resultBytesLength = {}, resultBytes = {}", () -> resultBytesLength, () -> resultBytes);
 
-            if (argsLength == 3) {
-                final byte[] resultBytes;
-                if(data.isLeft()) {
-                    try(final InputStream is = data.left().get()) {
-                        resultBytes = Hmac.hmac(is, secretKey, algorithm);
-                    }
-                    dataStreamClosed = true;
-                } else {
-                    resultBytes =  Hmac.hmac(data.right().get(), secretKey, algorithm);
-                }
-                final int resultBytesLength = resultBytes.length;
+				result = new ValueSequence();
+				for (int i = 0, il = resultBytesLength; i < il; i++) {
+					result.add(new IntegerValue(resultBytes[i]));
+				}
+			} else if (argsLength == 4) {
+				final String resultString;
 
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("resultBytesLength = " + resultBytesLength);
-                    LOG.debug("resultBytes = " + Arrays.toString(resultBytes));
-                }
+				if (data.isLeft()) {
+					try (final InputStream is = data.left().get()) {
+						resultString = Hmac.hmac(is, secretKey, algorithm, encoding);
+					}
+				} else {
+					resultString = Hmac.hmac(data.right().get(), secretKey, algorithm, encoding);
+				}
+				LOG.debug("resultString = {}", () -> resultString);
 
-                result = new ValueSequence();
-                for (int i = 0, il = resultBytesLength; i < il; i++) {
-                    result.add(new IntegerValue(resultBytes[i]));
-                }
-            } else if (argsLength == 4) {
-                final String resultString;
+				result = new StringValue(resultString);
+			} else {
+				result = Sequence.EMPTY_SEQUENCE;
+			}
+		} catch (final CryptoException e) {
+			throw new XPathException(this, e.getCryptoError().asMessage(), e);
+		} catch (final IOException e) {
+			throw new XPathException(this, e);
+		} finally {
+			if (data != null && data.isLeft() && !dataStreamClosed) {
+				try {
+					data.left().get().close();
+				} catch (final IOException e) {
+					throw new XPathException(e.getMessage());
+				}
+			}
+		}
 
-                if(data.isLeft()) {
-                    try(final InputStream is = data.left().get()) {
-                        resultString = Hmac.hmac(is, secretKey, algorithm, encoding);
-                    }
-                } else {
-                    resultString = Hmac.hmac(data.right().get(), secretKey, algorithm, encoding);
-                }
+		return result;
+	}
 
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("resultString = " + resultString);
-                }
+	private @Nullable Either<InputStream, byte[]> sequence2javaTypes(final Sequence sequence) throws XPathException {
+		final int itemCount = sequence.getItemCount();
+		LOG.debug("itemCount = {}", () -> itemCount);
 
-                result = new StringValue(resultString);
-            } else {
-                result = Sequence.EMPTY_SEQUENCE;
-            }
-        } catch (final CryptoException e) {
-            throw new XPathException(this, e.getCryptoError().asMessage(), e);
-        } catch (final IOException e) {
-            throw new XPathException(this, e);
-        } finally {
-            if (data != null && data.isLeft() && !dataStreamClosed) {
-                try {
-                    data.left().get().close();
-                } catch (final IOException e) {
-                    throw new XPathException(e.getMessage());
-                }
-            }
-        }
+		try {
+			if (itemCount == 1) {
+				final int itemType = sequence.itemAt(0).getType();
+				LOG.debug("itemTypeName = {}", () -> Type.getTypeName(itemType));
 
-        return result;
-    }
+				switch (itemType) {
+				case Type.STRING:
+				case Type.ELEMENT:
+				case Type.DOCUMENT:
+					final String itemStringValue = sequence.itemAt(0).getStringValue();
+					LOG.debug("itemStringValue = {}, itemStringValue hash = {}, itemStringValue length = {}",
+							() -> itemStringValue, () -> itemStringValue.hashCode(),
+							() -> itemStringValue.trim().length());
 
-    private @Nullable Either<InputStream, byte[]> sequence2javaTypes(final Sequence sequence) throws XPathException {
-        final int itemCount = sequence.getItemCount();
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("itemCount = " + itemCount);
-        }
+					return Either.Right(itemStringValue.getBytes(StandardCharsets.UTF_8));
 
-        try {
-            if (itemCount == 1) {
-                final int itemType = sequence.itemAt(0).getType();
-                if(LOG.isDebugEnabled()) {
-                    LOG.debug("itemTypeName = " + Type.getTypeName(itemType));
-                }
+				case Type.BASE64_BINARY:
+				case Type.HEX_BINARY:
+					final BinaryValue binaryValue = (BinaryValue) sequence.itemAt(0);
+					return Either.Left(binaryValue.getInputStream());
 
-                switch (itemType) {
-                    case Type.STRING:
-                    case Type.ELEMENT:
-                    case Type.DOCUMENT:
-                        final String itemStringValue = sequence.itemAt(0).getStringValue();
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("itemStringValue = " + itemStringValue);
-                            LOG.debug("itemStringValue hash = " + itemStringValue.hashCode());
-                            LOG.debug("itemStringValue length = " + itemStringValue.trim().length());
-                        }
+				default:
+					return null;
+				}
+			} else {
+				final FastByteArrayOutputStream baos = new FastByteArrayOutputStream();
+				for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext();) {
+					baos.write(((NumericValue) iterator.nextItem()).getInt());
+				}
+				return Either.Left(baos.toFastByteInputStream());
+			}
+		} catch (final Exception ex) {
+			throw new XPathException(ex.getMessage());
+		}
+	}
 
-                        return Either.Right(itemStringValue.getBytes(StandardCharsets.UTF_8));
+	private @Nullable byte[] toByteArray(@Nullable final Either<InputStream, byte[]> data) throws IOException {
+		if (data == null) {
+			return null;
+		}
 
-                    case Type.BASE64_BINARY:
-                    case Type.HEX_BINARY:
-                        final BinaryValue binaryValue = (BinaryValue) sequence.itemAt(0);
-                        return Either.Left(binaryValue.getInputStream());
+		if (data.isRight()) {
+			return data.right().get();
+		} else {
+			try (final InputStream is = data.left().get();
+					final FastByteArrayOutputStream baos = new FastByteArrayOutputStream()) {
 
-                    default:
-                        return null;
-                }
-            } else {
-                final FastByteArrayOutputStream baos = new FastByteArrayOutputStream();
-                for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext(); ) {
-                    baos.write(((NumericValue) iterator.nextItem()).getInt());
-                }
-                return Either.Left(baos.toFastByteInputStream());
-            }
-        } catch (final Exception ex) {
-            throw new XPathException(ex.getMessage());
-        }
-    }
+				final byte[] buf = new byte[Buffer.TRANSFER_SIZE];
+				int read = -1;
+				while ((read = is.read(buf)) > -1) {
+					baos.write(buf, 0, read);
+				}
 
-    private @Nullable byte[] toByteArray(@Nullable final Either<InputStream, byte[]> data) throws IOException {
-        if(data == null) {
-            return null;
-        }
-
-        if(data.isRight()) {
-            return data.right().get();
-        } else {
-            try(final InputStream is = data.left().get();
-                    final FastByteArrayOutputStream baos = new FastByteArrayOutputStream()) {
-
-                final byte[] buf = new byte[Buffer.TRANSFER_SIZE];
-                int read = -1;
-                while((read = is.read(buf)) > -1) {
-                    baos.write(buf, 0, read);
-                }
-
-                return baos.toByteArray();
-            }
-        }
-    }
+				return baos.toByteArray();
+			}
+		}
+	}
 }
