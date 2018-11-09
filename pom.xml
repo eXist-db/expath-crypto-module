@@ -159,7 +159,7 @@
 							<Description>${project.description}</Description>
 							<Implementation-URL>${project.url}</Implementation-URL>
 
-							<!-- following is needed by kuberam-expath-plugin to successfully generate its components.xml -->
+							<!-- following is needed by Claudius Teodorescu-expath-plugin to successfully generate its components.xml -->
 							<ModuleNamespace>${crypto.module.namespace}</ModuleNamespace>
 						</manifestEntries>
 					</archive>

@@ -1,7 +1,7 @@
 /**
  * eXist-db EXPath Cryptographic library
  * eXist-db wrapper for EXPath Cryptographic Java library
- * Copyright (C) 2016 Kuberam
+ * Copyright (C) 2016 Claudius Teodorescu
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -36,6 +36,7 @@ import org.expath.exist.crypto.digitalSignature.GenerateSignatureFunction;
 import org.expath.exist.crypto.digitalSignature.ValidateSignatureFunction;
 import org.expath.exist.crypto.encrypt.EncryptionFunctions;
 
+import ro.kuberam.libs.java.crypto.CryptoError;
 import ro.kuberam.libs.java.crypto.ExpathCryptoModule;
 
 import static org.exist.xquery.FunctionDSL.functionDefs;
@@ -54,7 +55,7 @@ public class ExistExpathCryptoModule extends AbstractInternalModule {
 	public final static String INCLUSION_DATE = "2011-03-24";
 	public final static String RELEASED_IN_VERSION = "eXist-1.5";
 
-	public final static ErrorCode EXXQDYFT0001 = new ExpathCryptoErrorCode("EXXQDYFT0001", "Permission denied.");
+	public final static ErrorCode NO_FUNCTION = new ExpathCryptoErrorCode("NO_FUNCTION", "No function");
 
 	private final static FunctionDef[] functions = functionDefs(functionDefs(HashFunction.class, HashFunction.FS_HASH),
 			functionDefs(HmacFunction.class, HmacFunction.FS_HMAC),
@@ -97,11 +98,11 @@ public class ExistExpathCryptoModule extends AbstractInternalModule {
 				variableParamTypes);
 	}
 
-	protected final static class ExpathCryptoErrorCode extends ErrorCode {
+	public static ExpathCryptoErrorCode getErrorCode(CryptoError cryptoError) {
+		return new ExpathCryptoErrorCode(cryptoError);
+	}
 
-		public ExpathCryptoErrorCode(String code, String description) {
-			super(new QName(code, NAMESPACE_URI, PREFIX), description);
-		}
+	public final static class ExpathCryptoErrorCode extends ErrorCode {
 
 	}
 }

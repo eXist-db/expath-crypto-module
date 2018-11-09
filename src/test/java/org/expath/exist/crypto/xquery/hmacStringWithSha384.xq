@@ -1,7 +1,7 @@
 (:
  : eXist-db EXPath Cryptographic library
  : eXist-db wrapper for EXPath Cryptographic Java library
- : Copyright (C) 2016 Kuberam
+ : Copyright (C) 2016 Claudius Teodorescu
  :
  : This library is free software; you can redistribute it and/or
  : modify it under the terms of the GNU Lesser General Public License
