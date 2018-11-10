@@ -19,12 +19,26 @@
  */
 package org.expath.exist.crypto.encrypt;
 
+import static org.exist.xquery.FunctionDSL.optParam;
+import static org.exist.xquery.FunctionDSL.param;
+import static org.exist.xquery.FunctionDSL.returns;
+import static org.expath.exist.crypto.ExistExpathCryptoModule.functionSignature;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.annotation.Nullable;
+
 import org.exist.xquery.BasicFunction;
-import org.exist.xquery.ErrorCodes.ErrorCode;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.XQueryContext;
-import org.exist.xquery.value.*;
+import org.exist.xquery.value.BinaryValue;
+import org.exist.xquery.value.FunctionParameterSequenceType;
+import org.exist.xquery.value.Item;
+import org.exist.xquery.value.Sequence;
+import org.exist.xquery.value.StringValue;
+import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
 import org.expath.exist.crypto.ExistExpathCryptoModule;
 
@@ -32,14 +46,6 @@ import ro.kuberam.libs.java.crypto.CryptoError;
 import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.encrypt.AsymmetricEncryption;
 import ro.kuberam.libs.java.crypto.encrypt.SymmetricEncryption;
-
-import javax.annotation.Nullable;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import static org.exist.xquery.FunctionDSL.*;
-import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
 
 /**
  * @author <a href="mailto:claudius.teodorescu@gmail.com">Claudius
@@ -102,8 +108,8 @@ public class EncryptionFunctions extends BasicFunction {
 		}
 	}
 
-	private Sequence encrypt(final Item data, final CryptType encryptType, final String secretKey,
-			final String algorithm, @Nullable final String iv, @Nullable final String provider) throws XPathException {
+	private Sequence encrypt(Item data, CryptType encryptType, String secretKey, String algorithm, @Nullable String iv,
+			@Nullable String provider) throws XPathException {
 		try {
 			String encrypted;
 			if (data.getType() == Type.BASE64_BINARY || data.getType() == Type.HEX_BINARY) {
@@ -119,10 +125,7 @@ public class EncryptionFunctions extends BasicFunction {
 						break;
 
 					default:
-						ErrorCode errorCode = ExistExpathCryptoModule.getErrorCode(CryptoError.ENCRYPTION_TYPE);
-
-						throw new CryptoException(this,
-								ExistExpathCryptoModule.getErrorCode(CryptoError.ENCRYPTION_TYPE));
+						throw new EXpathCryptoException(this, CryptoError.ENCRYPTION_TYPE);
 					}
 				}
 			} else {
@@ -137,22 +140,20 @@ public class EncryptionFunctions extends BasicFunction {
 					break;
 
 				default:
-					ErrorCode errorCode = ExistExpathCryptoModule.getErrorCode(CryptoError.ENCRYPTION_TYPE);
-
-					throw new XPathException(this, errorCode, errorCode.getDescription());
+					throw new EXpathCryptoException(this, CryptoError.ENCRYPTION_TYPE);
 				}
 			}
 
 			return new StringValue(encrypted);
-		} catch (final CryptoException e) {
-			throw new XPathException(this, e.getCryptoError().asMessage(), e);
-		} catch (final IOException e) {
-			throw new XPathException(this, e);
+		} catch (CryptoException e) {
+			throw new EXpathCryptoException(this, e.getCryptoError());
+		} catch (IOException e) {
+			throw new EXpathCryptoException(this, e);
 		}
 	}
 
-	private Sequence decrypt(final Item data, final CryptType decryptType, final String secretKey,
-			final String algorithm, @Nullable final String iv, @Nullable final String provider) throws XPathException {
+	private Sequence decrypt(Item data, CryptType decryptType, String secretKey, String algorithm, @Nullable String iv,
+			@Nullable String provider) throws XPathException {
 		try {
 			final String decrypted;
 			if (data.getType() == Type.BASE64_BINARY || data.getType() == Type.HEX_BINARY) {
@@ -168,9 +169,7 @@ public class EncryptionFunctions extends BasicFunction {
 						break;
 
 					default:
-						ErrorCode errorCode = ExistExpathCryptoModule.getErrorCode(CryptoError.DECRYPTION_TYPE);
-
-						throw new XPathException(this, errorCode, errorCode.getDescription());
+						throw new EXpathCryptoException(this, CryptoError.DECRYPTION_TYPE);
 					}
 				}
 			} else {
@@ -186,17 +185,15 @@ public class EncryptionFunctions extends BasicFunction {
 					break;
 
 				default:
-					ErrorCode errorCode = ExistExpathCryptoModule.getErrorCode(CryptoError.DECRYPTION_TYPE);
-
-					throw new XPathException(this, errorCode, errorCode.getDescription());
+					throw new EXpathCryptoException(this, CryptoError.DECRYPTION_TYPE);
 				}
 			}
 
 			return new StringValue(decrypted);
 		} catch (CryptoException e) {
-			throw new XPathException(this, e.getCryptoError().asMessage(), e);
+			throw new EXpathCryptoException(this, e.getCryptoError());
 		} catch (IOException e) {
-			throw new XPathException(this, e);
+			throw new EXpathCryptoException(this, e);
 		}
 	}
 

@@ -49,6 +49,7 @@ import org.exist.xquery.value.SequenceIterator;
 import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.exist.xquery.value.ValueSequence;
+import org.expath.exist.crypto.EXpathCryptoException;
 
 import com.evolvedbinary.j8fu.Either;
 
@@ -81,14 +82,13 @@ public class HmacFunction extends BasicFunction {
 	@Override
 	public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
 		final int argsLength = args.length;
-
 		LOG.debug("argsLength = {}", () -> argsLength);
 		LOG.debug("data item count = {}", () -> args[0].getItemCount());
 
 		final Sequence result;
 		Either<InputStream, byte[]> data = null;
 		boolean dataStreamClosed = false;
-		
+
 		try {
 			data = sequence2javaTypes(args[0]);
 
@@ -98,7 +98,9 @@ public class HmacFunction extends BasicFunction {
 			final String algorithm = args[2].getStringValue();
 			LOG.debug("algorithm = {}", () -> algorithm);
 
-			final String encoding = Optional.ofNullable(args[3].getStringValue()).filter(str -> !str.isEmpty()).orElse("base64");;
+			final String encoding = Optional.ofNullable(args[3].getStringValue()).filter(str -> !str.isEmpty())
+					.orElse("base64");
+			;
 			LOG.debug("encoding = {}", () -> encoding);
 
 			if (argsLength == 3) {
@@ -134,16 +136,16 @@ public class HmacFunction extends BasicFunction {
 			} else {
 				result = Sequence.EMPTY_SEQUENCE;
 			}
-		} catch (final CryptoException e) {
-			throw new XPathException(this, e.getCryptoError().asMessage(), e);
-		} catch (final IOException e) {
-			throw new XPathException(this, e);
+		} catch (CryptoException e) {
+			throw new EXpathCryptoException(this, e.getCryptoError());
+		} catch (IOException e) {
+			throw new EXpathCryptoException(this, e);
 		} finally {
 			if (data != null && data.isLeft() && !dataStreamClosed) {
 				try {
 					data.left().get().close();
-				} catch (final IOException e) {
-					throw new XPathException(e.getMessage());
+				} catch (IOException e) {
+					throw new EXpathCryptoException(this, e);
 				}
 			}
 		}
@@ -186,8 +188,8 @@ public class HmacFunction extends BasicFunction {
 				}
 				return Either.Left(baos.toFastByteInputStream());
 			}
-		} catch (final Exception ex) {
-			throw new XPathException(ex.getMessage());
+		} catch (Exception e) {
+			throw new EXpathCryptoException(this, e);
 		}
 	}
 

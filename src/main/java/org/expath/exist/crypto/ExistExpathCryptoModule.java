@@ -97,12 +97,4 @@ public class ExistExpathCryptoModule extends AbstractInternalModule {
 		return FunctionDSL.functionSignatures(new QName(name, NAMESPACE_URI), description, returnType,
 				variableParamTypes);
 	}
-
-	public static ExpathCryptoErrorCode getErrorCode(CryptoError cryptoError) {
-		return new ExpathCryptoErrorCode(cryptoError);
-	}
-
-	public final static class ExpathCryptoErrorCode extends ErrorCode {
-
-	}
 }
