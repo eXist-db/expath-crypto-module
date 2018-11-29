@@ -201,3 +201,11 @@ public class EncryptionFunctions extends BasicFunction {
 		SYMMETRIC, ASYMMETRIC
 	}
 }
+
+// ByteArrayOutputStream resultBaos = new ByteArrayOutputStream();
+// final byte[] buf = new byte[Buffer.TRANSFER_SIZE];
+// int read = -1;
+// while ((read = input.read(buf)) > -1) {
+// byte[] tmpBuffer = cipher.update(buf, 0, read);
+// resultBaos.write(tmpBuffer);
+// }

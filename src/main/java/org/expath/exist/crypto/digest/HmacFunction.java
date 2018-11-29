@@ -59,14 +59,14 @@ import ro.kuberam.libs.java.crypto.utils.Buffer;
 
 public class HmacFunction extends BasicFunction {
 
-	private static final Logger LOG = LogManager.getLogger(HmacFunction.class);
+	private static Logger LOG = LogManager.getLogger(HmacFunction.class);
 
-	private static final String FS_HMAC_NAME = "hmac";
-	private static final FunctionParameterSequenceType FS_HMAC_PARAM_DATA = optManyParam("data", Type.ATOMIC,
+	private static String FS_HMAC_NAME = "hmac";
+	private static FunctionParameterSequenceType FS_HMAC_PARAM_DATA = optManyParam("data", Type.ATOMIC,
 			"The data to be authenticated. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary.");
-	private static final FunctionParameterSequenceType FS_HMAC_PARAM_KEY = optManyParam("key", Type.ATOMIC,
+	private static FunctionParameterSequenceType FS_HMAC_PARAM_KEY = optManyParam("key", Type.ATOMIC,
 			"The secret key used for calculating the authentication code. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary.");
-	private static final FunctionParameterSequenceType FS_HMAC_PARAM_ALGORITHM = param("algorithm", Type.STRING,
+	private static FunctionParameterSequenceType FS_HMAC_PARAM_ALGORITHM = param("algorithm", Type.STRING,
 			"The cryptographic hashing algorithm.");
 
 	public final static FunctionSignature FS_HMAC[] = functionSignatures(FS_HMAC_NAME, "Hashes the input message.",
