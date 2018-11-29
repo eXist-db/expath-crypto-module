@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>ro.kuberam.expath.exist</groupId>
 		<artifactId>base</artifactId>
-		<version>1.5.1</version>
+		<version>1.5.2</version>
 	</parent>
 
 	<artifactId>crypto</artifactId>
@@ -43,15 +43,10 @@
 		</contributor>
 	</contributors>
 
-	<prerequisites>
-		<maven>${mavenVersion}</maven>
-	</prerequisites>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.version>3.5.4</maven.version>
 		<crypto.java.lib.version>1.6</crypto.java.lib.version>
 		<crypto.module.namespace>http://expath.org/ns/${project.artifactId}</crypto.module.namespace>
 		<java-package-name>org.expath.exist.crypto</java-package-name>
@@ -102,43 +97,8 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.mycila</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<configuration>
-					<header>LGPL2.1-template.txt</header>
-					<failIfMissing>true</failIfMissing>
-					<aggregate>true</aggregate>
-					<strictCheck>true</strictCheck>
-					<properties>
-						<owner>${project.organization.name}</owner>
-						<organization>${project.organization.name}</organization>
-						<email>exit-open@lists.sourceforge.net</email>
-						<url>${project.organization.url}</url>
-					</properties>
-					<headerDefinitions>
-						<headerDefinition>xquery-license-style.xml</headerDefinition>
-					</headerDefinitions>
-					<mapping>
-						<xq>xquery_style</xq>
-						<xqm>xquery_style</xqm>
-						<xql>xquery_style</xql>
-						<xqy>xquery_style</xqy>
-					</mapping>
-					<excludes>
-						<exclude>pom.xml</exclude>
-						<exclude>README.md</exclude>
-						<exclude>LICENSE</exclude>
-						<exclude>xquery-license-style.xml</exclude>
-						<exclude>org.expath.exist.crypto.launch</exclude>
-						<exclude>src/test/resources/**/*.txt</exclude>
-						<exclude>src/test/resources/**/*.xml</exclude>
-						<exclude>**/*.cer</exclude>
-						<exclude>**/*.ks</exclude>
-						<exclude>**/*.key</exclude>
-						<exclude>**/*.pem</exclude>
-						<exclude>**/*.pub</exclude>
-					</excludes>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
