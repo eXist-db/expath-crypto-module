@@ -1,6 +1,6 @@
-<package xmlns="http://expath.org/ns/pkg" name="${package-name}" abbrev="${package-abbrev}"
+<package xmlns="http://expath.org/ns/pkg" name="${package.name}" abbrev="${package.abbrev}"
 	version="${project.version}" spec="1.0">
-	<title>${package-title}</title>
+	<title>${package.title}</title>
 	<author id="cteodorescu">Claudius Teodorescu</author>
 	<website>${project.url}</website>
 	<license>GNU LGPL v2.1</license>

@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>ro.kuberam.expath.exist</groupId>
 		<artifactId>base</artifactId>
-		<version>1.5.3</version>
+		<version>1.5.4</version>
 	</parent>
 
 	<artifactId>crypto</artifactId>
@@ -45,13 +45,7 @@
 
 	<properties>
 		<crypto.java.lib.version>1.6</crypto.java.lib.version>
-		<crypto.module.namespace>http://expath.org/ns/${project.artifactId}</crypto.module.namespace>
-		<java-package-name>org.expath.exist.crypto</java-package-name>
-		<module-prefix>${java-package-name}</module-prefix>
-		<package-title>EXPath Cryptographic Module Implementation</package-title>
-		<package-name>${crypto.module.namespace}</package-name>
-		<package-abbrev>expath-${project.artifactId}-exist-lib</package-abbrev>
-		<package-final-name>expath-${project.artifactId}-exist-lib-${project.version}</package-final-name>
+		<package.title>EXPath Cryptographic Module Implementation</package.title>
 	</properties>
 
 	<dependencies>
