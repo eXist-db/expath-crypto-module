@@ -28,34 +28,27 @@ import static org.expath.exist.crypto.ExistExpathCryptoModule.functionSignatures
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-
-import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.exist.util.io.FastByteArrayOutputStream;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.XQueryContext;
-import org.exist.xquery.value.BinaryValue;
 import org.exist.xquery.value.FunctionParameterSequenceType;
 import org.exist.xquery.value.IntegerValue;
-import org.exist.xquery.value.NumericValue;
 import org.exist.xquery.value.Sequence;
-import org.exist.xquery.value.SequenceIterator;
 import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.exist.xquery.value.ValueSequence;
 import org.expath.exist.crypto.EXpathCryptoException;
+import org.expath.exist.crypto.utils.Conversion;
 
 import com.evolvedbinary.j8fu.Either;
 
 import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digest.Hmac;
-import ro.kuberam.libs.java.crypto.utils.Buffer;
 
 public class HmacFunction extends BasicFunction {
 
@@ -90,9 +83,9 @@ public class HmacFunction extends BasicFunction {
 		boolean dataStreamClosed = false;
 
 		try {
-			data = sequence2javaTypes(args[0]);
+			data = Conversion.sequence2javaTypes(args[0]);
 
-			final byte[] secretKey = toByteArray(sequence2javaTypes(args[1]));
+			final byte[] secretKey = Conversion.toByteArray(Conversion.sequence2javaTypes(args[1]));
 			LOG.debug("secretKey item count = {}", () -> args[1].getItemCount());
 
 			final String algorithm = args[2].getStringValue();
@@ -152,66 +145,5 @@ public class HmacFunction extends BasicFunction {
 
 		return result;
 	}
-
-	private @Nullable Either<InputStream, byte[]> sequence2javaTypes(final Sequence sequence) throws XPathException {
-		final int itemCount = sequence.getItemCount();
-		LOG.debug("itemCount = {}", () -> itemCount);
-
-		try {
-			if (itemCount == 1) {
-				final int itemType = sequence.itemAt(0).getType();
-				LOG.debug("itemTypeName = {}", () -> Type.getTypeName(itemType));
-
-				switch (itemType) {
-				case Type.STRING:
-				case Type.ELEMENT:
-				case Type.DOCUMENT:
-					final String itemStringValue = sequence.itemAt(0).getStringValue();
-					LOG.debug("itemStringValue = {}, itemStringValue hash = {}, itemStringValue length = {}",
-							() -> itemStringValue, () -> itemStringValue.hashCode(),
-							() -> itemStringValue.trim().length());
-
-					return Either.Right(itemStringValue.getBytes(StandardCharsets.UTF_8));
-
-				case Type.BASE64_BINARY:
-				case Type.HEX_BINARY:
-					final BinaryValue binaryValue = (BinaryValue) sequence.itemAt(0);
-					return Either.Left(binaryValue.getInputStream());
-
-				default:
-					return null;
-				}
-			} else {
-				final FastByteArrayOutputStream baos = new FastByteArrayOutputStream();
-				for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext();) {
-					baos.write(((NumericValue) iterator.nextItem()).getInt());
-				}
-				return Either.Left(baos.toFastByteInputStream());
-			}
-		} catch (Exception e) {
-			throw new EXpathCryptoException(this, e);
-		}
-	}
-
-	private @Nullable byte[] toByteArray(@Nullable final Either<InputStream, byte[]> data) throws IOException {
-		if (data == null) {
-			return null;
-		}
-
-		if (data.isRight()) {
-			return data.right().get();
-		} else {
-			try (final InputStream is = data.left().get();
-					final FastByteArrayOutputStream baos = new FastByteArrayOutputStream()) {
-
-				final byte[] buf = new byte[Buffer.TRANSFER_SIZE];
-				int read = -1;
-				while ((read = is.read(buf)) > -1) {
-					baos.write(buf, 0, read);
-				}
-
-				return baos.toByteArray();
-			}
-		}
-	}
 }
+
