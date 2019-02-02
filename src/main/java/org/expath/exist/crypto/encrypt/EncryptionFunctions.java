@@ -24,27 +24,28 @@ import static org.exist.xquery.FunctionDSL.param;
 import static org.exist.xquery.FunctionDSL.returns;
 import static org.expath.exist.crypto.ExistExpathCryptoModule.functionSignature;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.XQueryContext;
-import org.exist.xquery.value.BinaryValue;
 import org.exist.xquery.value.FunctionParameterSequenceType;
-import org.exist.xquery.value.Item;
 import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
 import org.expath.exist.crypto.ExistExpathCryptoModule;
+import org.expath.exist.crypto.utils.Conversion;
 
 import ro.kuberam.libs.java.crypto.CryptoError;
 import ro.kuberam.libs.java.crypto.CryptoException;
-import ro.kuberam.libs.java.crypto.encrypt.AsymmetricEncryption;
 import ro.kuberam.libs.java.crypto.encrypt.SymmetricEncryption;
 
 /**
@@ -52,6 +53,8 @@ import ro.kuberam.libs.java.crypto.encrypt.SymmetricEncryption;
  *         Teodorescu</a>
  */
 public class EncryptionFunctions extends BasicFunction {
+
+	private static Logger LOG = LogManager.getLogger(EncryptionFunctions.class);
 
 	private static final String FS_ENCRYPT_NAME = "encrypt";
 	private static final String FS_DECRYPT_NAME = "decrypt";
@@ -86,7 +89,13 @@ public class EncryptionFunctions extends BasicFunction {
 
 	@Override
 	public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
-		final Item data = args[0].itemAt(0);
+		byte[] data;
+		try {
+			data = Conversion.toByteArray(Conversion.sequence2javaTypes(args[0]));
+		} catch (IOException e) {
+			throw new EXpathCryptoException(this, e);
+		}
+
 		final CryptType cryptType = CryptType.valueOf(args[1].getStringValue().toUpperCase());
 		final String secretKey = args[2].getStringValue();
 		final String algorithm = args[3].getStringValue();
@@ -108,88 +117,54 @@ public class EncryptionFunctions extends BasicFunction {
 		}
 	}
 
-	private Sequence encrypt(Item data, CryptType encryptType, String secretKey, String algorithm, @Nullable String iv,
-			@Nullable String provider) throws XPathException {
+	private Sequence encrypt(byte[] data, CryptType encryptType, String secretKey, String algorithm,
+			@Nullable String iv, @Nullable String provider) throws XPathException {
 		try {
-			String encrypted;
-			if (data.getType() == Type.BASE64_BINARY || data.getType() == Type.HEX_BINARY) {
-				final BinaryValue binaryValue = (BinaryValue) data;
-				try (final InputStream is = binaryValue.getInputStream()) {
-					switch (encryptType) {
-					case SYMMETRIC:
-						encrypted = SymmetricEncryption.encryptBinary(is, secretKey, algorithm, iv, provider);
-						break;
+			byte[] resultBytes = null;
 
-					case ASYMMETRIC:
-						encrypted = AsymmetricEncryption.encrypt(is, secretKey, algorithm);
-						break;
+			switch (encryptType) {
+			case SYMMETRIC:
+				resultBytes = SymmetricEncryption.encrypt(data, secretKey, algorithm, iv, provider);
+				break;
 
-					default:
-						throw new EXpathCryptoException(this, CryptoError.ENCRYPTION_TYPE);
-					}
-				}
-			} else {
-				switch (encryptType) {
-				case SYMMETRIC:
-					encrypted = SymmetricEncryption.encryptString(data.getStringValue(), secretKey, algorithm, iv,
-							provider);
-					break;
+			case ASYMMETRIC:
+				// encrypted = AsymmetricEncryption.encrypt(is, secretKey, algorithm);
+				break;
 
-				case ASYMMETRIC:
-					encrypted = AsymmetricEncryption.encryptString(data.getStringValue(), secretKey, algorithm);
-					break;
-
-				default:
-					throw new EXpathCryptoException(this, CryptoError.ENCRYPTION_TYPE);
-				}
+			default:
+				throw new EXpathCryptoException(this, CryptoError.ENCRYPTION_TYPE);
 			}
 
-			return new StringValue(encrypted);
-		} catch (CryptoException e) {
+			return new StringValue(new String(resultBytes, UTF_8));
+		} catch (
+
+		CryptoException e) {
 			throw new EXpathCryptoException(this, e.getCryptoError());
 		} catch (IOException e) {
 			throw new EXpathCryptoException(this, e);
 		}
 	}
 
-	private Sequence decrypt(Item data, CryptType decryptType, String secretKey, String algorithm, @Nullable String iv,
-			@Nullable String provider) throws XPathException {
+	private Sequence decrypt(byte[] data, CryptType decryptType, String secretKey, String algorithm,
+			@Nullable String iv, @Nullable String provider) throws XPathException {
 		try {
-			final String decrypted;
-			if (data.getType() == Type.BASE64_BINARY || data.getType() == Type.HEX_BINARY) {
-				final BinaryValue binaryValue = (BinaryValue) data;
-				try (final InputStream is = binaryValue.getInputStream()) {
-					switch (decryptType) {
-					case SYMMETRIC:
-						decrypted = SymmetricEncryption.decryptBinary(is, secretKey, algorithm, iv, provider);
-						break;
+			byte[] resultBytes = null;
 
-					case ASYMMETRIC:
-						decrypted = AsymmetricEncryption.decrypt(is, secretKey, algorithm, iv, provider);
-						break;
+			switch (decryptType) {
+			case SYMMETRIC:
+				resultBytes = SymmetricEncryption.decrypt(data, secretKey, algorithm, iv, provider);
+				break;
 
-					default:
-						throw new EXpathCryptoException(this, CryptoError.DECRYPTION_TYPE);
-					}
-				}
-			} else {
-				switch (decryptType) {
-				case SYMMETRIC:
-					decrypted = SymmetricEncryption.decryptString(data.getStringValue(), secretKey, algorithm, iv,
-							provider);
-					break;
+			case ASYMMETRIC:
+				// decrypted = AsymmetricEncryption.decrypt(is, secretKey, algorithm, iv,
+				// provider);
+				break;
 
-				case ASYMMETRIC:
-					decrypted = AsymmetricEncryption.decryptString(data.getStringValue(), secretKey, algorithm, iv,
-							provider);
-					break;
-
-				default:
-					throw new EXpathCryptoException(this, CryptoError.DECRYPTION_TYPE);
-				}
+			default:
+				throw new EXpathCryptoException(this, CryptoError.DECRYPTION_TYPE);
 			}
 
-			return new StringValue(decrypted);
+			return new StringValue(new String(resultBytes, UTF_8));
 		} catch (CryptoException e) {
 			throw new EXpathCryptoException(this, e.getCryptoError());
 		} catch (IOException e) {

@@ -37,11 +37,9 @@ import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.XQueryContext;
 import org.exist.xquery.value.FunctionParameterSequenceType;
-import org.exist.xquery.value.IntegerValue;
 import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
-import org.exist.xquery.value.ValueSequence;
 import org.expath.exist.crypto.EXpathCryptoException;
 import org.expath.exist.crypto.utils.Conversion;
 
@@ -86,14 +84,12 @@ public class HmacFunction extends BasicFunction {
 			data = Conversion.sequence2javaTypes(args[0]);
 
 			final byte[] secretKey = Conversion.toByteArray(Conversion.sequence2javaTypes(args[1]));
-			LOG.debug("secretKey item count = {}", () -> args[1].getItemCount());
 
 			final String algorithm = args[2].getStringValue();
 			LOG.debug("algorithm = {}", () -> algorithm);
 
 			final String encoding = Optional.ofNullable(args[3].getStringValue()).filter(str -> !str.isEmpty())
 					.orElse("base64");
-			;
 			LOG.debug("encoding = {}", () -> encoding);
 
 			if (argsLength == 3) {
@@ -106,13 +102,8 @@ public class HmacFunction extends BasicFunction {
 				} else {
 					resultBytes = Hmac.hmac(data.right().get(), secretKey, algorithm);
 				}
-				final int resultBytesLength = resultBytes.length;
-				LOG.debug("resultBytesLength = {}, resultBytes = {}", () -> resultBytesLength, () -> resultBytes);
 
-				result = new ValueSequence();
-				for (int i = 0, il = resultBytesLength; i < il; i++) {
-					result.add(new IntegerValue(resultBytes[i]));
-				}
+				result = Conversion.byteArrayToIntegerSequence(resultBytes);
 			} else if (argsLength == 4) {
 				final String resultString;
 
