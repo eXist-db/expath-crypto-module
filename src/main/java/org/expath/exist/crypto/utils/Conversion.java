@@ -54,38 +54,37 @@ public class Conversion {
 		final int itemCount = sequence.getItemCount();
 		LOG.debug("itemCount = {}", () -> itemCount);
 
-			if (itemCount == 1) {
-				final int itemType = sequence.itemAt(0).getType();
-				LOG.debug("itemTypeName = {}", () -> Type.getTypeName(itemType));
+		if (itemCount == 1) {
+			final int itemType = sequence.itemAt(0).getType();
+			LOG.debug("itemTypeName = {}", () -> Type.getTypeName(itemType));
 
-				switch (itemType) {
-				case Type.STRING:
-				case Type.ELEMENT:
-				case Type.DOCUMENT:
-					final String itemStringValue = sequence.itemAt(0).getStringValue();
-					LOG.debug("itemStringValue = {}, itemStringValue hash = {}, itemStringValue length = {}",
-							() -> itemStringValue, () -> itemStringValue.hashCode(),
-							() -> itemStringValue.trim().length());
+			switch (itemType) {
+			case Type.STRING:
+			case Type.ELEMENT:
+			case Type.DOCUMENT:
+				final String itemStringValue = sequence.itemAt(0).getStringValue();
+				LOG.debug("itemStringValue = {}, itemStringValue length = {}", () -> itemStringValue,
+						() -> itemStringValue.trim().length());
 
-					return Either.Right(itemStringValue.getBytes(StandardCharsets.UTF_8));
+				return Either.Right(itemStringValue.getBytes(StandardCharsets.UTF_8));
 
-				case Type.BASE64_BINARY:
-				case Type.HEX_BINARY:
-					final BinaryValue binaryValue = (BinaryValue) sequence.itemAt(0);
-					return Either.Left(binaryValue.getInputStream());
+			case Type.BASE64_BINARY:
+			case Type.HEX_BINARY:
+				final BinaryValue binaryValue = (BinaryValue) sequence.itemAt(0);
+				return Either.Left(binaryValue.getInputStream());
 
-				default:
-					return null;
-				}
-			} else {
-				final FastByteArrayOutputStream baos = new FastByteArrayOutputStream();
-				for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext();) {
-					baos.write(((NumericValue) iterator.nextItem()).getInt());
-				}
-				return Either.Left(baos.toFastByteInputStream());
+			default:
+				return null;
 			}
+		} else {
+			final FastByteArrayOutputStream baos = new FastByteArrayOutputStream();
+			for (final SequenceIterator iterator = sequence.iterate(); iterator.hasNext();) {
+				baos.write(((NumericValue) iterator.nextItem()).getInt());
+			}
+			return Either.Left(baos.toFastByteInputStream());
+		}
 	}
-	
+
 	public static Sequence byteArrayToIntegerSequence(byte[] bytes) {
 		Sequence result = new ValueSequence();
 		int bytesLength = bytes.length;
@@ -97,7 +96,7 @@ public class Conversion {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return result;
 	}
 }

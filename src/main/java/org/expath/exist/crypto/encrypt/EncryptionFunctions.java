@@ -27,6 +27,7 @@ import static org.expath.exist.crypto.ExistExpathCryptoModule.functionSignature;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import javax.annotation.Nullable;
 
@@ -90,12 +91,6 @@ public class EncryptionFunctions extends BasicFunction {
 	@Override
 	public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
 		byte[] data;
-		try {
-			data = Conversion.toByteArray(Conversion.sequence2javaTypes(args[0]));
-		} catch (IOException e) {
-			throw new EXpathCryptoException(this, e);
-		}
-
 		final CryptType cryptType = CryptType.valueOf(args[1].getStringValue().toUpperCase());
 		final String secretKey = args[2].getStringValue();
 		final String algorithm = args[3].getStringValue();
@@ -106,9 +101,15 @@ public class EncryptionFunctions extends BasicFunction {
 
 		switch (getName().getLocalPart()) {
 		case FS_ENCRYPT_NAME:
+			try {
+				data = Conversion.toByteArray(Conversion.sequence2javaTypes(args[0]));
+			} catch (IOException e) {
+				throw new EXpathCryptoException(this, e);
+			}
 			return encrypt(data, cryptType, secretKey, algorithm, iv, provider);
 
 		case FS_DECRYPT_NAME:
+			data = Base64.getDecoder().decode(args[0].itemAt(0).getStringValue());
 			return decrypt(data, cryptType, secretKey, algorithm, iv, provider);
 
 		default:
@@ -134,8 +135,10 @@ public class EncryptionFunctions extends BasicFunction {
 			default:
 				throw new EXpathCryptoException(this, CryptoError.ENCRYPTION_TYPE);
 			}
+			String result = Base64.getEncoder().encodeToString(resultBytes);
+			LOG.debug("encrypt result = {}", () -> result);
 
-			return new StringValue(new String(resultBytes, UTF_8));
+			return new StringValue(result);
 		} catch (
 
 		CryptoException e) {
@@ -164,7 +167,10 @@ public class EncryptionFunctions extends BasicFunction {
 				throw new EXpathCryptoException(this, CryptoError.DECRYPTION_TYPE);
 			}
 
-			return new StringValue(new String(resultBytes, UTF_8));
+			String result = new String(resultBytes, UTF_8);
+			LOG.debug("decrypt result = {}", () -> result);
+
+			return new StringValue(result);
 		} catch (CryptoException e) {
 			throw new EXpathCryptoException(this, e.getCryptoError());
 		} catch (IOException e) {
