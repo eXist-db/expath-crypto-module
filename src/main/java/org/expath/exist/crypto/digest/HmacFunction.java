@@ -88,10 +88,6 @@ public class HmacFunction extends BasicFunction {
 			final String algorithm = args[2].getStringValue();
 			LOG.debug("algorithm = {}", () -> algorithm);
 
-			final String encoding = Optional.ofNullable(args[3].getStringValue()).filter(str -> !str.isEmpty())
-					.orElse("base64");
-			LOG.debug("encoding = {}", () -> encoding);
-
 			if (argsLength == 3) {
 				final byte[] resultBytes;
 				if (data.isLeft()) {
@@ -105,6 +101,11 @@ public class HmacFunction extends BasicFunction {
 
 				result = Conversion.byteArrayToIntegerSequence(resultBytes);
 			} else if (argsLength == 4) {
+
+				final String encoding = Optional.ofNullable(args[3].getStringValue()).filter(str -> !str.isEmpty())
+						.orElse("base64");
+				LOG.debug("encoding = {}", () -> encoding);
+
 				final String resultString;
 
 				if (data.isLeft()) {
