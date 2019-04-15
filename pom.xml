@@ -7,11 +7,11 @@
 	<parent>
 		<groupId>ro.kuberam.expath.exist</groupId>
 		<artifactId>base</artifactId>
-		<version>1.5.4</version>
+		<version>1.5.5</version>
 	</parent>
 
 	<artifactId>crypto</artifactId>
-	<version>0.7</version>
+	<version>0.8</version>
 	<name>eXist-db EXPath Cryptographic library</name>
 	<description>eXist-db wrapper for EXPath Cryptographic Java library</description>
 	<url>http://expath.org/spec/crypto</url>
@@ -44,7 +44,7 @@
 	</contributors>
 
 	<properties>
-		<crypto.java.lib.version>1.6</crypto.java.lib.version>
+		<crypto.java.lib.version>1.7</crypto.java.lib.version>
 		<package.title>EXPath Cryptographic Module Implementation</package.title>
 	</properties>
 
@@ -119,7 +119,7 @@
 				<version>2.1.0</version>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
@@ -129,25 +129,8 @@
 					<inputDirectory>${project.basedir}</inputDirectory>
 					<headerHtmlFile>${project.basedir}/build/header.html</headerHtmlFile>
 					<footerHtmlFile>${project.basedir}/build/footer.html</footerHtmlFile>
+					<defaultTitle>index.html</defaultTitle>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.coderplus.maven.plugins</groupId>
-				<artifactId>copy-rename-maven-plugin</artifactId>
-				<version>1.0.1</version>
-				<executions>
-					<execution>
-						<id>rename-readme-file</id>
-						<phase>package</phase>
-						<goals>
-							<goal>rename</goal>
-						</goals>
-						<configuration>
-							<sourceFile>${project.build.directory}/html/README.html</sourceFile>
-							<destinationFile>${project.build.directory}/html/index.html</destinationFile>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>ro.kuberam.maven.plugins</groupId>
