@@ -7,11 +7,11 @@
 	<parent>
 		<groupId>ro.kuberam.expath.exist</groupId>
 		<artifactId>base</artifactId>
-		<version>1.5.4</version>
+		<version>1.6.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>crypto</artifactId>
-	<version>0.7</version>
+	<version>0.8.0-SNAPSHOT</version>
 	<name>eXist-db EXPath Cryptographic library</name>
 	<description>eXist-db wrapper for EXPath Cryptographic Java library</description>
 	<url>http://expath.org/spec/crypto</url>
@@ -44,7 +44,7 @@
 	</contributors>
 
 	<properties>
-		<crypto.java.lib.version>1.6</crypto.java.lib.version>
+		<crypto.java.lib.version>1.7.0-SNAPSHOT</crypto.java.lib.version>
 		<package.title>EXPath Cryptographic Module Implementation</package.title>
 	</properties>
 
