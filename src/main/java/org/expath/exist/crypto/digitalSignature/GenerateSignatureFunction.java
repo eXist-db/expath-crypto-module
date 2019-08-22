@@ -258,11 +258,11 @@ public class GenerateSignatureFunction extends BasicFunction {
 				}
 
 			} catch (final PermissionDeniedException e) {
-				LOG.error(ExpathCryptoErrorCode.getDescription(CryptoError.DENIED_KEYSTORE));
+				LOG.error(CryptoError.DENIED_KEYSTORE.getDescription());
 				return null;
 			}
 		} catch (final URISyntaxException e) {
-			LOG.error(ExpathCryptoErrorCode.getDescription(CryptoError.KEYSTORE_URL));
+			LOG.error(CryptoError.KEYSTORE_URL.getDescription());
 			return null;
 		}
 	}

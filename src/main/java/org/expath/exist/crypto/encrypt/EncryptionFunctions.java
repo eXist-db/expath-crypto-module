@@ -122,13 +122,11 @@ public class EncryptionFunctions extends BasicFunction {
 	private Sequence encrypt(byte[] data, CryptType encryptType, String secretKey, String algorithm,
 			@Nullable String iv, @Nullable String provider) throws XPathException {
 		try {
-			String resultBytes = null;
+			byte[] resultBytes = null;
 
 			switch (encryptType) {
 			case SYMMETRIC:
-				try (final FastByteArrayInputStream is = new FastByteArrayInputStream(data)) {
-					resultBytes = SymmetricEncryption.encrypt(is, secretKey, algorithm, iv, provider);
-				}
+				resultBytes = SymmetricEncryption.encrypt(data, secretKey, algorithm, iv, provider);
 				break;
 
 			case ASYMMETRIC:
@@ -138,7 +136,7 @@ public class EncryptionFunctions extends BasicFunction {
 			default:
 				throw new EXpathCryptoException(this, CryptoError.ENCRYPTION_TYPE);
 			}
-			String result = Base64.getEncoder().encodeToString(resultBytes.getBytes());
+			String result = Base64.getEncoder().encodeToString(resultBytes);
 			LOG.debug("encrypt result = {}", () -> result);
 
 			return new StringValue(result);
@@ -154,13 +152,11 @@ public class EncryptionFunctions extends BasicFunction {
 	private Sequence decrypt(byte[] data, CryptType decryptType, String secretKey, String algorithm,
 			@Nullable String iv, @Nullable String provider) throws XPathException {
 		try {
-			String resultBytes = null;
+			byte[] resultBytes = null;
 
 			switch (decryptType) {
 			case SYMMETRIC:
-				try (final FastByteArrayInputStream is = new FastByteArrayInputStream(data)) {
-					resultBytes = SymmetricEncryption.decrypt(is, secretKey, algorithm, iv, provider);
-				}
+				resultBytes = SymmetricEncryption.decrypt(data, secretKey, algorithm, iv, provider);
 				break;
 
 			case ASYMMETRIC:
@@ -172,7 +168,7 @@ public class EncryptionFunctions extends BasicFunction {
 				throw new EXpathCryptoException(this, CryptoError.DECRYPTION_TYPE);
 			}
 
-			String result = new String(resultBytes.getBytes(), UTF_8);
+			String result = new String(resultBytes, UTF_8);
 			LOG.debug("decrypt result = {}", () -> result);
 
 			return new StringValue(result);

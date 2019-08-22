@@ -13,16 +13,6 @@ public class ExpathCryptoErrorCode extends ErrorCode {
 	}
 
 	public ExpathCryptoErrorCode(CryptoError cryptoError) {
-		super(new QName(cryptoError.name(), ExistExpathCryptoModule.NAMESPACE_URI, ExistExpathCryptoModule.PREFIX), getDescription(cryptoError));
-	}
-
-	public static String getDescription(final CryptoError cryptoError) {
-		try {
-			final Field field = cryptoError.getClass().getDeclaredField("description");
-			field.setAccessible(true);
-			return (String) field.get(cryptoError);
-		} catch (final  NoSuchFieldException | IllegalAccessException e) {
-			return "UNKNOWN";
-		}
+		super(new QName(cryptoError.getCode(), ExistExpathCryptoModule.NAMESPACE_URI, ExistExpathCryptoModule.PREFIX), cryptoError.getDescription());
 	}
 }
