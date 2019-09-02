@@ -28,9 +28,9 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/exist-db/exist.git</url>
-		<connection>scm:git:https://github.com/exist-db/exist.git</connection>
-		<developerConnection>scm:git:https://github.com/exist-db/exist.git</developerConnection>
+		<url>https://github.com/exist-db/crypto-exist-java-lib.git</url>
+		<connection>scm:git:https://github.com/exist-db/crypto-exist-java-lib.git</connection>
+		<developerConnection>scm:git:https://github.com/exist-db/crypto-exist-java-lib.git</developerConnection>
 	</scm>
 
 	<organization>
