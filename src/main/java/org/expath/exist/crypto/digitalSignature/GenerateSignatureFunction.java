@@ -51,6 +51,7 @@ import org.exist.xquery.value.NodeValue;
 import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
+import org.expath.exist.crypto.ExpathCryptoErrorCode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -257,11 +258,11 @@ public class GenerateSignatureFunction extends BasicFunction {
 				}
 
 			} catch (final PermissionDeniedException e) {
-				LOG.error(CryptoError.DENIED_KEYSTORE.getDescription());
+				LOG.error(ExpathCryptoErrorCode.getDescription(CryptoError.DENIED_KEYSTORE));
 				return null;
 			}
 		} catch (final URISyntaxException e) {
-			LOG.error(CryptoError.KEYSTORE_URL.getDescription());
+			LOG.error(ExpathCryptoErrorCode.getDescription(CryptoError.KEYSTORE_URL));
 			return null;
 		}
 	}

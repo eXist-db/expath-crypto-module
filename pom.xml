@@ -12,7 +12,7 @@
 
 	<groupId>org.exist-db.xquery.extensions.expath</groupId>
 	<artifactId>expath-crypto-module</artifactId>
-	<version>0.8.0-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<name>eXist-db EXPath Cryptographic library</name>
 	<description>eXist-db wrapper for EXPath Cryptographic Java library</description>
@@ -55,7 +55,7 @@
 
 	<properties>
 		<package.title>EXPath Cryptographic Module Implementation</package.title>
-		<crypto.java.lib.version>1.7.0-SNAPSHOT</crypto.java.lib.version>
+		<crypto.java.lib.version>1.5</crypto.java.lib.version>
 		<exist.version>5.0.0-RC8</exist.version>
 		<crypto.module.ns>http://expath.org/ns/crypto</crypto.module.ns>
 		<package-abbrev>crypto</package-abbrev>
