@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 import org.exist.Namespaces;
 import org.exist.dom.memtree.SAXAdapter;
 import org.exist.dom.persistent.BinaryDocument;
-import org.exist.dom.persistent.DocumentImpl;
+import org.exist.dom.persistent.LockedDocument;
 import org.exist.security.PermissionDeniedException;
 import org.exist.storage.lock.Lock;
 import org.exist.storage.serializers.Serializer;
@@ -51,6 +51,7 @@ import org.exist.xquery.value.NodeValue;
 import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
+import org.expath.exist.crypto.ExpathCryptoErrorCode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -129,7 +130,7 @@ public class GenerateSignatureFunction extends BasicFunction {
 		NodeValue inputNode = (NodeValue) args[0].itemAt(0);
 		Document inputDOMDoc;
 
-		try (InputStream inputNodeStream = new NodeInputStream(serializer, inputNode)) {
+		try (InputStream inputNodeStream = new NodeInputStream(context.getBroker().getBrokerPool(), serializer, inputNode)) {
 			inputDOMDoc = inputStreamToDocument(inputNodeStream);
 		} catch (IOException e) {
 			throw new EXpathCryptoException(this, e);
@@ -244,15 +245,12 @@ public class GenerateSignatureFunction extends BasicFunction {
 	private InputStream getKeyStoreInputStream(final String keystoreURI) throws CryptoException {
 		// get the keystore as InputStream
 		try {
-			DocumentImpl keyStoreDoc = null;
-			try {
-				keyStoreDoc = context.getBroker().getXMLResource(XmldbURI.xmldbUriFor(keystoreURI),
-						Lock.LockMode.READ_LOCK);
-				if (keyStoreDoc == null) {
+			try(final LockedDocument lockedKeyStoreDoc = context.getBroker().getXMLResource(XmldbURI.xmldbUriFor(keystoreURI), Lock.LockMode.READ_LOCK)) {
+				if (lockedKeyStoreDoc == null) {
 					throw new CryptoException(CryptoError.UNREADABLE_KEYSTORE);
 				}
 
-				final BinaryDocument keyStoreBinaryDoc = (BinaryDocument) keyStoreDoc;
+				final BinaryDocument keyStoreBinaryDoc = (BinaryDocument) lockedKeyStoreDoc.getDocument();
 				try {
 					return context.getBroker().getBinaryResource(keyStoreBinaryDoc);
 				} catch (final IOException e) {
@@ -260,13 +258,11 @@ public class GenerateSignatureFunction extends BasicFunction {
 				}
 
 			} catch (final PermissionDeniedException e) {
-				LOG.error(CryptoError.DENIED_KEYSTORE.getDescription());
+				LOG.error(ExpathCryptoErrorCode.getDescription(CryptoError.DENIED_KEYSTORE));
 				return null;
-			} finally {
-				keyStoreDoc.getUpdateLock().release(Lock.LockMode.READ_LOCK);
 			}
 		} catch (final URISyntaxException e) {
-			LOG.error(CryptoError.KEYSTORE_URL.getDescription());
+			LOG.error(ExpathCryptoErrorCode.getDescription(CryptoError.KEYSTORE_URL));
 			return null;
 		}
 	}
