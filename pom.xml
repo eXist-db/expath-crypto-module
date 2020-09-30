@@ -56,7 +56,7 @@
 	<properties>
 		<package.title>EXPath Cryptographic Module Implementation</package.title>
 		<crypto.java.lib.version>1.5</crypto.java.lib.version>
-		<exist.version>5.0.0</exist.version>
+		<exist.version>5.2.0</exist.version>
 		<crypto.module.ns>http://expath.org/ns/crypto</crypto.module.ns>
 		<package-abbrev>crypto</package-abbrev>
 		<package-name>${crypto.module.ns}</package-name>
