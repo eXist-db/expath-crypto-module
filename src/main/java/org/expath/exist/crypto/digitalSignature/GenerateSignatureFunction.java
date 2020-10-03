@@ -43,10 +43,13 @@ import org.apache.logging.log4j.Logger;
 import org.exist.Namespaces;
 import org.exist.dom.memtree.SAXAdapter;
 import org.exist.dom.persistent.BinaryDocument;
+import org.exist.dom.persistent.DocumentImpl;
 import org.exist.dom.persistent.LockedDocument;
 import org.exist.security.PermissionDeniedException;
-import org.exist.storage.lock.Lock;
+import org.exist.storage.lock.Lock.LockMode;
 import org.exist.storage.serializers.Serializer;
+import org.exist.storage.txn.TransactionException;
+import org.exist.storage.txn.Txn;
 import org.exist.validation.internal.node.NodeInputStream;
 import org.exist.xmldb.XmldbURI;
 import org.exist.xquery.BasicFunction;
@@ -275,26 +278,29 @@ public class GenerateSignatureFunction extends BasicFunction {
 	}
 
 	private InputStream getKeyStoreInputStream(final String keystoreURI) throws CryptoException {
-		// get the keystore as InputStream
-		try {
-			try(final LockedDocument lockedKeyStoreDoc = context.getBroker().getXMLResource(XmldbURI.xmldbUriFor(keystoreURI), Lock.LockMode.READ_LOCK)) {
-				if (lockedKeyStoreDoc == null) {
-					throw new CryptoException(CryptoError.UNREADABLE_KEYSTORE);
-				}
+		try (final LockedDocument keyStoreLockedDoc = context.getBroker()
+				.getXMLResource(XmldbURI.xmldbUriFor(keystoreURI), LockMode.READ_LOCK);) {
+			if (keyStoreLockedDoc == null) {
+				throw new CryptoException(CryptoError.UNREADABLE_KEYSTORE);
+			}
 
-				final BinaryDocument keyStoreBinaryDoc = (BinaryDocument) lockedKeyStoreDoc.getDocument();
-				try {
-					return context.getBroker().getBinaryResource(keyStoreBinaryDoc);
-				} catch (final IOException e) {
-					throw new CryptoException(CryptoError.UNREADABLE_KEYSTORE, e);
-				}
+			final DocumentImpl doc = keyStoreLockedDoc.getDocument();
 
-			} catch (final PermissionDeniedException e) {
-				LOG.error(ExpathCryptoErrorCode.getDescription(CryptoError.DENIED_KEYSTORE));
-				return null;
+			try (final Txn transaction = context.getBroker().continueOrBeginTransaction()) {
+				final BinaryDocument bin = (BinaryDocument) doc;
+				final InputStream is = context.getBroker().getBinaryResource(transaction, bin);
+
+				transaction.commit();
+
+				return is;
 			}
 		} catch (final URISyntaxException e) {
 			LOG.error(ExpathCryptoErrorCode.getDescription(CryptoError.KEYSTORE_URL));
+			return null;
+		} catch (final IOException | TransactionException e) {
+			throw new CryptoException(CryptoError.UNREADABLE_KEYSTORE, e);
+		} catch (final PermissionDeniedException e) {
+			LOG.error(CryptoError.DENIED_KEYSTORE.getDescription());
 			return null;
 		}
 	}
