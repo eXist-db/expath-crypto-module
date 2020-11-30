@@ -1,3 +1,5 @@
+# Warning: Current release of eXist crypto lib 5.3.0 has known fatal issues. See https://github.com/eXist-db/crypto-exist-java-lib/issues/33.
+
 ## eXist implementation for EXPath Cryptographic Module
 
 ### Currently implemented functions
