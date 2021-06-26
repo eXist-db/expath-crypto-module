@@ -27,15 +27,15 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/exist-db/crypto-exist-java-lib.git</url>
+		<url>scm:git://github.com/exist-db/crypto-exist-java-lib.git</url>
 		<connection>scm:git:https://github.com/exist-db/crypto-exist-java-lib.git</connection>
 		<developerConnection>scm:git:https://github.com/exist-db/crypto-exist-java-lib.git</developerConnection>
 	  <tag>HEAD</tag>
   </scm>
 
 	<organization>
-		<name>Kuberam</name>
-		<url>http://kuberam.ro</url>
+		<name>exist-db Project</name>
+		<url>https://exist-db.org</url>
 	</organization>
 
 	<developers>
@@ -44,12 +44,21 @@
 			<name>Claudius Teodorescu</name>
 			<email>claudius.teodorescu@gmail.com</email>
 		</developer>
+		<developer>
+			<id>olaf</id>
+			<name>Olaf Schreck</name>
+			<email>olaf@existsolutions.com</email>
+		</developer>
 	</developers>
 
 	<contributors>
 		<contributor>
 			<name>Adam Retter</name>
 			<email>adam@exist-db.org</email>
+		</contributor>
+		<contributor>
+			<name>Juri Leino</name>
+			<email>juri@existsolutions.com</email>
 		</contributor>
 	</contributors>
 
@@ -180,6 +189,34 @@
 					<tagNameFormat>@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>de.jutzig</groupId>
+				<artifactId>github-release-plugin</artifactId>
+				<version>1.4.0</version>
+				<executions>
+				  <execution>
+					<id>github-upload</id>
+					<phase>deploy</phase>
+					<goals>
+					  <goal>release</goal>
+					</goals>
+					<inherited>false</inherited>
+					<configuration>
+						<description>eXist implementation for EXPath Cryptographic Module</description>
+						<releaseName>v6.0.0</releaseName>
+						<tag>${project.version}</tag>
+					  <fileSets>
+						<fileSet>
+						  <directory>${project.build.directory}</directory>
+						  <includes>
+							<include>${project.artifactId}*.xar</include>
+						  </includes>
+						</fileSet>
+					  </fileSets>
+					</configuration>
+				  </execution>
+				</executions>
+			  </plugin>			
 		</plugins>
 	</build>
 
