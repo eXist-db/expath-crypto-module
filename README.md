@@ -13,8 +13,8 @@ $ cd crypto-exist-java-lib
 $ mvn clean package
 ```
 
-This will create a "expath-crypto-module-<version>.xar" file in the target folder. The .xar file can be uploaded to any eXist-db version > 5.3.0 via the Dashboard.  
-
+This will create a "expath-crypto-module-<version>.xar" file in the target folder. The .xar file can be uploaded to any eXist-db version > 5.3.0 via the Dashboard.
+  
 ### Currently implemented functions
 
 *   crypto:hash()
