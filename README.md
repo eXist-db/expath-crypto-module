@@ -1,7 +1,20 @@
-# Warning: Current release of eXist crypto lib 5.3.0 has known fatal issues. See https://github.com/eXist-db/crypto-exist-java-lib/issues/33.
+# eXist-db implementation for EXPath Cryptographic Module
 
-## eXist implementation for EXPath Cryptographic Module
+This is an eXist-db implementation of the [EXPath HTTP Crypto Module specification](http://expath.org/spec/crypto).
+## Building from source
 
+Requires:
+* Java 1.8 or newer
+* Maven 3.6 or newer
+
+```bash
+$ git clone https://github.com/eXist-db/crypto-exist-java-lib
+$ cd crypto-exist-java-lib
+$ mvn clean package
+```
+
+This will create a "expath-crypto-module-<version>.xar" file in the target folder. The .xar file can be uploaded to any eXist-db version > 5.3.0 via the Dashboard.
+  
 ### Currently implemented functions
 
 *   crypto:hash()
