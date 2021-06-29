@@ -122,7 +122,7 @@ declare
 function t:encryptStringWithAesSymmetricKeyCbcMode() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
-        crypto:encrypt("Short string for tests.", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, "SunJCE")				
+        crypto:encrypt("Short string for tests.", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, "SunJCE")
 };
 
 declare
@@ -131,21 +131,21 @@ declare
 function t:encryptStringWithAesSymmetricKeyCbcModeDefaultProvider() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
-        crypto:encrypt("Short string for tests.", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, "")				
+        crypto:encrypt("Short string for tests.", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, "")
 };
 
 declare
     %test:name("Symmetric encryption of string, AES")
     %test:assertEquals("222-157-20-54-132-99-46-30-73-43-253-148-61-155-86-141-51-56-40-42-31-168-189-56-236-102-58-237-175-171-9-87")
 function t:encryptStringWithAesSymmetricKeyEcbMode() {
-    crypto:encrypt("Short string for tests.", "symmetric", "1234567890123456", "AES", (), "SunJCE")				
+    crypto:encrypt("Short string for tests.", "symmetric", "1234567890123456", "AES", (), "SunJCE")
 };
 
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding, wrong key")
     %test:assertError("err:CX19: The secret key is invalid")
 function t:encryptStringWithAesWrongSymmetricKeyCbcMode() {
-    let $iv := crypto:hash("initialization vector", "MD5", "")  
+    let $iv := crypto:hash("initialization vector", "MD5", "")
     return
         crypto:encrypt("Short string for tests.", "symmetric", "12345678901234567", "AES/CBC/PKCS5Padding", $iv, "SunJCE")
 };
@@ -154,7 +154,7 @@ declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding, wrong key, default provider")
     %test:assertEquals("err:CX19: The secret key is invalid")
 function t:encryptStringWithAesWrongSymmetricKeyCbcModeDefaultProvider() {
-    let $iv := crypto:hash("initialization vector", "MD5", "")	
+    let $iv := crypto:hash("initialization vector", "MD5", "")
     return
         crypto:encrypt("Short string for tests.", "symmetric", "12345678901234567", "AES/CBC/PKCS5Padding", $iv, ())
 };
@@ -165,16 +165,16 @@ declare
 function t:generateEnvelopedDigitalSignature() {
     let $sample-doc := $t:DOC-1
     let $certificate-details :=
-    	<digital-certificate>
-    		<keystore-type>JKS</keystore-type>
-    		<keystore-password>ab987c</keystore-password>
-    		<key-alias>eXist</key-alias>
-    		<private-key-password>kpi135</private-key-password>
-    		<keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
-    	</digital-certificate>
+        <digital-certificate>
+            <keystore-type>JKS</keystore-type>
+            <keystore-password>ab987c</keystore-password>
+            <key-alias>eXist</key-alias>
+            <private-key-password>kpi135</private-key-password>
+            <keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
+        </digital-certificate>
     let $signed-doc := crypto:generate-signature($sample-doc, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped")
-	return 
-	    $signed-doc//*[local-name() = 'P']/text()
+    return
+        $signed-doc//*[local-name() = 'P']/text()
 };
 
 declare
@@ -257,7 +257,7 @@ function t:hashBinaryWithSha512() {
     return
         crypto:hash($input, "SHA-512", "base64")
 };
- 
+
 declare
     %test:name("'SHA-512' hashing for binary, default format")
     %test:assertEquals("Be+hlGy9TNibbaE+6DA2gu6kNj2GS+7b4egFcJDMzQSFQiGgFtTh/mD61ta4pDvc+jqHFlqOyJLHirkROd86Mw==")
@@ -266,7 +266,7 @@ function t:hashBinaryWithSha512AndDefaultFormat() {
     return
         crypto:hash($input, "SHA-512", ())
 };
- 
+
 declare
     %test:name("Hash binary with wrong algorithm")
     %test:assertError("err:CX21: The algorithm is not supported.")
@@ -275,7 +275,7 @@ function t:hashBinaryWithWrongAlgorithm() {
     return
         crypto:hash($input, "SHA-17", "base64")
 };
- 
+
 declare
     %test:name("Hash binary with wrong algorithm, default format")
     %test:assertError("err:CX21: The algorithm is not supported.")
@@ -291,70 +291,70 @@ declare
 function t:hashStringWithMd5() {
     crypto:hash("Short string for tests.", "MD5", "base64")
 };
- 
+
 declare
     %test:name("'MD5' hashing for string, default format")
     %test:assertEquals("use1oAoe8vIgnFgygz2OKw==")
 function t:hashStringWithMd5AndDefaultFormat() {
     crypto:hash("Short string for tests.", "MD5")
 };
- 
+
 declare
     %test:name("'SHA-1' hashing for string")
     %test:assertEquals("cV2wx17vo8eH2TaFRvCIIvJjNqU=")
 function t:hashStringWithSha1() {
     crypto:hash("Short string for tests.", "SHA-1", "base64")
 };
- 
+
 declare
     %test:name("'SHA-1' hashing for string, default format")
     %test:assertEquals("cV2wx17vo8eH2TaFRvCIIvJjNqU=")
 function t:hashStringWithSha1AndDefaultFormat() {
     crypto:hash("Short string for tests.", "SHA-1")
 };
- 
+
 declare
     %test:name("'SHA-256' hashing for string")
     %test:assertEquals("E+B0JzLRgxm2+1rB8qIZoQ2Qn+JLxwJCWORv46fKhMM=")
 function t:hashStringWithSha256() {
     crypto:hash("Short string for tests.", "SHA-256", "base64")
 };
- 
+
 declare
     %test:name("'SHA-256' hashing for string, default format")
     %test:assertEquals("E+B0JzLRgxm2+1rB8qIZoQ2Qn+JLxwJCWORv46fKhMM=")
 function t:hashStringWithSha256AndDefaultFormat() {
     crypto:hash("Short string for tests.", "SHA-256")
 };
- 
+
 declare
     %test:assertEquals("F4CFDSBHm+Bm400bOgH2q2IbIUj8XRUBWf0inx7lrN0T8IHz9scGVmJoGZ2+s1La")
     %test:name("'SHA-384' hashing for string")
 function t:hashStringWithSha384() {
     crypto:hash("Short string for tests.", "SHA-384", "base64")
 };
- 
+
 declare
     %test:assertEquals("F4CFDSBHm+Bm400bOgH2q2IbIUj8XRUBWf0inx7lrN0T8IHz9scGVmJoGZ2+s1La")
     %test:name("'SHA-384' hashing for string, default format")
 function t:hashStringWithSha384AndDefaultFormat() {
     crypto:hash("Short string for tests.", "SHA-384")
 };
- 
+
 declare
     %test:assertEquals("+YpeZRBrctlL1xr6plZOScp/6ArUw3GihjtKys1e3qQ6/aWLFjoOFEfuiUJA3uLIkebH1OG+rDdMFZ0+/JFK2g==")
     %test:name("'SHA-512' hashing for string")
 function t:hashStringWithSha512() {
     crypto:hash("Short string for tests.", "SHA-512", "base64")
 };
- 
+
 declare
     %test:name("'SHA-512' hashing for string, default format")
     %test:assertEquals("+YpeZRBrctlL1xr6plZOScp/6ArUw3GihjtKys1e3qQ6/aWLFjoOFEfuiUJA3uLIkebH1OG+rDdMFZ0+/JFK2g==")
 function t:hashStringWithSha512AndDefaultFormat() {
     crypto:hash("Short string for tests.", "SHA-512")
 };
- 
+
 declare
     %test:name("'MD5' hashing for XML file")
     %test:assertEquals("xMpCOKC5I4INzFCab3WEmw==")
@@ -363,7 +363,7 @@ function t:hashXmlWithMd5() {
     return
         crypto:hash($input/*/*[1], "MD5", "base64")
 };
- 
+
 declare
     %test:name("'MD5' hashing for XML file, default format")
     %test:assertEquals("xMpCOKC5I4INzFCab3WEmw==")
@@ -381,7 +381,7 @@ function t:hmacStringWithMd5() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HMAC-MD5", "base64")
 };
- 
+
 declare
     %test:name("'MD5' HMAC for string, default format")
     %test:assertEquals("l4MY6Yosjo7W60VJeXB/PQ==")
@@ -390,7 +390,7 @@ function t:hmacStringWithMd5AndDefaultFormat() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HMAC-MD5")
 };
- 
+
 declare
     %test:name("'SHA-1' HMAC for string")
     %test:assertEquals("55LyDq7GFnqijauK4CQWR4AqyZk=")
@@ -399,7 +399,7 @@ function t:hmacStringWithSha1() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HmacSha1", "base64")
 };
- 
+
 declare
     %test:name("'SHA-1' HMAC for string, default format")
     %test:assertEquals("55LyDq7GFnqijauK4CQWR4AqyZk=")
@@ -408,7 +408,7 @@ function t:hmacStringWithSha1AndDefaultFormat() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HMAC-SHA-1")
 };
- 
+
 declare
     %test:name("'SHA-256' HMAC for string")
     %test:assertEquals("FfZidcLEUg4oJLIZfw6xHlPMz8KPHxo2liaBKgLfcOE=")
@@ -417,7 +417,7 @@ function t:hmacStringWithSha256() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HmacSha256", "base64")
 };
- 
+
 declare
     %test:name("'SHA-256' HMAC for string, default format")
     %test:assertEquals("FfZidcLEUg4oJLIZfw6xHlPMz8KPHxo2liaBKgLfcOE=")
@@ -426,7 +426,7 @@ function t:hmacStringWithSha256AndDefaultFormat() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HMAC-SHA-256")
 };
- 
+
 declare
     %test:name("'SHA-384' HMAC for string")
     %test:assertEquals("RRirKZTmx+cG8EXvgrRnpYFPEPYXaZBirY+LFmiUBAK61LCryDsL4clFRG5/BcBr")
@@ -435,7 +435,7 @@ function t:hmacStringWithSha384() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HMAC-SHA-384", "base64")
 };
- 
+
 declare
     %test:name("'SHA-384' HMAC for string, default format")
     %test:assertEquals("RRirKZTmx+cG8EXvgrRnpYFPEPYXaZBirY+LFmiUBAK61LCryDsL4clFRG5/BcBr")
@@ -444,7 +444,7 @@ function t:hmacStringWithSha384AndDefaultFormat() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HMAC-SHA-384")
 };
- 
+
 declare
     %test:name("'SHA-512' HMAC for string")
     %test:assertEquals("z9MtEpBXxO5bKmsXJWfKsZ4v+RduKU89Y95H2HMGQEwHGefWmewNNQ7urZVuWEU5aeRRdO7G7j0QlcLYv1pkrg==")
@@ -453,7 +453,7 @@ function t:hmacStringWithSha512() {
     return
         crypto:hmac("Short string for tests.", $private-key, "HMAC-SHA-512", "base64")
 };
- 
+
 declare
     %test:name("'SHA-512' HMAC for string, default format")
     %test:assertEquals("z9MtEpBXxO5bKmsXJWfKsZ4v+RduKU89Y95H2HMGQEwHGefWmewNNQ7urZVuWEU5aeRRdO7G7j0QlcLYv1pkrg==")
@@ -469,13 +469,13 @@ declare
 function t:validateEnvelopedDigitalSignature() {
     let $input := $t:DOC-1
     let $certificate-details :=
-    	<digital-certificate>
-    		<keystore-type>JKS</keystore-type>
-    		<keystore-password>ab987c</keystore-password>
-    		<key-alias>eXist</key-alias>
-    		<private-key-password>kpi135</private-key-password>
-    		<keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
-    	</digital-certificate>
+        <digital-certificate>
+            <keystore-type>JKS</keystore-type>
+            <keystore-password>ab987c</keystore-password>
+            <key-alias>eXist</key-alias>
+            <private-key-password>kpi135</private-key-password>
+            <keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
+        </digital-certificate>
     let $signed-doc := crypto:generate-signature($input, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped")
     return
         crypto:validate-signature($signed-doc)
