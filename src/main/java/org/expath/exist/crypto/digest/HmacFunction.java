@@ -28,7 +28,6 @@ import static org.expath.exist.crypto.ExistExpathCryptoModule.functionSignatures
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -101,9 +100,7 @@ public class HmacFunction extends BasicFunction {
 
 				result = Conversion.byteArrayToIntegerSequence(resultBytes);
 			} else if (argsLength == 4) {
-
-				final String encoding = Optional.ofNullable(args[3].getStringValue()).filter(str -> !str.isEmpty())
-						.orElse("base64");
+				final String encoding = args[3].getStringValue().isEmpty() ? "base64" : args[3].getStringValue();
 				LOG.debug("encoding = {}", () -> encoding);
 
 				final String resultString;

@@ -30,7 +30,7 @@ public class EXpathCryptoException extends XPathException {
 	private static final long serialVersionUID = -6789727720893604433L;
 	
 	public EXpathCryptoException(Expression expr, CryptoError cryptoError) {
-		super(expr, new ExpathCryptoErrorCode(cryptoError), ExpathCryptoErrorCode.getDescription(cryptoError));
+		super(expr, new ExpathCryptoErrorCode(cryptoError), cryptoError.getDescription());
 	}
 
 	public EXpathCryptoException(Expression expr, Exception exception) {

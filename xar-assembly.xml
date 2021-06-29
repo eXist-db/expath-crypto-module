@@ -22,8 +22,8 @@
 			<outputFileNameMapping>${project.artifactId}-exist-java-lib-${project.version}.jar</outputFileNameMapping>
 		</dependencySet>
 		<dependencySet>
-			<groupId>ro.kuberam.libs.java</groupId>
-			<artifactId>crypto</artifactId>
+			<groupId>org.expath.crypto</groupId>
+			<artifactId>crypto-java</artifactId>
 			<version>${crypto.java.lib.version}</version>
 			<outputFileNameMapping>crypto-java-lib-${crypto.java.lib.version}.jar</outputFileNameMapping>
 		</dependencySet>

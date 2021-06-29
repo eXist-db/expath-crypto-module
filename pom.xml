@@ -11,7 +11,7 @@
 
 	<groupId>org.exist-db.xquery.extensions.expath</groupId>
 	<artifactId>expath-crypto-module</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>6.0.0-SNAPSHOT</version>
 
 	<name>eXist-db EXPath Cryptographic library</name>
 	<description>eXist-db wrapper for EXPath Cryptographic Java library</description>
@@ -27,15 +27,15 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/exist-db/crypto-exist-java-lib.git</url>
+		<url>scm:git://github.com/exist-db/crypto-exist-java-lib.git</url>
 		<connection>scm:git:https://github.com/exist-db/crypto-exist-java-lib.git</connection>
 		<developerConnection>scm:git:https://github.com/exist-db/crypto-exist-java-lib.git</developerConnection>
 	  <tag>HEAD</tag>
   </scm>
 
 	<organization>
-		<name>Kuberam</name>
-		<url>http://kuberam.ro</url>
+		<name>exist-db Project</name>
+		<url>https://exist-db.org</url>
 	</organization>
 
 	<developers>
@@ -44,6 +44,11 @@
 			<name>Claudius Teodorescu</name>
 			<email>claudius.teodorescu@gmail.com</email>
 		</developer>
+		<developer>
+			<id>olaf</id>
+			<name>Olaf Schreck</name>
+			<email>olaf@existsolutions.com</email>
+		</developer>
 	</developers>
 
 	<contributors>
@@ -51,12 +56,16 @@
 			<name>Adam Retter</name>
 			<email>adam@exist-db.org</email>
 		</contributor>
+		<contributor>
+			<name>Juri Leino</name>
+			<email>juri@existsolutions.com</email>
+		</contributor>
 	</contributors>
 
 	<properties>
 		<package.title>EXPath Cryptographic Module Implementation</package.title>
-		<crypto.java.lib.version>1.5</crypto.java.lib.version>
-		<exist.version>5.2.0</exist.version>
+		<crypto.java.lib.version>1.8.0</crypto.java.lib.version>
+		<exist.version>5.3.0</exist.version>
 		<crypto.module.ns>http://expath.org/ns/crypto</crypto.module.ns>
 		<crypto.module.java.class>org.expath.exist.crypto.ExistExpathCryptoModule</crypto.module.java.class>
 		<package-abbrev>crypto</package-abbrev>
@@ -65,8 +74,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>ro.kuberam.libs.java</groupId>
-			<artifactId>crypto</artifactId>
+			<groupId>org.expath.crypto</groupId>
+			<artifactId>crypto-java</artifactId>
 			<version>${crypto.java.lib.version}</version>
 		</dependency>
 		<dependency>
@@ -159,7 +168,7 @@
 				<version>2.3.0</version>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
@@ -169,25 +178,8 @@
 					<inputDirectory>${project.basedir}</inputDirectory>
 					<headerHtmlFile>${project.basedir}/build/header.html</headerHtmlFile>
 					<footerHtmlFile>${project.basedir}/build/footer.html</footerHtmlFile>
+					<defaultTitle>index.html</defaultTitle>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.coderplus.maven.plugins</groupId>
-				<artifactId>copy-rename-maven-plugin</artifactId>
-				<version>1.0.1</version>
-				<executions>
-					<execution>
-						<id>rename-readme-file</id>
-						<phase>package</phase>
-						<goals>
-							<goal>rename</goal>
-						</goals>
-						<configuration>
-							<sourceFile>${project.build.directory}/html/README.html</sourceFile>
-							<destinationFile>${project.build.directory}/html/index.html</destinationFile>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>ro.kuberam.maven.plugins</groupId>
@@ -222,6 +214,34 @@
 					<tagNameFormat>@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>de.jutzig</groupId>
+				<artifactId>github-release-plugin</artifactId>
+				<version>1.4.0</version>
+				<executions>
+				  <execution>
+					<id>github-upload</id>
+					<phase>deploy</phase>
+					<goals>
+					  <goal>release</goal>
+					</goals>
+					<inherited>false</inherited>
+					<configuration>
+						<description>eXist implementation for EXPath Cryptographic Module</description>
+						<releaseName>v6.0.0</releaseName>
+						<tag>${project.version}</tag>
+					  <fileSets>
+						<fileSet>
+						  <directory>${project.build.directory}</directory>
+						  <includes>
+							<include>${project.artifactId}*.xar</include>
+						  </includes>
+						</fileSet>
+					  </fileSets>
+					</configuration>
+				  </execution>
+				</executions>
+			  </plugin>			
 		</plugins>
 	</build>
 
