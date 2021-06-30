@@ -6,8 +6,6 @@ import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.exist.xquery.XPathException;
 import org.exist.xquery.value.BinaryValue;
 import org.exist.xquery.value.IntegerValue;
@@ -21,11 +19,13 @@ import org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream;
 
 import com.evolvedbinary.j8fu.Either;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.kuberam.libs.java.crypto.utils.Buffer;
 
 public class Conversion {
 
-	private static Logger LOG = LogManager.getLogger(Conversion.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Conversion.class);
 
 	@Nullable
 	public static byte[] toByteArray(@Nullable final Either<InputStream, byte[]> data) throws IOException {
@@ -53,19 +53,19 @@ public class Conversion {
 	@Nullable
 	public static Either<InputStream, byte[]> sequence2javaTypes(final Sequence sequence) throws XPathException {
 		final int itemCount = sequence.getItemCount();
-		LOG.debug("itemCount = {}", () -> itemCount);
+		LOG.debug("itemCount = {}", itemCount);
 
 		if (itemCount == 1) {
 			final int itemType = sequence.itemAt(0).getType();
-			LOG.debug("itemTypeName = {}", () -> Type.getTypeName(itemType));
+			LOG.debug("itemTypeName = {}", Type.getTypeName(itemType));
 
 			switch (itemType) {
 			case Type.STRING:
 			case Type.ELEMENT:
 			case Type.DOCUMENT:
 				final String itemStringValue = sequence.itemAt(0).getStringValue();
-				LOG.debug("itemStringValue = {}, itemStringValue length = {}", () -> itemStringValue,
-						() -> itemStringValue.trim().length());
+				LOG.debug("itemStringValue = {}, itemStringValue length = {}", itemStringValue,
+						itemStringValue.trim().length());
 
 				return Either.Right(itemStringValue.getBytes(StandardCharsets.UTF_8));
 

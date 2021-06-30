@@ -38,8 +38,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.exist.Namespaces;
 import org.exist.dom.memtree.SAXAdapter;
 import org.exist.dom.persistent.BinaryDocument;
@@ -62,6 +60,8 @@ import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -81,7 +81,7 @@ import ro.kuberam.libs.java.crypto.keyManagement.Load;
  */
 public class GenerateSignatureFunction extends BasicFunction {
 
-	private static final Logger LOG = LogManager.getLogger(GenerateSignatureFunction.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GenerateSignatureFunction.class);
 
 	private static String FS_GENERATE_SIGNATURE_NAME = "generate-signature";
 

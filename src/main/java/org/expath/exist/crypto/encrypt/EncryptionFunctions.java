@@ -31,8 +31,6 @@ import java.util.Base64;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
@@ -45,6 +43,8 @@ import org.expath.exist.crypto.EXpathCryptoException;
 import org.expath.exist.crypto.ExistExpathCryptoModule;
 import org.expath.exist.crypto.utils.Conversion;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.kuberam.libs.java.crypto.CryptoError;
 import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.encrypt.SymmetricEncryption;
@@ -55,7 +55,7 @@ import ro.kuberam.libs.java.crypto.encrypt.SymmetricEncryption;
  */
 public class EncryptionFunctions extends BasicFunction {
 
-	private static Logger LOG = LogManager.getLogger(EncryptionFunctions.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EncryptionFunctions.class);
 
 	private static final String FS_ENCRYPT_NAME = "encrypt";
 	private static final String FS_DECRYPT_NAME = "decrypt";
@@ -136,7 +136,7 @@ public class EncryptionFunctions extends BasicFunction {
 				throw new EXpathCryptoException(this, CryptoError.ENCRYPTION_TYPE);
 			}
 			String result = Base64.getEncoder().encodeToString(resultBytes);
-			LOG.debug("encrypt result = {}", () -> result);
+			LOG.debug("encrypt result = {}", result);
 
 			return new StringValue(result);
 		} catch (
@@ -168,7 +168,7 @@ public class EncryptionFunctions extends BasicFunction {
 			}
 
 			String result = new String(resultBytes, UTF_8);
-			LOG.debug("decrypt result = {}", () -> result);
+			LOG.debug("decrypt result = {}", result);
 
 			return new StringValue(result);
 		} catch (CryptoException e) {
