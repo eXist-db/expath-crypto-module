@@ -193,8 +193,8 @@
 				</executions>
 				<configuration>
 					<inputDirectory>${project.basedir}</inputDirectory>
-					<headerHtmlFile>${project.basedir}/build/header.html</headerHtmlFile>
-					<footerHtmlFile>${project.basedir}/build/footer.html</footerHtmlFile>
+					<headerHtmlFile>${project.basedir}/src/markdown-page-generator/header.html</headerHtmlFile>
+					<footerHtmlFile>${project.basedir}/src/markdown-page-generator/footer.html</footerHtmlFile>
 					<defaultTitle>index.html</defaultTitle>
 				</configuration>
 			</plugin>
