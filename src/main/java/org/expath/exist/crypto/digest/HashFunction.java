@@ -1,4 +1,4 @@
-/**
+/*
  * eXist-db EXPath Cryptographic library
  * eXist-db wrapper for EXPath Cryptographic Java library
  * Copyright (C) 2016 Claudius Teodorescu
@@ -28,8 +28,6 @@ package org.expath.exist.crypto.digest;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
@@ -41,6 +39,8 @@ import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digest.Hash;
 
@@ -49,7 +49,7 @@ import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
 
 public class HashFunction extends BasicFunction {
 
-	private static final Logger LOG = LogManager.getLogger(HashFunction.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HashFunction.class);
 
 	private static final String FS_HASH_NAME = "hash";
 	private static final FunctionParameterSequenceType FS_HASH_PARAM_DATA = param("data", Type.ANY_TYPE,
@@ -78,7 +78,7 @@ public class HashFunction extends BasicFunction {
 		} else {
 			encoding = args[2].getStringValue().isEmpty() ? "base64" : args[2].getStringValue();
 		}
-		LOG.debug("encoding = {}", () -> encoding);
+		LOG.debug("encoding = {}", encoding);
 
 		final Sequence result;
 		if (inputType == Type.STRING || inputType == Type.ELEMENT || inputType == Type.DOCUMENT) {

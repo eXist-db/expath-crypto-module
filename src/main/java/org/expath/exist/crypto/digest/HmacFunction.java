@@ -1,4 +1,4 @@
-/**
+/*
  * eXist-db EXPath Cryptographic library
  * eXist-db wrapper for EXPath Cryptographic Java library
  * Copyright (C) 2016 Claudius Teodorescu
@@ -29,8 +29,6 @@ import static org.expath.exist.crypto.ExistExpathCryptoModule.functionSignatures
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
 import org.exist.xquery.XPathException;
@@ -44,12 +42,14 @@ import org.expath.exist.crypto.utils.Conversion;
 
 import com.evolvedbinary.j8fu.Either;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.kuberam.libs.java.crypto.CryptoException;
 import ro.kuberam.libs.java.crypto.digest.Hmac;
 
 public class HmacFunction extends BasicFunction {
 
-	private static Logger LOG = LogManager.getLogger(HmacFunction.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HmacFunction.class);
 
 	private static String FS_HMAC_NAME = "hmac";
 	private static FunctionParameterSequenceType FS_HMAC_PARAM_DATA = optManyParam("data", Type.ATOMIC,
@@ -72,8 +72,8 @@ public class HmacFunction extends BasicFunction {
 	@Override
 	public Sequence eval(final Sequence[] args, final Sequence contextSequence) throws XPathException {
 		final int argsLength = args.length;
-		LOG.debug("argsLength = {}", () -> argsLength);
-		LOG.debug("data item count = {}", () -> args[0].getItemCount());
+		LOG.debug("argsLength = {}", argsLength);
+		LOG.debug("data item count = {}", args[0].getItemCount());
 
 		final Sequence result;
 		Either<InputStream, byte[]> data = null;
@@ -85,7 +85,7 @@ public class HmacFunction extends BasicFunction {
 			final byte[] secretKey = Conversion.toByteArray(Conversion.sequence2javaTypes(args[1]));
 
 			final String algorithm = args[2].getStringValue();
-			LOG.debug("algorithm = {}", () -> algorithm);
+			LOG.debug("algorithm = {}", algorithm);
 
 			if (argsLength == 3) {
 				final byte[] resultBytes;
@@ -101,7 +101,7 @@ public class HmacFunction extends BasicFunction {
 				result = Conversion.byteArrayToIntegerSequence(resultBytes);
 			} else if (argsLength == 4) {
 				final String encoding = args[3].getStringValue().isEmpty() ? "base64" : args[3].getStringValue();
-				LOG.debug("encoding = {}", () -> encoding);
+				LOG.debug("encoding = {}", encoding);
 
 				final String resultString;
 
@@ -112,7 +112,7 @@ public class HmacFunction extends BasicFunction {
 				} else {
 					resultString = Hmac.hmac(data.right().get(), secretKey, algorithm, encoding);
 				}
-				LOG.debug("resultString = {}", () -> resultString);
+				LOG.debug("resultString = {}", resultString);
 
 				result = new StringValue(resultString);
 			} else {

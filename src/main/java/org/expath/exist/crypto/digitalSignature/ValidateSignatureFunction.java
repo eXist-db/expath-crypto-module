@@ -1,4 +1,4 @@
-/**
+/*
  * eXist-db EXPath Cryptographic library
  * eXist-db wrapper for EXPath Cryptographic Java library
  * Copyright (C) 2016 Claudius Teodorescu
@@ -30,8 +30,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.exist.storage.serializers.Serializer;
 import org.exist.xquery.BasicFunction;
 import org.exist.xquery.FunctionSignature;
@@ -42,6 +40,8 @@ import org.exist.xquery.value.NodeValue;
 import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -62,7 +62,7 @@ import static org.expath.exist.crypto.ExistExpathCryptoModule.*;
  */
 public class ValidateSignatureFunction extends BasicFunction {
 
-	private static final Logger LOG = LogManager.getLogger(ValidateSignatureFunction.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ValidateSignatureFunction.class);
 
 	public final static FunctionSignature FS_VALIDATE_SIGNATURE = functionSignature("validate-signature",
 			"This function validates an XML Digital Signature.",
