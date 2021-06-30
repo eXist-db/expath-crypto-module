@@ -1,4 +1,4 @@
-[![CI](https://github.com/eXist-db/crypto-exist-java-lib/workflows/CI/badge.svg)](https://github.com/eXist-db/crypto-exist-java-lib/actions?query=workflow%3ACI)
+[![CI](https://github.com/eXist-db/expath-crypto-module/workflows/CI/badge.svg)](https://github.com/eXist-db/expath-crypto-module/actions?query=workflow%3ACI)
 
 # eXist-db implementation for EXPath Cryptographic Module
 
@@ -10,8 +10,8 @@ Requires:
 * Maven 3.6 or newer
 
 ```bash
-$ git clone https://github.com/eXist-db/crypto-exist-java-lib
-$ cd crypto-exist-java-lib
+$ git clone https://github.com/eXist-db/expath-crypto-module.git
+$ cd expath-crypto-module
 $ mvn clean package
 ```
 
@@ -44,5 +44,5 @@ Unit Tests use [XQSuite](https://exist-db.org/exist/apps/doc/xqsuite) and can be
 To run tests:
 
 ```bash
-$ mvn validate
+$ mvn verify
 ```
