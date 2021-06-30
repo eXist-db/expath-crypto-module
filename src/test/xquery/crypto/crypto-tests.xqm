@@ -48,8 +48,10 @@ function t:setup() {
     return
         (
             xmldb:store("/db/test", "doc-1.xml", $t:DOC-1),
-            (: TODO adjust path to keystore.ks :)
-            xmldb:store-files-from-pattern("/db/test", "/Users/joe/workspace/crypto-exist-java-lib/src/test/resources/org/expath/exist/crypto", "*.ks")
+
+            let $keystore := fn:unparsed-text("resource:xquery/crypto/keystore.ks")
+            return
+                xmldb:store-as-binary("/db/test", "keystore.ks", $keystore)
         )
 };
 
