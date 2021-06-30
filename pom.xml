@@ -277,8 +277,25 @@
 					<inputDirectory>${project.basedir}</inputDirectory>
 					<headerHtmlFile>${project.basedir}/src/markdown-page-generator/header.html</headerHtmlFile>
 					<footerHtmlFile>${project.basedir}/src/markdown-page-generator/footer.html</footerHtmlFile>
-					<defaultTitle>index.html</defaultTitle>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<executions>
+					<execution>
+						<id>rename-readme-file</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${project.build.directory}/html/README.html</sourceFile>
+							<destinationFile>${project.build.directory}/html/index.html</destinationFile>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>ro.kuberam.maven.plugins</groupId>
