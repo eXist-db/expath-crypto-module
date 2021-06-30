@@ -1,4 +1,4 @@
-/**
+/*
  * eXist-db EXPath Cryptographic library
  * eXist-db wrapper for EXPath Cryptographic Java library
  * Copyright (C) 2016 Claudius Teodorescu
