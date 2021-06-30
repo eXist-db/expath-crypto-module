@@ -1,3 +1,5 @@
+[![CI](https://github.com/eXist-db/crypto-exist-java-lib/workflows/CI/badge.svg)](https://github.com/eXist-db/crypto-exist-java-lib/actions?query=workflow%3ACI)
+
 # eXist-db implementation for EXPath Cryptographic Module
 
 This is an eXist-db implementation of the [EXPath HTTP Crypto Module specification](http://expath.org/spec/crypto).
@@ -35,12 +37,12 @@ For the latest version of the specification for this module see [http://expath.o
 
 The implementation follows this specification.
 
-### Examples of usage
-
-For examples of usage, see [this folder in github](src/test/java/org/expath/exist/crypto/xquery/) or [this collection](/apps/expath-crypto/tests/unit-tests) when this library is installed in eXist.
-
 ### Unit Tests
 
-Unit Tests can be found in [this folder in github](src/test/java/org/expath/exist/crypto/xquery/) or in [this collection](/apps/expath-crypto/tests/unit-tests) when this library is installed in eXist.
+Unit Tests use [XQSuite](https://exist-db.org/exist/apps/doc/xqsuite) and can be found in the [src/test/xquery/crypto folder](src/test/xquery/crypto/). 
 
-When this library is installed in eXist, to get a simple test runner, showing description and status (passed / failed) for each unit test, go [here](/apps/expath-crypto/tests/test-plan.xq).
+To run tests:
+
+```bash
+$ mvn validate
+```

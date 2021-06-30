@@ -67,6 +67,7 @@
 		<crypto.java.lib.version>1.8.0</crypto.java.lib.version>
 		<exist.version>5.3.0</exist.version>
 		<crypto.module.ns>http://expath.org/ns/crypto</crypto.module.ns>
+		<crypto.module.java.class>org.expath.exist.crypto.ExistExpathCryptoModule</crypto.module.java.class>
 		<package-abbrev>crypto</package-abbrev>
 		<package-name>${crypto.module.ns}</package-name>
 	</properties>
@@ -113,6 +114,17 @@
 	</dependencies>
 
 	<build>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>false</filtering>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources-filtered</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -136,6 +148,19 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M5</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.ruleoftech</groupId>
