@@ -89,12 +89,12 @@ public class ExistExpathCryptoModule extends AbstractInternalModule {
 
 	public static FunctionSignature functionSignature(final String name, final String description,
 			final FunctionReturnSequenceType returnType, final FunctionParameterSequenceType... paramTypes) {
-		return FunctionDSL.functionSignature(new QName(name, NAMESPACE_URI), description, returnType, paramTypes);
+		return FunctionDSL.functionSignature(new QName(name, NAMESPACE_URI, PREFIX), description, returnType, paramTypes);
 	}
 
 	public static FunctionSignature[] functionSignatures(final String name, final String description,
 			final FunctionReturnSequenceType returnType, final FunctionParameterSequenceType[][] variableParamTypes) {
-		return FunctionDSL.functionSignatures(new QName(name, NAMESPACE_URI), description, returnType,
+		return FunctionDSL.functionSignatures(new QName(name, NAMESPACE_URI, PREFIX), description, returnType,
 				variableParamTypes);
 	}
 }
