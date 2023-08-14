@@ -57,11 +57,15 @@ public class ExistExpathCryptoModule extends AbstractInternalModule {
 
 	public final static ErrorCode NO_FUNCTION = new ExpathCryptoErrorCode("NO_FUNCTION", "No function");
 
-	private final static FunctionDef[] functions = functionDefs(functionDefs(HashFunction.class, HashFunction.FS_HASH),
+	private final static FunctionDef[] functions = functionDefs(
+			functionDefs(HashFunction.class, HashFunction.FS_HASH),
+			functionDefs(HashFunction.class, HashFunction.FS_HASH_PROVIDERS),
+			functionDefs(HashFunction.class, HashFunction.FS_HASH_ALGORITHMS),
 			functionDefs(HmacFunction.class, HmacFunction.FS_HMAC),
 			functionDefs(GenerateSignatureFunction.class, GenerateSignatureFunction.FS_GENERATE_SIGNATURE),
 			functionDefs(ValidateSignatureFunction.class, ValidateSignatureFunction.FS_VALIDATE_SIGNATURE),
-			functionDefs(EncryptionFunctions.class, EncryptionFunctions.FS_ENCRYPT, EncryptionFunctions.FS_DECRYPT));
+			functionDefs(EncryptionFunctions.class, EncryptionFunctions.FS_ENCRYPT, EncryptionFunctions.FS_DECRYPT)
+	);
 
 	public ExistExpathCryptoModule(final Map<String, List<? extends Object>> parameters) throws Exception {
 		super(functions, parameters);
