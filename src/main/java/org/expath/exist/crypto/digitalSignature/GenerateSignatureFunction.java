@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.security.PrivateKey;
+import java.util.Optional;
 
 import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.parsers.DocumentBuilder;
@@ -38,12 +39,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import com.evolvedbinary.j8fu.function.ConsumerE;
+import org.exist.EXistException;
 import org.exist.Namespaces;
 import org.exist.dom.memtree.SAXAdapter;
 import org.exist.dom.persistent.BinaryDocument;
 import org.exist.dom.persistent.DocumentImpl;
 import org.exist.dom.persistent.LockedDocument;
 import org.exist.security.PermissionDeniedException;
+import org.exist.security.Subject;
+import org.exist.storage.BrokerPool;
+import org.exist.storage.DBBroker;
 import org.exist.storage.lock.Lock.LockMode;
 import org.exist.storage.serializers.Serializer;
 import org.exist.storage.txn.TransactionException;
@@ -170,11 +176,25 @@ public class GenerateSignatureFunction extends BasicFunction {
 
 			return new StringValue(output);
 		} else {
-			Serializer serializer = context.getBroker().getSerializer();
 			NodeValue inputNode = (NodeValue) args[0].itemAt(0);
 			Document inputDOMDoc;
 
-			try (InputStream inputNodeStream = new NodeInputStream(context.getBroker().getBrokerPool(), serializer,
+			final BrokerPool brokerPool = context.getBroker().getBrokerPool();
+			final Subject activeSubject = context.getSubject();
+			final ConsumerE<ConsumerE<Serializer, IOException>, IOException> withSerializerFn = fn -> {
+				try (final DBBroker broker = brokerPool.get(Optional.of(activeSubject))) {
+					final Serializer serializer = broker.borrowSerializer();
+					try {
+						fn.accept(serializer);
+					} finally {
+						context.getBroker().returnSerializer(serializer);
+					}
+				} catch (final EXistException e) {
+					throw new IOException(e.getMessage(), e);
+				}
+			};
+
+			try (final InputStream inputNodeStream = new NodeInputStream(context.getBroker().getBrokerPool(), withSerializerFn,
 					inputNode)) {
 				inputDOMDoc = inputStreamToDocument(inputNodeStream);
 			} catch (IOException e) {

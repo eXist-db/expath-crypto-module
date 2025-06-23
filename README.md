@@ -1,8 +1,8 @@
 [![CI](https://github.com/eXist-db/expath-crypto-module/workflows/CI/badge.svg)](https://github.com/eXist-db/expath-crypto-module/actions?query=workflow%3ACI)
 
-# eXist-db implementation for EXPath Cryptographic Module
+# Implementation of EXPath Cryptographic Module for eXist-db and Elemental
 
-This is an eXist-db implementation of the [EXPath HTTP Crypto Module specification](http://expath.org/spec/crypto).
+This is an implementation of the [EXPath HTTP Crypto Module specification](http://expath.org/spec/crypto).
 ## Building from source
 
 Requires:
@@ -15,7 +15,7 @@ $ cd expath-crypto-module
 $ mvn clean package
 ```
 
-This will create a "expath-crypto-module-<version>.xar" file in the target folder. The .xar file can be uploaded to any eXist-db version > 5.3.0 via the Dashboard.
+This will create a "expath-crypto-module-<version>.xar" file in the target folder. The .xar file can be uploaded to any eXist-db or Elemental version >= 6.0.0 via the Dashboard.
   
 ### Currently implemented functions
 

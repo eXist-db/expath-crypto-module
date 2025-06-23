@@ -31,16 +31,17 @@
 	<tag>${project.artifactId}</tag>
 	<tag>expath</tag>
 	<tag>library</tag>
-	<tag>exist</tag>
 	<category id="libs">Libraries</category>
-	<category id="exist">eXist extensions</category>
-	<dependency processor="http://exist-db.org" semver-min="${exist.version}" />
+
+	<dependency processor="http://exist-db.org" semver-min="${existdb.version}" />
+	<dependency processor="http://elemental.xyz" semver-min="${elemental.version}"/>
+
 	<dependencySets>
 		<dependencySet>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>${project.artifactId}</artifactId>
 			<version>${project.version}</version>
-			<outputFileNameMapping>${project.artifactId}-exist-java-lib-${project.version}.jar</outputFileNameMapping>
+			<outputFileNameMapping>${project.artifactId}-db-impl-java-lib-${project.version}.jar</outputFileNameMapping>
 		</dependencySet>
 		<dependencySet>
 			<groupId>org.expath.crypto</groupId>
