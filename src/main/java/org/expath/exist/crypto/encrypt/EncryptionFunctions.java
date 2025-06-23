@@ -139,9 +139,7 @@ public class EncryptionFunctions extends BasicFunction {
 			LOG.debug("encrypt result = {}", result);
 
 			return new StringValue(result);
-		} catch (
-
-		CryptoException e) {
+		} catch (final CryptoException e) {
 			throw new EXpathCryptoException(this, e.getCryptoError());
 		} catch (IOException e) {
 			throw new EXpathCryptoException(this, e);

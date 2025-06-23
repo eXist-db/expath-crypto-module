@@ -19,11 +19,7 @@
  */
 package org.expath.exist.crypto.digest;
 
-import static org.exist.xquery.FunctionDSL.arities;
-import static org.exist.xquery.FunctionDSL.arity;
-import static org.exist.xquery.FunctionDSL.optManyParam;
-import static org.exist.xquery.FunctionDSL.param;
-import static org.exist.xquery.FunctionDSL.returnsOptMany;
+import static org.exist.xquery.FunctionDSL.*;
 import static org.expath.exist.crypto.ExistExpathCryptoModule.functionSignatures;
 
 import java.io.IOException;
@@ -60,10 +56,21 @@ public class HmacFunction extends BasicFunction {
 			"The cryptographic hashing algorithm.");
 
 	public final static FunctionSignature FS_HMAC[] = functionSignatures(FS_HMAC_NAME, "Hashes the input message.",
-			returnsOptMany(Type.BYTE),
-			arities(arity(FS_HMAC_PARAM_DATA, FS_HMAC_PARAM_KEY, FS_HMAC_PARAM_ALGORITHM),
-					arity(FS_HMAC_PARAM_DATA, FS_HMAC_PARAM_KEY, FS_HMAC_PARAM_ALGORITHM, param("encoding", Type.STRING,
-							"The encoding of the output. The legal values are \"hex\" and \"base64\". The result is generated accordingly as xs:base64Binary string or xs:hexBinary string."))));
+			returnsOpt(Type.STRING),
+			arities(
+				arity(
+					FS_HMAC_PARAM_DATA,
+					FS_HMAC_PARAM_KEY,
+					FS_HMAC_PARAM_ALGORITHM
+				),
+				arity(
+					FS_HMAC_PARAM_DATA,
+					FS_HMAC_PARAM_KEY,
+					FS_HMAC_PARAM_ALGORITHM,
+					param("encoding", Type.STRING, "The encoding of the output. The legal values are \"hex\" and \"base64\". The result is generated accordingly as xs:base64Binary string or xs:hexBinary string.")
+				)
+			)
+	);
 
 	public HmacFunction(final XQueryContext context, final FunctionSignature signature) {
 		super(context, signature);
@@ -87,23 +94,24 @@ public class HmacFunction extends BasicFunction {
 			final String algorithm = args[2].getStringValue();
 			LOG.debug("algorithm = {}", algorithm);
 
+			final String encoding;
+			final String resultString;
 			if (argsLength == 3) {
+				encoding = "base64";
 				final byte[] resultBytes;
 				if (data.isLeft()) {
 					try (final InputStream is = data.left().get()) {
-						resultBytes = Hmac.hmac(is, secretKey, algorithm);
+						resultString = Hmac.hmac(is, secretKey, algorithm, encoding);
 					}
 					dataStreamClosed = true;
 				} else {
-					resultBytes = Hmac.hmac(data.right().get(), secretKey, algorithm);
+					resultString = Hmac.hmac(data.right().get(), secretKey, algorithm, encoding);
 				}
 
-				result = Conversion.byteArrayToIntegerSequence(resultBytes);
+				result = new StringValue(resultString);
 			} else if (argsLength == 4) {
-				final String encoding = args[3].getStringValue().isEmpty() ? "base64" : args[3].getStringValue();
+				encoding = args[3].getStringValue().isEmpty() ? "base64" : args[3].getStringValue();
 				LOG.debug("encoding = {}", encoding);
-
-				final String resultString;
 
 				if (data.isLeft()) {
 					try (final InputStream is = data.left().get()) {

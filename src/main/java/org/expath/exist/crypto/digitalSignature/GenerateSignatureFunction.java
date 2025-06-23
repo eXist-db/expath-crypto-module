@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 import java.security.PrivateKey;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
 import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -211,7 +212,7 @@ public class GenerateSignatureFunction extends BasicFunction {
 			Document signatureDocument = null;
 
 			// get the XPath expression and/or the certificate's details
-			String xpathExprString = null;
+			@Nullable String xpathExprString = null;
 			String[] certificateDetails = new String[5];
 			certificateDetails[0] = "";
 			InputStream keyStoreInputStream = null;
@@ -220,7 +221,7 @@ public class GenerateSignatureFunction extends BasicFunction {
 
 				// signature with 7 arguments
 				if (args.length == 7) {
-					if (args[6].itemAt(0).getType() == 22) {
+					if (args[6].getItemCount() > 0 && args[6].itemAt(0).getType() == Type.STRING) {
 						xpathExprString = args[6].getStringValue();
 					} else if (args[6].itemAt(0).getType() == 1) {
 						final Node certificateDetailsNode = ((NodeValue) args[6].itemAt(0)).getNode();
@@ -233,7 +234,9 @@ public class GenerateSignatureFunction extends BasicFunction {
 
 				// signature with 8 arguments
 				if (args.length == 8) {
-					xpathExprString = args[6].getStringValue();
+					if (args[6].getItemCount() > 0) {
+						xpathExprString = args[6].getStringValue();
+					}
 					final Node certificateDetailsNode = ((NodeValue) args[7].itemAt(0)).getNode();
 					// get the certificate details
 					certificateDetails = getDigitalCertificateDetails(certificateDetails, certificateDetailsNode);
