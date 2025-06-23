@@ -25,7 +25,7 @@ module namespace ct = "http://expath.org/ns/crypto/test";
 
 import module "http://expath.org/ns/crypto";
 
-declare namespace test="http://exist-db.org/xquery/xqsuite";
+declare namespace test = "http://exist-db.org/xquery/xqsuite";
 
 declare variable $ct:doc-1 := document {
 <data>
@@ -60,6 +60,9 @@ ZpJmWV2y1zIqxRnsjBlPLraX4Sx9DBEDw2H8aWhN1oIjAoGBANc0gizRHGfOK2UASXskuO5Ueias
 s1tkDtD9uOJN6CsLuVjfuo4ZT5SwC7pq842aQrqJveKWKdzEorQjWKeN8OM2wzEMs0P1
 -----END RSA PRIVATE KEY-----";
 
+(: Inline representation of xquery/crypto/ar.bmp :)
+declare variable $ct:bin-file-b64 := xs:base64Binary("Qk2KAgAAAAAAAIoAAAB8AAAAEAAAABAAAAABABAAAwAAAAACAAAjLgAAIy4AAAAAAAAAAAAAAPgAAOAHAAAfAAAAAAAAAEJHUnMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////wAA//8AAAAAAAAAAAAA/////wAAAAD//wAAAAAAAP//AAD//wAAAAAAAAAA//8AAP///////wAAAAAAAAAA//8AAP//AAAAAAAA//8AAAAAAAD//////////////////wAA//////////8AAAAAAAAAAAAA//8AAAAAAAD//wAA////////AAAAAAAAAAAAAAAAAAD//wAAAAAAAP//AAD///////8AAAAAAAAAAAAAAAAAAP//AAAAAP//AAAAAP//AAAAAP//AAAAAAAAAAAAAAAAAAD//wAA//8AAAAA//8AAAAA//8AAAAAAAAAAAAAAAAAAP//AAD//wAAAAD//wAAAAAAAP//AAAAAAAAAAAAAAAA/////wAAAAAAAP//AAAAAAAA//8AAAAAAAAAAAAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAAAAAAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAAAAAAAAAAAAD//wAAAAAAAP//////////AAAAAAAAAAAAAAAAAAAAAP//AAAAAAAA//8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
+
 declare
     %test:setUp
 function ct:setup() {
@@ -67,6 +70,7 @@ function ct:setup() {
     return
         (
             xmldb:store("/db/test", "doc-1.xml", $ct:doc-1),
+            xmldb:store-as-binary("/db/test", "ar.bmp", $ct:bin-file-b64),
 
             let $keystore := fn:unparsed-text("resource:xquery/crypto/keystore.ks")
             return
@@ -89,7 +93,7 @@ function ct:aws-rest-request() {
 c8fdb181845a4ca6b8fec737b3581d76
 text/html
 Thu, 17 Nov 2005 18:49:58 GMT
-x-amz-magic:password
+x-amz-magic:abracadabra
 x-amz-meta-author:foo@bar.com
 /quotes/nelson"
     let $private-key := "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"
@@ -121,7 +125,7 @@ declare
 function ct:decrypt-string-with-aes-symmetric-key-cbc-mode() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
-        crypto:decrypt("51-143-171-200-187-20-34-252-231-243-254-42-36-13-9-123-191-251-243-42-3-238-193-13-155-168-139-67-135-3-143-54", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, "SunJCE")
+        crypto:decrypt("M4+ryLsUIvzn8/4qJA0Je7/78yoD7sENm6iLQ4cDjzY=", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, "SunJCE")
 };
 
 (:~ Symmetric decryption of a string with AES/CBC/PKCS5Padding transformation, 128 bytes key, and default provider. :)
@@ -131,7 +135,7 @@ declare
 function ct:decrypt-string-with-aes-symmetric-key-cbc-mode-default-provider() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
-        crypto:decrypt("51-143-171-200-187-20-34-252-231-243-254-42-36-13-9-123-191-251-243-42-3-238-193-13-155-168-139-67-135-3-143-54", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, ())
+        crypto:decrypt("M4+ryLsUIvzn8/4qJA0Je7/78yoD7sENm6iLQ4cDjzY=", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, ())
 };
 
 (:~ Symmetric decryption of a string with AES transformation (implicit ECB mode), and 128 bytes key. :)
@@ -139,13 +143,13 @@ declare
     %test:name("Symmetric decryption of string, AES")
     %test:assertEquals("Short string for tests.")
 function ct:decrypt-string-with-aes-symmetric-key-ecb-mode() {
-    crypto:decrypt("222-157-20-54-132-99-46-30-73-43-253-148-61-155-86-141-51-56-40-42-31-168-189-56-236-102-58-237-175-171-9-87", "symmetric", "1234567890123456", "AES", (), "SunJCE")
+    crypto:decrypt("3p0UNoRjLh5JK/2UPZtWjTM4KCofqL047GY67a+rCVc=", "symmetric", "1234567890123456", "AES", (), "SunJCE")
 };
 
 (:~ Symmetric encryption of a string with AES/CBC/PKCS5Padding transformation, and 128 bytes key. :)
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding")
-    %test:assertEquals("51-143-171-200-187-20-34-252-231-243-254-42-36-13-9-123-191-251-243-42-3-238-193-13-155-168-139-67-135-3-143-54")
+    %test:assertEquals("M4+ryLsUIvzn8/4qJA0Je7/78yoD7sENm6iLQ4cDjzY=")
 function ct:encrypt-string-with-aes-symmetric-key-cbc-mode() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
@@ -155,7 +159,7 @@ function ct:encrypt-string-with-aes-symmetric-key-cbc-mode() {
 (:~ Symmetric encryption of a string with AES/CBC/PKCS5Padding transformation, 128 bytes key, and default provider. :)
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding, default provider")
-    %test:assertEquals("51-143-171-200-187-20-34-252-231-243-254-42-36-13-9-123-191-251-243-42-3-238-193-13-155-168-139-67-135-3-143-54")
+    %test:assertEquals("M4+ryLsUIvzn8/4qJA0Je7/78yoD7sENm6iLQ4cDjzY=")
 function ct:encrypt-string-with-aes-symmetric-key-cbc-mode-default-provider() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
@@ -165,7 +169,7 @@ function ct:encrypt-string-with-aes-symmetric-key-cbc-mode-default-provider() {
 (:~ Symmetric encryption of a string with AES transformation (implicit ECB mode), and 128 bytes key. :)
 declare
     %test:name("Symmetric encryption of string, AES")
-    %test:assertEquals("222-157-20-54-132-99-46-30-73-43-253-148-61-155-86-141-51-56-40-42-31-168-189-56-236-102-58-237-175-171-9-87")
+    %test:assertEquals("3p0UNoRjLh5JK/2UPZtWjTM4KCofqL047GY67a+rCVc=")
 function ct:encrypt-string-with-aes-symmetric-key-ecb-mode() {
     crypto:encrypt("Short string for tests.", "symmetric", "1234567890123456", "AES", (), "SunJCE")
 };
@@ -173,7 +177,7 @@ function ct:encrypt-string-with-aes-symmetric-key-ecb-mode() {
 (:~ Symmetric encryption of a string with AES/CBC/PKCS5Padding transformation, and wrong key. :)
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding, wrong key")
-    %test:assertError("err:CX19: The secret key is invalid")
+    %test:assertError("crypto:invalid-crypto-key")
 function ct:encrypt-string-with-aes-wrong-symmetric-key-cbc-Mode() {
     let $iv := crypto:hash("initialization vector", "MD5", "")
     return
@@ -183,7 +187,7 @@ function ct:encrypt-string-with-aes-wrong-symmetric-key-cbc-Mode() {
 (:~ Symmetric encryption of a string with AES/CBC/PKCS5Padding transformation, wrong key, and default provider. :)
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding, wrong key, default provider")
-    %test:assertEquals("err:CX19: The secret key is invalid")
+    %test:assertError("crypto:invalid-crypto-key")
 function ct:encrypt-string-with-aes-wrong-symmetric-key-cbc-mode-default-provider() {
     let $iv := crypto:hash("initialization vector", "MD5", "")
     return
@@ -198,6 +202,7 @@ function ct:encrypt-string-with-aes-wrong-symmetric-key-cbc-mode-default-provide
 declare
     %test:name("Generate enveloped digital signature")
     %test:assertEquals("/KaCzo4Syrom78z3EQ5SbbB4sF7ey80etKII864WF64B81uRpH5t9jQTxeEu0ImbzRMqzVDZkVG9xD7nN1kuFw==")
+    %test:pending("Need to find a way to load the keystore.ks correctly from the filesystem")
 function ct:generate-enveloped-digital-signature() {
     let $sample-doc := $ct:doc-1
     let $certificate-details :=
@@ -208,7 +213,7 @@ function ct:generate-enveloped-digital-signature() {
             <private-key-password>kpi135</private-key-password>
             <keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
         </digital-certificate>
-    let $signed-doc := crypto:generate-signature($sample-doc, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped")
+    let $signed-doc := crypto:generate-signature($sample-doc, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped", $certificate-details)
     return
         $signed-doc//*[local-name() = 'P']/text()
 };
@@ -216,9 +221,9 @@ function ct:generate-enveloped-digital-signature() {
 (:~ Hashing a binary by using 'MD5' algorithm. :)
 declare
     %test:name("'MD5' hashing for binary")
-    %test:assertEquals("UI/aOJodA6gtJPitQ6xcJA==")
+    %test:assertEquals("VNwDbnAq3AQR6ZK3Bvwprg==")
 function ct:hash-binary-with-md5() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "MD5", "base64")
 };
@@ -226,9 +231,9 @@ function ct:hash-binary-with-md5() {
 (:~ Hashing a binary by using 'MD5' algorithm and the default format. :)
 declare
     %test:name("'MD5' hashing for binary, default format")
-    %test:assertEquals("UI/aOJodA6gtJPitQ6xcJA==")
+    %test:assertEquals("VNwDbnAq3AQR6ZK3Bvwprg==")
 function ct:hash-binary-with-md5-and-default-format() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "MD5", ())
 };
@@ -236,9 +241,9 @@ function ct:hash-binary-with-md5-and-default-format() {
 (:~ Hashing a binary by using 'SHA-1' algorithm. :)
 declare
     %test:name("'SHA-1' hashing for binary")
-    %test:assertEquals("GyscHvnJKxInsBLgSg/FRAmQXYU=")
+    %test:assertEquals("S2F5A7L9ZAiVm65/aomONS1+3EM=")
 function ct:hash-binary-with-sha1() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-1", "base64")
 };
@@ -246,9 +251,9 @@ function ct:hash-binary-with-sha1() {
 (:~ Hashing a binary by using 'SHA-1' algorithm and the default format. :)
 declare
     %test:name("'SHA-1' hashing for binary, default format")
-    %test:assertEquals("GyscHvnJKxInsBLgSg/FRAmQXYU=")
+    %test:assertEquals("S2F5A7L9ZAiVm65/aomONS1+3EM=")
 function ct:hash-binary-with-sha1-and-default-format() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-1", ())
 };
@@ -256,9 +261,9 @@ function ct:hash-binary-with-sha1-and-default-format() {
 (:~ Hashing a binary by using 'SHA-256' algorithm. :)
 declare
     %test:name("'SHA-256' hashing for binary")
-    %test:assertEquals("37JiNBym250ye3aUJ04RaZg3SFSP03qJ8FR/I1JckVI=")
+    %test:assertEquals("uW6xdcIIbWTjz/j3ypYMNuFqIbD2Iy3wn7+g+qY8VUY=")
 function ct:hash-binary-with-sha256() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-256", "base64")
 };
@@ -266,9 +271,9 @@ function ct:hash-binary-with-sha256() {
 (:~ Hashing a binary by using 'SHA-256' algorithm and the default format. :)
 declare
     %test:name("'SHA-256' hashing for binary, default format")
-    %test:assertEquals("37JiNBym250ye3aUJ04RaZg3SFSP03qJ8FR/I1JckVI=")
+    %test:assertEquals("uW6xdcIIbWTjz/j3ypYMNuFqIbD2Iy3wn7+g+qY8VUY=")
 function ct:hash-binary-with-sha256-and-default-format() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-256", ())
 };
@@ -276,9 +281,9 @@ function ct:hash-binary-with-sha256-and-default-format() {
 (:~ Hashing a binary by using 'SHA-384' algorithm. :)
 declare
     %test:name("'SHA-384' hashing for binary")
-    %test:assertEquals("DcQ3caBftiQCIQn96Pr8PC2vzs17Re0tZ8/CZnOoucu/N+818uqAXxR7l9oxYgoW")
+    %test:assertEquals("lA162A+CFLzsc4PNnskzkFJlw4DE++P9h4Ve83o0CMiGBd1vuR5wNoXQdnPa8fP6")
 function ct:hash-binary-with-sha384() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-384", "base64")
 };
@@ -286,9 +291,9 @@ function ct:hash-binary-with-sha384() {
 (:~ Hashing a string by using 'SHA-384' algorithm and the default format. :)
 declare
     %test:name("'SHA-384' hashing for binary, default format")
-    %test:assertEquals("DcQ3caBftiQCIQn96Pr8PC2vzs17Re0tZ8/CZnOoucu/N+818uqAXxR7l9oxYgoW")
+    %test:assertEquals("lA162A+CFLzsc4PNnskzkFJlw4DE++P9h4Ve83o0CMiGBd1vuR5wNoXQdnPa8fP6")
 function ct:hash-binary-with-sha384-and-default-format() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-384", ())
 };
@@ -296,9 +301,9 @@ function ct:hash-binary-with-sha384-and-default-format() {
 (:~ Hashing a binary by using 'SHA-512' algorithm. :)
 declare
     %test:name("'SHA-512' hashing for binary")
-    %test:assertEquals("Be+hlGy9TNibbaE+6DA2gu6kNj2GS+7b4egFcJDMzQSFQiGgFtTh/mD61ta4pDvc+jqHFlqOyJLHirkROd86Mw==")
+    %test:assertEquals("i1zN/jL9ARygszMlZDdPY1ebyxD8tBNuqRlGEmnJ0cCUvEADUsJAGgVMGJqw9BMCrJWKm13O/NvX4NIFT43ctQ==")
 function ct:hash-binary-with-sha512() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-512", "base64")
 };
@@ -306,9 +311,9 @@ function ct:hash-binary-with-sha512() {
 (:~ Hashing a binary by using 'SHA-512' algorithm and the default format. :)
 declare
     %test:name("'SHA-512' hashing for binary, default format")
-    %test:assertEquals("Be+hlGy9TNibbaE+6DA2gu6kNj2GS+7b4egFcJDMzQSFQiGgFtTh/mD61ta4pDvc+jqHFlqOyJLHirkROd86Mw==")
+    %test:assertEquals("i1zN/jL9ARygszMlZDdPY1ebyxD8tBNuqRlGEmnJ0cCUvEADUsJAGgVMGJqw9BMCrJWKm13O/NvX4NIFT43ctQ==")
 function ct:hash-binary-with-sha512-and-default-format() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-512", ())
 };
@@ -316,9 +321,9 @@ function ct:hash-binary-with-sha512-and-default-format() {
 (:~ Hashing a binary with a wrong algorithm. Test will pass if the correct error is thrown. :)
 declare
     %test:name("Hash binary with wrong algorithm")
-    %test:assertError("err:CX21: The algorithm is not supported.")
+    %test:assertError("crypto:unknown-algorithm")
 function ct:hash-binary-with-wrong-algorithm() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-17", "base64")
 };
@@ -326,9 +331,9 @@ function ct:hash-binary-with-wrong-algorithm() {
 (:~ Hashing a binary with a wrong algorithm and the default format. Test will pass if the correct error is thrown. :)
 declare
     %test:name("Hash binary with wrong algorithm, default format")
-    %test:assertError("err:CX21: The algorithm is not supported.")
+    %test:assertError("crypto:unknown-algorithm")
 function ct:hash-binary-with-wrong-algorithm-and-default-format() {
-    let $input := util:binary-doc("/db/test/keystore.ks")
+    let $input := util:binary-doc("/db/test/ar.bmp")
     return
         crypto:hash($input, "SHA-17", ())
 };
@@ -541,6 +546,7 @@ function ct:hmac-string-with-sha512-and-default-format() {
 declare
     %test:name("Validate enveloped digital signature")
     %test:assertTrue
+    %test:pending("Need to find a way to load the keystore.ks correctly from the filesystem")
 function ct:validate-enveloped-digital-signature() {
     let $input := $ct:doc-1
     let $certificate-details :=
@@ -551,7 +557,7 @@ function ct:validate-enveloped-digital-signature() {
             <private-key-password>kpi135</private-key-password>
             <keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
         </digital-certificate>
-    let $signed-doc := crypto:generate-signature($input, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped")
+    let $signed-doc := crypto:generate-signature($input, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped", $certificate-details)
     return
         crypto:validate-signature($signed-doc)
 };
