@@ -1,364 +1,147 @@
-<?xml version="1.0"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-    eXist-db EXPath Cryptographic library
-    eXist-db wrapper for EXPath Cryptographic Java library
-    Copyright (C) 2016 The eXist-db Authors
+    <parent>
+        <groupId>org.exist-db</groupId>
+        <artifactId>exist-apps-parent</artifactId>
+        <version>2.0.0</version>
+        <relativePath/>
+    </parent>
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public License
-    as published by the Free Software Foundation; either version 2.1
-    of the License, or (at your option) any later version.
+    <groupId>org.exist-db</groupId>
+    <artifactId>exist-crypto</artifactId>
+    <version>7.0.0-SNAPSHOT</version>
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+    <name>EXPath Crypto Module</name>
+    <description>EXPath Cryptographic Module for eXist-db: HMAC, symmetric encryption/decryption, and XML digital signatures using Java JCE</description>
+    <url>https://github.com/eXist-db/exist-crypto</url>
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with this library; if not, write to the Free Software Foundation,
-    Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+    <organization>
+        <name>The eXist-db Authors</name>
+        <url>https://exist-db.org</url>
+    </organization>
 
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License, version 2.1</name>
+            <url>https://opensource.org/licenses/LGPL-2.1</url>
+        </license>
+    </licenses>
 
-	<modelVersion>4.0.0</modelVersion>
+    <scm>
+        <url>https://github.com/eXist-db/exist-crypto.git</url>
+        <connection>scm:git:https://github.com/eXist-db/exist-crypto.git</connection>
+        <developerConnection>scm:git:https://github.com/eXist-db/exist-crypto.git</developerConnection>
+    </scm>
 
-	<parent>
-		<groupId>org.exist-db</groupId>
-		<artifactId>exist-apps-parent</artifactId>
-		<version>1.11.0</version>
-	</parent>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.source>21</project.build.source>
+        <project.build.target>21</project.build.target>
 
-	<groupId>org.exist-db.xquery.extensions.expath</groupId>
-	<artifactId>expath-crypto-module</artifactId>
-	<version>6.0.2-SNAPSHOT</version>
+        <exist.version>7.0.0-SNAPSHOT</exist.version>
 
-	<name>eXist-db EXPath Cryptographic library</name>
-	<description>eXist-db wrapper for EXPath Cryptographic Java library</description>
-	<url>http://expath.org/spec/crypto</url>
-	<inceptionYear>2016</inceptionYear>
+        <!-- used in the EXPath Package Descriptor -->
+        <package-name>http://expath.org/ns/crypto</package-name>
+        <package-abbrev>exist-crypto</package-abbrev>
 
-	<licenses>
-		<license>
-			<name>GNU Lesser General Public License version 2.1</name>
-			<url>https://opensource.org/licenses/LGPL-2.1</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+        <crypto.module.namespace>http://expath.org/ns/crypto</crypto.module.namespace>
+        <crypto.module.java.classname>org.exist.xquery.modules.crypto.CryptoModule</crypto.module.java.classname>
+    </properties>
 
-	<scm>
-		<url>scm:git://github.com/exist-db/expath-crypto-module.git</url>
-		<connection>scm:git:https://github.com/exist-db/expath-crypto-module.git</connection>
-		<developerConnection>scm:git:https://github.com/exist-db/expath-crypto-module.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+    <dependencies>
+        <dependency>
+            <groupId>org.exist-db</groupId>
+            <artifactId>exist-core</artifactId>
+            <version>${exist.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.xmldb-org</groupId>
+            <artifactId>xmldb-api</artifactId>
+            <version>2.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-	<organization>
-		<name>The eXist-db Project</name>
-		<url>https://exist-db.org</url>
-	</organization>
+    <profiles>
+        <profile>
+            <id>integration-tests</id>
+            <dependencies>
+                <!-- Override provided scope so transitive deps (Saxon, etc.) are on test classpath -->
+                <dependency>
+                    <groupId>org.exist-db</groupId>
+                    <artifactId>exist-core</artifactId>
+                    <version>${exist.version}</version>
+                    <scope>compile</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.exist-db</groupId>
+                    <artifactId>exist-start</artifactId>
+                    <version>${exist.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <version>4.13.2</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
-	<developers>
-		<developer>
-			<id>claudius</id>
-			<name>Claudius Teodorescu</name>
-			<email>claudius.teodorescu@gmail.com</email>
-		</developer>
-		<developer>
-			<id>olaf</id>
-			<name>Olaf Schreck</name>
-			<email>olaf@existsolutions.com</email>
-		</developer>
-		<developer>
-			<id>adamretter</id>
-			<name>Adam Retter</name>
-			<email>adam@evolvedbinary.com</email>
-			<organization>Evolved Binary</organization>
-			<organizationUrl>https://www.evolvedbinary.com</organizationUrl>
-		</developer>
-	</developers>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>ro.kuberam.maven.plugins</groupId>
+                <artifactId>kuberam-expath-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <!-- exist-start is needed at runtime for the embedded test server
+                         but not directly referenced in code -->
+                    <ignoredUnusedDeclaredDependencies>
+                        <ignoredUnusedDeclaredDependency>org.exist-db:exist-start</ignoredUnusedDeclaredDependency>
+                    </ignoredUnusedDeclaredDependencies>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	<contributors>
-		<contributor>
-			<name>Juri Leino</name>
-			<email>juri@existsolutions.com</email>
-		</contributor>
-		<contributor>
-			<name>Joseph Wicentowski</name>
-			<email>joewiz@gmail.com</email>
-		</contributor>
-	</contributors>
-
-	<properties>
-		<package.title>EXPath Cryptographic Module Implementation</package.title>
-		<crypto.java.lib.version>1.8.0</crypto.java.lib.version>
-		<exist.version>5.3.0</exist.version>
-		<crypto.module.ns>http://expath.org/ns/crypto</crypto.module.ns>
-		<crypto.module.java.class>org.expath.exist.crypto.ExistExpathCryptoModule</crypto.module.java.class>
-		<package-abbrev>crypto</package-abbrev>
-		<package-name>${crypto.module.ns}</package-name>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.expath.crypto</groupId>
-			<artifactId>crypto-java</artifactId>
-			<version>${crypto.java.lib.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.exist-db</groupId>
-			<artifactId>exist-core</artifactId>
-			<version>${exist.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>xml-apis</groupId>
-			<artifactId>xml-apis</artifactId>
-			<version>1.4.01</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.evolvedbinary.j8fu</groupId>
-			<artifactId>j8fu</artifactId>
-			<version>1.23.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>jsr305</artifactId>
-			<version>3.0.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.10.0</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-	</dependencies>
-
-	<build>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>false</filtering>
-			</testResource>
-			<testResource>
-				<directory>src/test/resources-filtered</directory>
-				<filtering>true</filtering>
-			</testResource>
-		</testResources>
-
-		<plugins>
-			<plugin>
-				<groupId>com.mycila</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<version>4.1</version>
-				<configuration>
-					<failIfMissing>true</failIfMissing>
-					<aggregate>true</aggregate>
-					<strictCheck>false</strictCheck>
-					<licenseSets>
-
-						<!-- this enforces the original Copyright and License -->
-						<licenseSet>
-							<header>LGPL2.1-template.txt</header>
-							<properties>
-								<owner>${project.organization.name}</owner>
-								<organization>Claudius Teodorescu</organization>
-								<url>${project.organization.url}</url>
-							</properties>
-							<excludes>
-								<exclude>.github/**</exclude>
-								<exclude>README.md</exclude>
-								<exclude>LICENSE</exclude>
-								<exclude>xquery-license-style.xml</exclude>
-								<exclude>src/main/resources/**</exclude>
-								<exclude>src/markdown-page-generator/**</exclude>
-								<exclude>src/test/resources/**</exclude>
-								<exclude>src/test/resources-filtered/**</exclude>
-
-								<!-- files now authored by the EXPath project (see below) -->
-								<exclude>pom.xml</exclude>
-								<exclude>src/test/java/xquery/crypto/CryptoIT.java</exclude>
-							</excludes>
-						</licenseSet>
-
-						<!-- this enforces the EXPath Copyright and License on newer files -->
-						<licenseSet>
-							<header>LGPL2.1-template.txt</header>
-							<properties>
-								<owner>${project.organization.name}</owner>
-								<organization>The eXist-db Authors</organization>
-								<url>${project.organization.url}</url>
-							</properties>
-							<includes>
-								<include>pom.xml</include>
-								<include>src/test/java/xquery/crypto/CryptoIT.java</include>
-								<!-- include>src/test/java/ro/kuberam/libs/java/crypto/TestUtils.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashBinaryTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashBinaryWithWrongAlgorithmTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashLargeBinaryTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashLargeStringTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashStringTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashStringWithWrongAlgorithmTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HMACBinaryTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HMACLargeBinaryTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HMACLargeStringTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HMACStringTest.java</include -->
-							</includes>
-						</licenseSet>
-					</licenseSets>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.2</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-						<manifestEntries>
-							<Build-Tag>${build-tag}</Build-Tag>
-							<Git-Commit>${build-commit}</Git-Commit>
-							<Git-Commit-Abbrev>${build-commit-abbrev}</Git-Commit-Abbrev>
-							<Build-Version>${build-version}</Build-Version>
-							<Build-Timestamp>${build-tstamp}</Build-Timestamp>
-							<Source-Repository>${project.scm.connection}</Source-Repository>
-							<Description>${project.description}</Description>
-							<Implementation-URL>${project.url}</Implementation-URL>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.0.0-M5</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.ruleoftech</groupId>
-				<artifactId>markdown-page-generator-plugin</artifactId>
-				<version>2.3.0</version>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<inputDirectory>${project.basedir}</inputDirectory>
-					<headerHtmlFile>${project.basedir}/src/markdown-page-generator/header.html</headerHtmlFile>
-					<footerHtmlFile>${project.basedir}/src/markdown-page-generator/footer.html</footerHtmlFile>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.coderplus.maven.plugins</groupId>
-				<artifactId>copy-rename-maven-plugin</artifactId>
-				<version>1.0.1</version>
-				<executions>
-					<execution>
-						<id>rename-readme-file</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>rename</goal>
-						</goals>
-						<configuration>
-							<sourceFile>${project.build.directory}/html/README.html</sourceFile>
-							<destinationFile>${project.build.directory}/html/index.html</destinationFile>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>ro.kuberam.maven.plugins</groupId>
-				<artifactId>kuberam-expath-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>create-xar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>make-xar</goal>
-						</goals>
-						<configuration>
-							<descriptor>xar-assembly.xml</descriptor>
-							<finalName>${package-final-name}</finalName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<configuration>
-					<useAgent>true</useAgent>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<mavenExecutorId>forked-path</mavenExecutorId> <!-- avoid a bug with GPG plugin hanging http://jira.codehaus.org/browse/MGPG-9 -->
-					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<tagNameFormat>@{project.version}</tagNameFormat>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>de.jutzig</groupId>
-				<artifactId>github-release-plugin</artifactId>
-				<version>1.4.0</version>
-				<executions>
-				  <execution>
-					<id>github-upload</id>
-					<phase>deploy</phase>
-					<goals>
-					  <goal>release</goal>
-					</goals>
-					<inherited>false</inherited>
-					<configuration>
-						<description>eXist implementation for EXPath Cryptographic Module</description>
-						<releaseName>v6.0.0</releaseName>
-						<tag>${project.version}</tag>
-					  <fileSets>
-						<fileSet>
-						  <directory>${project.build.directory}</directory>
-						  <includes>
-							<include>${project.artifactId}*.xar</include>
-						  </includes>
-						</fileSet>
-					  </fileSets>
-					</configuration>
-				  </execution>
-				</executions>
-			  </plugin>			
-		</plugins>
-	</build>
-
+    <repositories>
+        <repository>
+            <id>exist-db</id>
+            <name>eXist-db Releases</name>
+            <url>https://repo.exist-db.org/repository/exist-db/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>exist-db-snapshots</id>
+            <name>eXist-db Snapshots</name>
+            <url>https://repo.exist-db.org/repository/exist-db-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

@@ -1,67 +1,70 @@
-<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://expath.org/ns/pkg"
+         name="${package-name}"
+         abbrev="${package-abbrev}"
+         version="${project.version}"
+         spec="1.0">
+    <title>${project.name}</title>
+    <description>${project.description}</description>
+    <author id="exist-db">${project.organization.name}</author>
+    <website>${project.url}</website>
+    <license>GNU Lesser General Public License, version 2.1</license>
+    <copyright>true</copyright>
 
-    eXist-db EXPath Cryptographic library
-    eXist-db wrapper for EXPath Cryptographic Java library
-    Copyright (C) 2016 Claudius Teodorescu
+    <type>library</type>
 
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public License
-    as published by the Free Software Foundation; either version 2.1
-    of the License, or (at your option) any later version.
+    <status>stable</status>
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU Lesser General Public License for more details.
+    <tag>${project.artifactId}</tag>
+    <tag>crypto</tag>
+    <tag>hmac</tag>
+    <tag>encryption</tag>
+    <tag>xml-signature</tag>
+    <tag>expath</tag>
+    <category id="libs">Libraries</category>
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with this library; if not, write to the Free Software Foundation,
-    Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+    <dependency processor="http://exist-db.org" semver-min="6.2.0"/>
 
--->
-<package xmlns="http://expath.org/ns/pkg" name="${package-name}" abbrev="${package-abbrev}"
-	version="${project.version}" spec="1.0">
-	<title>${package-title}</title>
-	<author id="cteodorescu">Claudius Teodorescu</author>
-	<website>${project.url}</website>
-	<license>GNU LGPL v2.1</license>
-	<copyright>true</copyright>
-	<type>library</type>
-	<status>stable</status>
-	<tag>${project.artifactId}</tag>
-	<tag>expath</tag>
-	<tag>library</tag>
-	<tag>exist</tag>
-	<category id="libs">Libraries</category>
-	<category id="exist">eXist extensions</category>
-	<dependency processor="http://exist-db.org" semver-min="${exist.version}" />
-	<dependencySets>
-		<dependencySet>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>${project.artifactId}</artifactId>
-			<version>${project.version}</version>
-			<outputFileNameMapping>${project.artifactId}-exist-java-lib-${project.version}.jar</outputFileNameMapping>
-		</dependencySet>
-		<dependencySet>
-			<groupId>org.expath.crypto</groupId>
-			<artifactId>crypto-java</artifactId>
-			<version>${crypto.java.lib.version}</version>
-			<outputFileNameMapping>crypto-java-lib-${crypto.java.lib.version}.jar</outputFileNameMapping>
-		</dependencySet>
-	</dependencySets>
-	<components>
-		<resource>
-			<public-uri>${crypto.module.ns}</public-uri>
-			<file>urn:java:class:${crypto.module.java.class}</file>
-		</resource>
-	</components>
-	<fileSets>
-		<fileSet>
-			<directory>${project.build.directory}/html</directory>
-			<outputDirectory>/</outputDirectory>
-			<includes>
-				<include>index.html</include>
-			</includes>
-		</fileSet>
-	</fileSets>
+    <target>${package-abbrev}</target>
+
+    <fileSets>
+        <fileSet>
+            <directory>${basedir}</directory>
+            <includes>
+                <include>README.md</include>
+                <include>LICENSE</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+    <!-- include the Java module JAR from this project -->
+    <dependencySets>
+        <dependencySet>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.artifactId}</artifactId>
+            <version>${project.version}</version>
+        </dependencySet>
+    </dependencySets>
+
+    <!-- register the Java module to eXist-db -->
+    <components>
+        <resource>
+            <public-uri>${crypto.module.namespace}</public-uri>
+            <file>urn:java:class:${crypto.module.java.classname}</file>
+        </resource>
+    </components>
+
+    <changelog>
+        <change xmlns="http://exist-db.org/xquery/repo" version="7.0.0">
+            <ul xmlns="http://www.w3.org/1999/xhtml">
+                <li>Complete rewrite using Java JCE (no external dependencies)</li>
+                <li>Drop-in replacement for expath-crypto-module 6.x</li>
+                <li>All old arities preserved for backward compatibility</li>
+                <li>Binary input support for crypto:hmac</li>
+                <li>BaseX-compatible function signatures</li>
+                <li>102 tests (JUnit + XQSuite)</li>
+                <li>Requires Java 17+ and eXist-db 7.0+</li>
+            </ul>
+        </change>
+    </changelog>
 </package>

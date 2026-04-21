@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Test conf.xml for exist-crypto.
+    Includes the standard modules that xqsuite depends on,
+    plus the crypto module under test.
+-->
+<exist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="schema/conf.xsd">
+
+    <db-connection cacheSize="256M" collectionCache="256M" database="native"
+                   files="data" pageSize="4096" nodesBuffer="-1">
+        <default-permissions collection="0775" resource="0775"/>
+        <pool max="20" min="1" sync-period="120000" wait-before-shutdown="120000"/>
+        <recovery enabled="no" journal-dir="data"/>
+    </db-connection>
+
+    <xquery enable-java-binding="no" enable-query-rewriting="yes"
+            backwardCompatible="no" enforce-index-use="always"
+            raise-error-on-failed-retrieval="no">
+        <builtin-modules>
+            <!-- Standard modules required by xqsuite -->
+            <module uri="http://www.w3.org/2005/xpath-functions/map"
+                    class="org.exist.xquery.functions.map.MapModule"/>
+            <module uri="http://www.w3.org/2005/xpath-functions/array"
+                    class="org.exist.xquery.functions.array.ArrayModule"/>
+            <module uri="http://exist-db.org/xquery/util"
+                    class="org.exist.xquery.functions.util.UtilModule">
+                <parameter name="moduleLoadPath" value=""/>
+            </module>
+            <module uri="http://exist-db.org/xquery/system"
+                    class="org.exist.xquery.functions.system.SystemModule"/>
+            <module uri="http://exist-db.org/xquery/xmldb"
+                    class="org.exist.xquery.functions.xmldb.XMLDBModule">
+                <parameter name="moduleLoadPath" value=""/>
+            </module>
+            <module uri="http://exist-db.org/xquery/inspection"
+                    class="org.exist.xquery.functions.inspect.InspectionModule"/>
+
+            <!-- Crypto module under test -->
+            <module uri="http://expath.org/ns/crypto"
+                    class="org.exist.xquery.modules.crypto.CryptoModule"/>
+        </builtin-modules>
+    </xquery>
+
+</exist>

@@ -1,9 +1,8 @@
 target/
-.DS_Store
 *.iml
 .idea/
-.classpath
+.settings/
 .project
-.settings
-.vscode
-
+.classpath
+*.swp
+*~

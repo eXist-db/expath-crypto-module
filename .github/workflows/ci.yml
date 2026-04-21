@@ -13,24 +13,33 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        jdk: [1.8, 9, 11, 15]
+        jdk: [21]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK
-        uses: actions/setup-java@v1
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.jdk }}
+          distribution: zulu
+
       - name: Cache Maven packages
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
-          path: ~/.m2
+          path: ~/.m2/repository
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Maven Build
-        run: mvn -V -B -DskipTests=true install
-      - name: Maven Test
-        run: mvn -B verify
-#      - name: Maven Code Coverage
-#        if: ${{ github.ref == 'refs/heads/main' && matrix.jdk == '1.8' && matrix.os == 'ubuntu-latest' }}
-#        run: mvn -B jacoco:report coveralls:report -DrepoToken=${{ secrets.COVERALLS_TOKEN }}
+
+      - name: Clone and build eXist-db (SNAPSHOT dependency)
+        shell: bash
+        run: |
+          git clone --depth 1 https://github.com/eXist-db/exist.git "$RUNNER_TEMP/exist-db"
+          cd "$RUNNER_TEMP/exist-db"
+          mvn -V -B -DskipTests -Ddependency-check.skip=true -Ddocker=false -pl exist-core,exist-start -am install
+
+      - name: Build
+        run: mvn -V -B -DskipTests install
+
+      - name: Test
+        run: mvn -B verify -Pintegration-tests
