@@ -107,16 +107,18 @@ public class GenerateSignatureFunction extends BasicFunction {
 
     public static final FunctionSignature[] FS_GENERATE_SIGNATURE = functionSignatures(
             CryptoModule.qname(FS_NAME),
-            "Generates an XML digital signature for the given node. " +
-                    "Uses a generated key pair (RSA or DSA) and returns the signed document.",
+            """
+            Generates an XML digital signature for the given node. \
+            Uses a generated key pair (RSA or DSA) and returns the signed document.""",
             returns(Type.NODE, "the signed XML document"),
             arities(
                     // 6-param: generated key pair
                     arity(
                             param("data", Type.NODE, "The XML node to sign."),
                             param("canonicalization", Type.STRING,
-                                    "Canonicalization: 'inclusive', 'inclusive-with-comments', " +
-                                            "'exclusive', or 'exclusive-with-comments'."),
+                                    """
+                                    Canonicalization: 'inclusive', 'inclusive-with-comments', \
+                                    'exclusive', or 'exclusive-with-comments'."""),
                             param("digest", Type.STRING,
                                     "Digest algorithm: 'SHA1', 'SHA256', or 'SHA512'."),
                             param("signature", Type.STRING,
@@ -148,8 +150,9 @@ public class GenerateSignatureFunction extends BasicFunction {
                             param("xpath-expression", Type.ANY_TYPE,
                                     "XPath expression selecting the subset to sign."),
                             param("digital-certificate", Type.ANY_TYPE,
-                                    "Certificate details element with keystore-type, keystore-password, " +
-                                            "key-alias, private-key-password, keystore-uri.")
+                                    """
+                                    Certificate details element with keystore-type, keystore-password, \
+                                    key-alias, private-key-password, keystore-uri.""")
                     ),
                     // 3-param: simplified RSA signing with private key
                     arity(
@@ -163,9 +166,10 @@ public class GenerateSignatureFunction extends BasicFunction {
                     arity(
                             param("data", Type.NODE, "The XML node to sign."),
                             param("parameters", Type.MAP_ITEM,
-                                    "Map with keys: canonicalization-algorithm, digest-algorithm, " +
-                                    "signature-algorithm, signature-namespace-prefix, signature-type, " +
-                                    "key (optional base64 private key).")
+                                    """
+                                    Map with keys: canonicalization-algorithm, digest-algorithm, \
+                                    signature-algorithm, signature-namespace-prefix, signature-type, \
+                                    key (optional base64 private key).""")
                     )
             )
     );

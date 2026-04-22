@@ -78,8 +78,9 @@ public class HmacFunction extends BasicFunction {
 
     public static final FunctionSignature[] FS_HMAC = functionSignatures(
             CryptoModule.qname(FS_HMAC_NAME),
-            "Calculates the HMAC (keyed-hash message authentication code) of the given data " +
-                    "using the specified key and algorithm.",
+            """
+            Calculates the HMAC (keyed-hash message authentication code) of the given data \
+            using the specified key and algorithm.""",
             returns(Type.STRING, "the HMAC value"),
             arities(
                     arity(

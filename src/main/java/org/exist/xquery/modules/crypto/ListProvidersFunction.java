@@ -75,8 +75,9 @@ public class ListProvidersFunction extends BasicFunction {
 
     public static final FunctionSignature[] FS_LIST_PROVIDERS = functionSignatures(
             CryptoModule.qname(FS_LIST_PROVIDERS_NAME),
-            "Returns a map of installed cryptographic providers. Each key is the provider " +
-                    "name, and the value is a map with 'version' and 'info' entries.",
+            """
+            Returns a map of installed cryptographic providers. Each key is the provider \
+            name, and the value is a map with 'version' and 'info' entries.""",
             returns(Type.MAP_ITEM, "map of provider name to details"),
             arities(
                     arity()

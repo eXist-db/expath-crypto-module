@@ -75,20 +75,25 @@ public class HashFunction extends BasicFunction {
 
     public static final FunctionSignature[] FS_HASH = functionSignatures(
             CryptoModule.qname(FS_HASH_NAME),
-            "Computes the hash of the given data using the specified algorithm. " +
-                    "For new code, prefer fn:hash() (XQuery 4.0) or util:hash(). " +
-                    "crypto:hash is provided for backward compatibility and cross-engine portability.",
+            """
+            Computes the hash of the given data using the specified algorithm. \
+            For new code, prefer fn:hash() (XQuery 4.0) or util:hash(). \
+            crypto:hash is provided for backward compatibility and cross-engine portability.""",
             returns(Type.STRING, "the hash value as a base64 or hex string"),
             arities(
                     arity(
-                            param("data", Type.ITEM, "The data to hash " +
-                                    "(xs:string, xs:base64Binary, xs:hexBinary, or node)."),
+                            param("data", Type.ITEM,
+                                    """
+                                    The data to hash \
+                                    (xs:string, xs:base64Binary, xs:hexBinary, or node)."""),
                             param("algorithm", Type.STRING,
                                     "The hash algorithm: MD5, SHA-1, SHA-256, SHA-384, or SHA-512.")
                     ),
                     arity(
-                            param("data", Type.ITEM, "The data to hash " +
-                                    "(xs:string, xs:base64Binary, xs:hexBinary, or node)."),
+                            param("data", Type.ITEM,
+                                    """
+                                    The data to hash \
+                                    (xs:string, xs:base64Binary, xs:hexBinary, or node)."""),
                             param("algorithm", Type.STRING,
                                     "The hash algorithm: MD5, SHA-1, SHA-256, SHA-384, or SHA-512."),
                             param("encoding", Type.STRING,

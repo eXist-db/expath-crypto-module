@@ -118,9 +118,10 @@ public class CryptoModuleTest {
     public void encryptDecryptAesRoundTrip() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $key := '0123456789abcdef'\n" +
-                "let $encrypted := crypto:encrypt('secret message', 'symmetric', $key, 'AES')\n" +
-                "return crypto:decrypt($encrypted, 'symmetric', $key, 'AES')");
+                """
+                let $key := '0123456789abcdef'
+                let $encrypted := crypto:encrypt('secret message', 'symmetric', $key, 'AES')
+                return crypto:decrypt($encrypted, 'symmetric', $key, 'AES')""");
         assertEquals("AES round-trip should preserve plaintext",
                 "secret message", result.getResource(0).getContent().toString());
     }
@@ -129,9 +130,10 @@ public class CryptoModuleTest {
     public void encryptDecryptDesRoundTrip() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $key := '12345678'\n" +
-                "let $encrypted := crypto:encrypt('hello DES', 'symmetric', $key, 'DES')\n" +
-                "return crypto:decrypt($encrypted, 'symmetric', $key, 'DES')");
+                """
+                let $key := '12345678'
+                let $encrypted := crypto:encrypt('hello DES', 'symmetric', $key, 'DES')
+                return crypto:decrypt($encrypted, 'symmetric', $key, 'DES')""");
         assertEquals("DES round-trip should preserve plaintext",
                 "hello DES", result.getResource(0).getContent().toString());
     }
@@ -139,11 +141,9 @@ public class CryptoModuleTest {
     @Test
     public void encryptProducesDifferentOutputEachTime() throws XMLDBException {
         final ResourceSet result1 = existEmbeddedServer.executeQuery(
-                CRYPTO_IMPORT +
-                "crypto:encrypt('test', 'symmetric', '0123456789abcdef', 'AES')");
+                CRYPTO_IMPORT + "crypto:encrypt('test', 'symmetric', '0123456789abcdef', 'AES')");
         final ResourceSet result2 = existEmbeddedServer.executeQuery(
-                CRYPTO_IMPORT +
-                "crypto:encrypt('test', 'symmetric', '0123456789abcdef', 'AES')");
+                CRYPTO_IMPORT + "crypto:encrypt('test', 'symmetric', '0123456789abcdef', 'AES')");
         // Due to random IV, encryptions of the same plaintext should differ
         final String enc1 = result1.getResource(0).getContent().toString();
         final String enc2 = result2.getResource(0).getContent().toString();
@@ -158,10 +158,11 @@ public class CryptoModuleTest {
     public void generateAndValidateSignature() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $doc := <root><data>test</data></root>\n" +
-                "let $signed := crypto:generate-signature($doc, 'inclusive', 'SHA256', " +
-                "'RSA_SHA256', 'dsig', 'enveloped')\n" +
-                "return crypto:validate-signature($signed)");
+                """
+                let $doc := <root><data>test</data></root>
+                let $signed := crypto:generate-signature($doc, 'inclusive', 'SHA256', \
+                'RSA_SHA256', 'dsig', 'enveloped')
+                return crypto:validate-signature($signed)""");
         assertEquals("Signature should validate",
                 "true", result.getResource(0).getContent().toString());
     }
@@ -170,10 +171,11 @@ public class CryptoModuleTest {
     public void generateSignatureProducesSignatureElement() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $doc := <root><data>test</data></root>\n" +
-                "let $signed := crypto:generate-signature($doc, 'exclusive', 'SHA1', " +
-                "'RSA_SHA256', 'ds', 'enveloped')\n" +
-                "return exists($signed//*[local-name() = 'Signature'])");
+                """
+                let $doc := <root><data>test</data></root>
+                let $signed := crypto:generate-signature($doc, 'exclusive', 'SHA1', \
+                'RSA_SHA256', 'ds', 'enveloped')
+                return exists($signed//*[local-name() = 'Signature'])""");
         assertEquals("Signed document should contain Signature element",
                 "true", result.getResource(0).getContent().toString());
     }
@@ -182,14 +184,15 @@ public class CryptoModuleTest {
     public void validateTamperedSignatureFails() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $doc := <root><data>test</data></root>\n" +
-                "let $signed := crypto:generate-signature($doc, 'inclusive', 'SHA256', " +
-                "'RSA_SHA256', 'dsig', 'enveloped')\n" +
-                "(: Tamper with the document by changing a text node :)\n" +
-                "let $tampered := " +
-                "  <root>{for $n in $signed/root/node() " +
-                "         return if ($n/self::data) then <data>TAMPERED</data> else $n}</root>\n" +
-                "return crypto:validate-signature($tampered)");
+                """
+                let $doc := <root><data>test</data></root>
+                let $signed := crypto:generate-signature($doc, 'inclusive', 'SHA256', \
+                'RSA_SHA256', 'dsig', 'enveloped')
+                (: Tamper with the document by changing a text node :)
+                let $tampered :=
+                  <root>{for $n in $signed/root/node()
+                         return if ($n/self::data) then <data>TAMPERED</data> else $n}</root>
+                return crypto:validate-signature($tampered)""");
         assertEquals("Tampered signature should not validate",
                 "false", result.getResource(0).getContent().toString());
     }
@@ -364,9 +367,10 @@ public class CryptoModuleTest {
     public void encryptDecryptEmptyString() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $key := '0123456789abcdef'\n" +
-                "let $enc := crypto:encrypt('', 'symmetric', $key, 'AES')\n" +
-                "return crypto:decrypt($enc, 'symmetric', $key, 'AES')");
+                """
+                let $key := '0123456789abcdef'
+                let $enc := crypto:encrypt('', 'symmetric', $key, 'AES')
+                return crypto:decrypt($enc, 'symmetric', $key, 'AES')""");
         assertEquals("Round-trip of empty string",
                 "", result.getResource(0).getContent().toString());
     }
@@ -375,11 +379,12 @@ public class CryptoModuleTest {
     public void encryptDecryptLongMessage() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $key := '0123456789abcdef'\n" +
-                "let $data := string-join(for $i in 1 to 100 return 'This is a long message. ', '')\n" +
-                "let $enc := crypto:encrypt($data, 'symmetric', $key, 'AES')\n" +
-                "let $dec := crypto:decrypt($enc, 'symmetric', $key, 'AES')\n" +
-                "return $dec = $data");
+                """
+                let $key := '0123456789abcdef'
+                let $data := string-join(for $i in 1 to 100 return 'This is a long message. ', '')
+                let $enc := crypto:encrypt($data, 'symmetric', $key, 'AES')
+                let $dec := crypto:decrypt($enc, 'symmetric', $key, 'AES')
+                return $dec = $data""");
         assertEquals("Round-trip of long message should preserve content",
                 "true", result.getResource(0).getContent().toString());
     }
@@ -389,10 +394,11 @@ public class CryptoModuleTest {
         // Use BMP characters only (supplementary chars get XML-escaped through XMLDB API)
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $key := '0123456789abcdef'\n" +
-                "let $data := '\u00e9\u00e0\u00fc\u00f6 \u4e16\u754c'\n" +
-                "let $enc := crypto:encrypt($data, 'symmetric', $key, 'AES')\n" +
-                "return crypto:decrypt($enc, 'symmetric', $key, 'AES')");
+                """
+                let $key := '0123456789abcdef'
+                let $data := '\u00e9\u00e0\u00fc\u00f6 \u4e16\u754c'
+                let $enc := crypto:encrypt($data, 'symmetric', $key, 'AES')
+                return crypto:decrypt($enc, 'symmetric', $key, 'AES')""");
         assertEquals("Unicode round-trip should work",
                 "\u00e9\u00e0\u00fc\u00f6 \u4e16\u754c",
                 result.getResource(0).getContent().toString());
@@ -402,9 +408,10 @@ public class CryptoModuleTest {
     public void encryptDecryptAes24ByteKey() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $key := '012345678901234567890123'\n" +
-                "let $enc := crypto:encrypt('test', 'symmetric', $key, 'AES')\n" +
-                "return crypto:decrypt($enc, 'symmetric', $key, 'AES')");
+                """
+                let $key := '012345678901234567890123'
+                let $enc := crypto:encrypt('test', 'symmetric', $key, 'AES')
+                return crypto:decrypt($enc, 'symmetric', $key, 'AES')""");
         assertEquals("AES-192 round-trip should work",
                 "test", result.getResource(0).getContent().toString());
     }
@@ -413,9 +420,10 @@ public class CryptoModuleTest {
     public void encryptDecryptAes32ByteKey() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $key := '01234567890123456789012345678901'\n" +
-                "let $enc := crypto:encrypt('test', 'symmetric', $key, 'AES')\n" +
-                "return crypto:decrypt($enc, 'symmetric', $key, 'AES')");
+                """
+                let $key := '01234567890123456789012345678901'
+                let $enc := crypto:encrypt('test', 'symmetric', $key, 'AES')
+                return crypto:decrypt($enc, 'symmetric', $key, 'AES')""");
         assertEquals("AES-256 round-trip should work",
                 "test", result.getResource(0).getContent().toString());
     }
@@ -423,30 +431,28 @@ public class CryptoModuleTest {
     @Test(expected = XMLDBException.class)
     public void encryptInvalidKeySizeThrows() throws XMLDBException {
         existEmbeddedServer.executeQuery(
-                CRYPTO_IMPORT +
-                "crypto:encrypt('test', 'symmetric', 'short', 'AES')");
+                CRYPTO_IMPORT + "crypto:encrypt('test', 'symmetric', 'short', 'AES')");
     }
 
     @Test(expected = XMLDBException.class)
     public void encryptUnsupportedAlgorithmThrows() throws XMLDBException {
         existEmbeddedServer.executeQuery(
-                CRYPTO_IMPORT +
-                "crypto:encrypt('test', 'symmetric', '0123456789abcdef', 'BLOWFISH')");
+                CRYPTO_IMPORT + "crypto:encrypt('test', 'symmetric', '0123456789abcdef', 'BLOWFISH')");
     }
 
     @Test(expected = XMLDBException.class)
     public void encryptUnsupportedTypeThrows() throws XMLDBException {
         existEmbeddedServer.executeQuery(
-                CRYPTO_IMPORT +
-                "crypto:encrypt('test', 'asymmetric', '0123456789abcdef', 'AES')");
+                CRYPTO_IMPORT + "crypto:encrypt('test', 'asymmetric', '0123456789abcdef', 'AES')");
     }
 
     @Test(expected = XMLDBException.class)
     public void decryptWrongKeyThrows() throws XMLDBException {
         existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $enc := crypto:encrypt('test', 'symmetric', '0123456789abcdef', 'AES')\n" +
-                "return crypto:decrypt($enc, 'symmetric', 'fedcba9876543210', 'AES')");
+                """
+                let $enc := crypto:encrypt('test', 'symmetric', '0123456789abcdef', 'AES')
+                return crypto:decrypt($enc, 'symmetric', 'fedcba9876543210', 'AES')""");
     }
 
     // ===== XML Signature edge cases =====
@@ -457,10 +463,11 @@ public class CryptoModuleTest {
         // may fail due to namespace context changes, so we just verify the signature is produced
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $doc := <root xmlns:ns='http://example.com'><ns:data>test</ns:data></root>\n" +
-                "let $signed := crypto:generate-signature($doc, 'exclusive', 'SHA256', " +
-                "'RSA_SHA256', 'dsig', 'enveloped')\n" +
-                "return exists($signed//*[local-name() = 'Signature'])");
+                """
+                let $doc := <root xmlns:ns='http://example.com'><ns:data>test</ns:data></root>
+                let $signed := crypto:generate-signature($doc, 'exclusive', 'SHA256', \
+                'RSA_SHA256', 'dsig', 'enveloped')
+                return exists($signed//*[local-name() = 'Signature'])""");
         assertEquals("Exclusive c14n should produce Signature element",
                 "true", result.getResource(0).getContent().toString());
     }
@@ -469,10 +476,11 @@ public class CryptoModuleTest {
     public void signatureWithInclusiveWithComments() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $doc := <root><data>test</data></root>\n" +
-                "let $signed := crypto:generate-signature($doc, 'inclusive-with-comments', 'SHA256', " +
-                "'RSA_SHA256', 'dsig', 'enveloped')\n" +
-                "return crypto:validate-signature($signed)");
+                """
+                let $doc := <root><data>test</data></root>
+                let $signed := crypto:generate-signature($doc, 'inclusive-with-comments', 'SHA256', \
+                'RSA_SHA256', 'dsig', 'enveloped')
+                return crypto:validate-signature($signed)""");
         assertEquals("Inclusive-with-comments signature should validate",
                 "true", result.getResource(0).getContent().toString());
     }
@@ -481,18 +489,19 @@ public class CryptoModuleTest {
     public void signatureWithComplexDocument() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $doc :=\n" +
-                "  <order id='12345'>\n" +
-                "    <customer name='Alice'/>\n" +
-                "    <items>\n" +
-                "      <item sku='A001' qty='2'>Widget</item>\n" +
-                "      <item sku='B002' qty='1'>Gadget</item>\n" +
-                "    </items>\n" +
-                "    <total currency='USD'>99.99</total>\n" +
-                "  </order>\n" +
-                "let $signed := crypto:generate-signature($doc, 'inclusive', 'SHA256', " +
-                "'RSA_SHA256', 'sig', 'enveloped')\n" +
-                "return crypto:validate-signature($signed)");
+                """
+                let $doc :=
+                  <order id='12345'>
+                    <customer name='Alice'/>
+                    <items>
+                      <item sku='A001' qty='2'>Widget</item>
+                      <item sku='B002' qty='1'>Gadget</item>
+                    </items>
+                    <total currency='USD'>99.99</total>
+                  </order>
+                let $signed := crypto:generate-signature($doc, 'inclusive', 'SHA256', \
+                'RSA_SHA256', 'sig', 'enveloped')
+                return crypto:validate-signature($signed)""");
         assertEquals("Complex document signature should validate",
                 "true", result.getResource(0).getContent().toString());
     }
@@ -501,23 +510,24 @@ public class CryptoModuleTest {
     public void signatureUnsupportedDigestThrows() throws XMLDBException {
         existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "crypto:generate-signature(<root/>, 'inclusive', 'MD5', " +
-                "'RSA_SHA256', 'dsig', 'enveloped')");
+                """
+                crypto:generate-signature(<root/>, 'inclusive', 'MD5', \
+                'RSA_SHA256', 'dsig', 'enveloped')""");
     }
 
     @Test(expected = XMLDBException.class)
     public void signatureUnsupportedCanonicalizationThrows() throws XMLDBException {
         existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "crypto:generate-signature(<root/>, 'bogus', 'SHA256', " +
-                "'RSA_SHA256', 'dsig', 'enveloped')");
+                """
+                crypto:generate-signature(<root/>, 'bogus', 'SHA256', \
+                'RSA_SHA256', 'dsig', 'enveloped')""");
     }
 
     @Test(expected = XMLDBException.class)
     public void validateNoSignatureThrows() throws XMLDBException {
         existEmbeddedServer.executeQuery(
-                CRYPTO_IMPORT +
-                "crypto:validate-signature(<root><data>no sig here</data></root>)");
+                CRYPTO_IMPORT + "crypto:validate-signature(<root><data>no sig here</data></root>)");
     }
 
     // ===== Old expath-crypto-module backward compatibility =====
@@ -571,11 +581,12 @@ public class CryptoModuleTest {
         // The multiline string is built using string-join to avoid Java/XQuery escaping issues.
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $lines := ('PUT','c8fdb181845a4ca6b8fec737b3581d76','text/html'," +
-                "'Thu, 17 Nov 2005 18:49:58 GMT','x-amz-magic:password'," +
-                "'x-amz-meta-author:foo@bar.com','/quotes/nelson') " +
-                "return crypto:hmac(string-join($lines, codepoints-to-string(10)), " +
-                "'OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV', 'HMAC-SHA-1', 'base64')");
+                """
+                let $lines := ('PUT','c8fdb181845a4ca6b8fec737b3581d76','text/html',\
+                'Thu, 17 Nov 2005 18:49:58 GMT','x-amz-magic:password',\
+                'x-amz-meta-author:foo@bar.com','/quotes/nelson')
+                return crypto:hmac(string-join($lines, codepoints-to-string(10)), \
+                'OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV', 'HMAC-SHA-1', 'base64')""");
         // The old test suite had the wrong expected value (copy-paste from a different variant).
         // The correct HMAC-SHA-1 for this data+key is verified via Python's hmac module.
         assertEquals("ggrrPVimvAlDa9xalO4+S87TKJY=",
@@ -586,9 +597,10 @@ public class CryptoModuleTest {
     public void oldModuleEncryptDecrypt6Param() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $iv := 'abcdefghijklmnop'\n" +
-                "let $enc := crypto:encrypt('test message', 'symmetric', '1234567890123456', 'AES', $iv, '')\n" +
-                "return crypto:decrypt($enc, 'symmetric', '1234567890123456', 'AES', $iv, '')");
+                """
+                let $iv := 'abcdefghijklmnop'
+                let $enc := crypto:encrypt('test message', 'symmetric', '1234567890123456', 'AES', $iv, '')
+                return crypto:decrypt($enc, 'symmetric', '1234567890123456', 'AES', $iv, '')""");
         assertEquals("test message",
                 result.getResource(0).getContent().toString());
     }
@@ -599,9 +611,11 @@ public class CryptoModuleTest {
         // Use RSA_SHA256 instead, which is the modern equivalent.
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $doc := <data><a>1</a><b>7</b></data>\n" +
-                "let $signed := crypto:generate-signature($doc, 'inclusive', 'SHA256', 'RSA_SHA256', 'dsig', 'enveloped')\n" +
-                "return crypto:validate-signature($signed)");
+                """
+                let $doc := <data><a>1</a><b>7</b></data>
+                let $signed := crypto:generate-signature($doc, 'inclusive', 'SHA256', \
+                'RSA_SHA256', 'dsig', 'enveloped')
+                return crypto:validate-signature($signed)""");
         assertEquals("true", result.getResource(0).getContent().toString());
     }
 
@@ -609,9 +623,11 @@ public class CryptoModuleTest {
     public void oldModuleSignature7ParamWithXPath() throws XMLDBException {
         final ResourceSet result = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT +
-                "let $doc := <data><a>1</a><b>7</b></data>\n" +
-                "let $signed := crypto:generate-signature($doc, 'exclusive', 'SHA256', 'RSA_SHA256', 'dsig', 'enveloped', '/')\n" +
-                "return crypto:validate-signature($signed)");
+                """
+                let $doc := <data><a>1</a><b>7</b></data>
+                let $signed := crypto:generate-signature($doc, 'exclusive', 'SHA256', \
+                'RSA_SHA256', 'dsig', 'enveloped', '/')
+                return crypto:validate-signature($signed)""");
         assertEquals("true", result.getResource(0).getContent().toString());
     }
 
@@ -696,8 +712,7 @@ public class CryptoModuleTest {
         final ResourceSet strResult = existEmbeddedServer.executeQuery(
                 CRYPTO_IMPORT + "crypto:hmac('hello', 'secret', 'SHA256', 'hex')");
         final ResourceSet binResult = existEmbeddedServer.executeQuery(
-                CRYPTO_IMPORT +
-                "crypto:hmac(xs:base64Binary('aGVsbG8='), xs:base64Binary('c2VjcmV0'), 'SHA256', 'hex')");
+                CRYPTO_IMPORT + "crypto:hmac(xs:base64Binary('aGVsbG8='), xs:base64Binary('c2VjcmV0'), 'SHA256', 'hex')");
         assertEquals("Binary and string HMAC should match",
                 strResult.getResource(0).getContent().toString(),
                 binResult.getResource(0).getContent().toString());

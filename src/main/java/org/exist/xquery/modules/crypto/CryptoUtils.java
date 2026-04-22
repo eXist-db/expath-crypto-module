@@ -48,22 +48,20 @@ final class CryptoUtils {
         final int keyLength = key.getBytes(StandardCharsets.UTF_8).length;
 
         switch (algorithm) {
-            case "AES":
+            case "AES" -> {
                 if (keyLength != 16 && keyLength != 24 && keyLength != 32) {
                     throw new XPathException(expr,
                             "AES key must be 16, 24, or 32 bytes, got " + keyLength + " bytes.");
                 }
-                break;
-            case "DES":
+            }
+            case "DES" -> {
                 if (keyLength != 8) {
                     throw new XPathException(expr,
                             "DES key must be 8 bytes, got " + keyLength + " bytes.");
                 }
-                break;
-            default:
-                throw new XPathException(expr,
-                        "Unsupported encryption algorithm: " + algorithm +
-                                ". Supported: AES, DES.");
+            }
+            default -> throw new XPathException(expr,
+                    "Unsupported encryption algorithm: " + algorithm + ". Supported: AES, DES.");
         }
     }
 }

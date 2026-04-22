@@ -51,7 +51,7 @@ public class CryptoModule extends AbstractInternalModule {
 
     public static final String PREFIX = "crypto";
 
-    public static final String RELEASE = "1.0.0";
+    public static final String RELEASE = "7.0.0";
 
     // Functions MUST be sorted alphabetically by local name for binary search (ordered=true)
     public static final FunctionDef[] functions = functionDefs(

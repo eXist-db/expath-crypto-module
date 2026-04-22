@@ -71,8 +71,9 @@ public class EncryptFunction extends BasicFunction {
 
     public static final FunctionSignature[] FS_ENCRYPT = functionSignatures(
             CryptoModule.qname(FS_ENCRYPT_NAME),
-            "Encrypts the given data using symmetric encryption (AES or DES). " +
-                    "The initialization vector is prepended to the ciphertext in the result.",
+            """
+            Encrypts the given data using symmetric encryption (AES or DES). \
+            The initialization vector is prepended to the ciphertext in the result.""",
             returns(Type.BASE64_BINARY, "the encrypted data as xs:base64Binary (IV + ciphertext)"),
             arities(
                     arity(

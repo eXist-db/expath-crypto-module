@@ -71,8 +71,9 @@ public class DecryptFunction extends BasicFunction {
 
     public static final FunctionSignature[] FS_DECRYPT = functionSignatures(
             CryptoModule.qname(FS_DECRYPT_NAME),
-            "Decrypts the given data using symmetric decryption (AES or DES). " +
-                    "The input must be the result of crypto:encrypt() with the IV prepended.",
+            """
+            Decrypts the given data using symmetric decryption (AES or DES). \
+            The input must be the result of crypto:encrypt() with the IV prepended.""",
             returns(Type.STRING, "the decrypted plaintext"),
             arities(
                     arity(

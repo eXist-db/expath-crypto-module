@@ -72,8 +72,9 @@ public class ValidateSignatureFunction extends BasicFunction {
 
     public static final FunctionSignature[] FS_VALIDATE_SIGNATURE = functionSignatures(
             CryptoModule.qname(FS_NAME),
-            "Validates an XML digital signature. Returns true if the signature is valid, " +
-                    "false otherwise. The public key is extracted from the KeyInfo element.",
+            """
+            Validates an XML digital signature. Returns true if the signature is valid, \
+            false otherwise. The public key is extracted from the KeyInfo element.""",
             returns(Type.BOOLEAN, "true if the signature is valid"),
             arities(
                     arity(
