@@ -63,7 +63,7 @@
                 <li>Binary input support for crypto:hmac</li>
                 <li>BaseX-compatible function signatures</li>
                 <li>102 tests (JUnit + XQSuite)</li>
-                <li>Requires Java 17+ and eXist-db 7.0+</li>
+                <li>Requires Java 21+ and eXist-db 7.0+</li>
             </ul>
         </change>
     </changelog>
