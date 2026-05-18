@@ -212,7 +212,7 @@ function ct:encrypt-string-with-aes-symmetric-key-ecb-mode() {
 (:~ Symmetric encryption of a string with AES/CBC/PKCS5Padding transformation, and wrong key. :)
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding, wrong key")
-    %test:assertError("err:CX19: The secret key is invalid")
+    %test:assertError("crypto:invalid-crypto-key")
 function ct:encrypt-string-with-aes-wrong-symmetric-key-cbc-Mode() {
     let $iv := crypto:hash("initialization vector", "MD5", "")
     return
@@ -222,7 +222,7 @@ function ct:encrypt-string-with-aes-wrong-symmetric-key-cbc-Mode() {
 (:~ Symmetric encryption of a string with AES/CBC/PKCS5Padding transformation, wrong key, and default provider. :)
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding, wrong key, default provider")
-    %test:assertEquals("err:CX19: The secret key is invalid")
+    %test:assertError("crypto:invalid-crypto-key")
 function ct:encrypt-string-with-aes-wrong-symmetric-key-cbc-mode-default-provider() {
     let $iv := crypto:hash("initialization vector", "MD5", "")
     return
@@ -357,7 +357,7 @@ function ct:hash-binary-with-sha512-and-default-format() {
 (:~ Hashing a binary with a wrong algorithm. Test will pass if the correct error is thrown. :)
 declare
     %test:name("Hash binary with wrong algorithm")
-    %test:assertError("err:CX21: The algorithm is not supported.")
+    %test:assertError("crypto:unknown-algorithm")
 function ct:hash-binary-with-wrong-algorithm() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -367,7 +367,7 @@ function ct:hash-binary-with-wrong-algorithm() {
 (:~ Hashing a binary with a wrong algorithm and the default format. Test will pass if the correct error is thrown. :)
 declare
     %test:name("Hash binary with wrong algorithm, default format")
-    %test:assertError("err:CX21: The algorithm is not supported.")
+    %test:assertError("crypto:unknown-algorithm")
 function ct:hash-binary-with-wrong-algorithm-and-default-format() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
