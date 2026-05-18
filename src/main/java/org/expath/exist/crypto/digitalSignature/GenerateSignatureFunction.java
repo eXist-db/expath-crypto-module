@@ -44,6 +44,7 @@ import org.exist.dom.persistent.BinaryDocument;
 import org.exist.dom.persistent.DocumentImpl;
 import org.exist.dom.persistent.LockedDocument;
 import org.exist.security.PermissionDeniedException;
+import org.exist.storage.DBBroker;
 import org.exist.storage.lock.Lock.LockMode;
 import org.exist.storage.serializers.Serializer;
 import org.exist.storage.txn.TransactionException;
@@ -60,6 +61,9 @@ import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
+
+import com.evolvedbinary.j8fu.function.ConsumerE;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -170,8 +174,8 @@ public class GenerateSignatureFunction extends BasicFunction {
 
 			return new StringValue(output);
 		} else {
-			final org.exist.storage.DBBroker broker = context.getBroker();
-			final com.evolvedbinary.j8fu.function.ConsumerE<com.evolvedbinary.j8fu.function.ConsumerE<Serializer, IOException>, IOException> withSerializerFn = fn -> {
+			final DBBroker broker = context.getBroker();
+			final ConsumerE<ConsumerE<Serializer, IOException>, IOException> withSerializerFn = fn -> {
 				final Serializer serializer = broker.borrowSerializer();
 				try {
 					fn.accept(serializer);
