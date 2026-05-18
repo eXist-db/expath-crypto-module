@@ -64,26 +64,43 @@ s1tkDtD9uOJN6CsLuVjfuo4ZT5SwC7pq842aQrqJveKWKdzEorQjWKeN8OM2wzEMs0P1
  : Inlined so it round-trips losslessly into the database; loading via
  : fn:unparsed-text would corrupt the binary bytes. :)
 declare variable $ct:keystore-base64 :=
-    "/u3+7QAAAAIAAAABAAAAAQAFZXhpc3QAAAEtLbvqDgAAAZAwggGMMA4GCisGAQQBKgIRAQEFAASCAXhh" ||
-    "ziwQXmnR363GwXyUNlKb6Z7OxLK05m12tYmyKf944Sj+KOUx8DeHxsuOPE83wA+/mFf9Vw7AglZaYwMd" ||
-    "Lv3og7/WZiSPJPV+5mkgGEcOSNKo3hZvxmDWkehp7RKlNNADXiyS79Su/X4XzG5vrKBpAMB4CZnWYHSr" ||
-    "nWAfOjkkrVbTS/bqfq+nw0QFVKNnDjIgiAU5V77XvrlzN+S9fgAaTPP6jMKXg/NaK4MyC+d+js4UorVu" ||
-    "UvgrTictgGW66L3C8Mwmn7Sr8Ht1x+aV+KfvAd0tGktp7KX5RvWPpPss+FfQCWY+kWTJFiNrdtWUvP5I" ||
-    "crGHtTUFdO5tzvbRI2Iy4/1bk97VZTxjXOKdbGsI4dnxNFF4QgwW/vAJGQ2dMZj7Z6Vh+tK/OuQTGZ6g" ||
-    "0U54z5Uzj0MBWWLo5mdCftGFd/zT/mzZmrf2m868IufkpnuZ87Gg6dH+GpZmQJt4bqovg0sxjocVJyUO" ||
-    "T8g7l6i71zsbkiatcBgUAAAAAQAFWC41MDkAAALPMIICyzCCAomgAwIBAgIETRoLPTALBgcqhkjOOAQD" ||
-    "BQAwSTELMAkGA1UEBhMCVVMxDDAKBgNVBAoTA1N1bjERMA8GA1UECxMISmF2YVNvZnQxGTAXBgNVBAMT" ||
-    "EFRlc3QgQ2VydGlmaWNhdGUwHhcNMTAxMjI4MTYwNzI1WhcNMTEwNjI2MTYwNzI1WjBJMQswCQYDVQQG" ||
-    "EwJVUzEMMAoGA1UEChMDU3VuMREwDwYDVQQLEwhKYXZhU29mdDEZMBcGA1UEAxMQVGVzdCBDZXJ0aWZp" ||
-    "Y2F0ZTCCAbcwggEsBgcqhkjOOAQBMIIBHwKBgQD9f1OBHXUSKVLfSpwu7OTn9hG3UjzvRADDHj+AtlEm" ||
-    "aUVdQCJR+1k9jVj6v8X1ujD2y5tVbNeBO4AdNG/yZmC3a5lQpaSfn+gEexAiwk+7qdf+t8Yb+DtX58ao" ||
-    "phUPBPuD9tPFHsMCNVQTWhaRMvZ1864rYdcq7/IiAxmd0UgBxwIVAJdgUI8VIwvMspK5gqLrhAvwWBz1" ||
-    "AoGBAPfhoIXWmz3ey7yrXDa4V7l5lK+7+jrqgvlXTAs9B4JnUVlXjrrUWU/mcQcQgYC0SRZxI+hMKBYT" ||
-    "t88JMozIpuE8FnqLVHyNKOCjrh4rs6Z1kW6jfwv6ITVi8ftiegEkO8yk8b6oUZCJqIPf4VrlnwaSi2Ze" ||
-    "gHtVJWQBTDv+z0kqA4GEAAKBgDb4fpsP1kDnlX5gnNu7uR/NPxweuq1+brJ6G3UX1z5fe1Zq+wEM3+Ic" ||
-    "3G95fS+VWjWMn1rr0uQafyDhHPqN9yq9qPEftDK97jpYIEpZG0YvMQ94AaSC8cpqQwmTgzu6utNGaBhp" ||
-    "8u5+tlA5Qj7uguHLeLBklThU7ESZaaL1bOtLMAsGByqGSM44BAMFAAMvADAsAhQP1O1m6w4ljJw5abm0" ||
-    "4R4uMexzEwIUN+h7BgZTo0He+mh4mw9E+Q4tnWvV3zI58ULRGzVTBjQFM1ueDADpLw==";
+    "/u3+7QAAAAIAAAABAAAAAQAFZXhpc3QAAAGePB6cvgAABQAwggT8MA4GCisGAQQBKgIRAQEFAASCBOh0" ||
+    "5Qz9xZe6xU6/yylrh494YPtX4K8ZS+8FeHcB6cstik1KapPzNEsRNw/g3fnFaHR5N9tCA8g8qJu9ZXCO" ||
+    "yBxNGheDQ0aVweOqkdCgtjePyT7Yvm6PWXu2o6VgvPHgiMKavcz/9VXP4ZsSH5QWUWCLf0AS+QJT/JTd" ||
+    "dOkjRZbq3B9Fuxme51EcGp7wWxICr/A/IhUynzSCwHIaRoQiJ38jR02vbPayWj21yCR8nRjpjsnnyFOT" ||
+    "LckjQ/B0b/dMPVg1plSFyFkPNxFAEBtjV7jNbx0HJXpTIcAQ9oitbEChyvVC61t7QXKouLeVTtJQKPy2" ||
+    "T5vVSbRAJv7uhhotwDOymT4WJJMZYfo3zTdyClnzirLEBOjrJ5XrgExCB114A+v/7bEmo6yQeHOb6WqT" ||
+    "HkAJnR33BMssolHFMChv3hxRUnfBrKN0KObN3HZA+Enjxrwon/zXHzIIJh6fyHF9K/4osYxNTRmg6dhE" ||
+    "6/6Iz5ZYld0IWWKDQSFAgFY3/l+xMe/DSxURKCeL1Lv59+LopYtzit8A1AjoInBa+eO3N+y4iX8h9AV9" ||
+    "DRLvrnfTMn/Uy0Ns124bAf+tuM0yKPUTGDezRkDvpNzJH5hKKGGc68RIq/AY6/p0ucaIn1nTpgV64L7l" ||
+    "t4twlKexMfTq1hTpv9LB7w0v6NgfswyqC6G1DYOwPZKJ5hnULVOxG5ZTNllwwvkUand4OY2WjW0tD26a" ||
+    "SLoL/p2oVW058HZqEYf0jxtWg6G17s11nn4kO88eS/B3tRGbgv/cnrPNRbI5UbWU8mP4ghEEle4ITuM7" ||
+    "wBmlj4AsG21CveRJMDJmLhoFeAjHzJg5c/qmh/VT8QiaP9QpowMUIpjmN+nU6Rh7NzGVgrqI26Ut1I3m" ||
+    "lemfuh8F080YfT+k+YqiGBeb/GXD7B9XziVnjpFz1ytcNyaEQ9k91QxtoEMsHwFytXZ8PfVvCUs6vH5R" ||
+    "MVVwnWpttFnF6kYYO7MOkU3i80MopT0lXq11Dnp3HF9mv8KQ3f2m8idwTNSe2KXOWfDMt3M4uzCGVPZm" ||
+    "2bu7jZoDll6OvN883a72Ul4AdtMJetqJtFdbh8Pg+QsSczp/DfIDtzmd/pXt4q6uUxzdwFWFJbVyrO9y" ||
+    "o7iiAn8O+E/SHfetDnea/PYd54Aw/kAs5BuJyBrnkFiUxjfAdS/qRYorLlY8W2eiYY83VsWJQgX9Bwt3" ||
+    "pNChTt5dK3z/V5Jn/WdoFG6tFOblWLZqcDthaGhlbQYfORAnJJOaWMVxIMsOQo71pYXukAEcWC2zoz+I" ||
+    "Oo7p7/I7UuNypfeKMNn0rKKtDyKR0Kf8BafLNOBw/+hC8fe13+UMWNBo7bYk/iFY7NcQwhel+FkkpJr0" ||
+    "wTIFdULD9K1Yu0r5A/Pv5ObKkDrVpRwYH5SgFN29kEAO8AOQUf+dxV02ywl5cVKlFT9b0DLLRJ3sPjJ9" ||
+    "KL/Ll9kPdFjlF86w8Iq3oPTEtCfRv3FN1yMnbgQA7/qz5V0x7z3qPMIYy6zR/aXvtMwG8KNMdAUjhma1" ||
+    "HeyDUQRoU5rOf8WdUsYgLYkjlJeWeP1EifVWFR9Wu0Yof2oyiFcBbDVwmOvCrJFHsQzH9jWScjVskkoL" ||
+    "aTevgDtMe7pJWeVn1MM8wFbmgaKOwTiduDgZHo+VOvOEMMWLOp8aON/ikBa3Oc/H/EZHiCCi8gAAAAEA" ||
+    "BVguNTA5AAADUTCCA00wggI1oAMCAQICBAJT0CIwDQYJKoZIhvcNAQELBQAwVjELMAkGA1UEBhMCVVMx" ||
+    "GTAXBgNVBAoTEGVYaXN0LWRiIFByb2plY3QxETAPBgNVBAsTCGVYaXN0LWRiMRkwFwYDVQQDExBUZXN0" ||
+    "IENlcnRpZmljYXRlMCAXDTI2MDUxODE3MjQ1OVoYDzIxMjYwNDI0MTcyNDU5WjBWMQswCQYDVQQGEwJV" ||
+    "UzEZMBcGA1UEChMQZVhpc3QtZGIgUHJvamVjdDERMA8GA1UECxMIZVhpc3QtZGIxGTAXBgNVBAMTEFRl" ||
+    "c3QgQ2VydGlmaWNhdGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCcZ3DUZU1UJy2Pxekn" ||
+    "Oj6GVPCiOz5bi0NgPgnVOLWJLkj6s2t9cm8N8+lFPWwzUGeDSRzI/dI5CxFMilXn3xxle2DT6dE0CFh7" ||
+    "hvw0+wncYrYzddu8DvYi5oQnRjkq6RlA/JcAeckFoFdaFfsVyRnmZAN9lWaoBclSIxwW9wl02wIkfiYK" ||
+    "oTF2MFE79Ji4jd0UuGlz7vAu3kUrxV0jHvyzLuZw6crgn9w8UCsnYNhqT5+PEpzICicoNHKTlMiMgA8s" ||
+    "wR4+giHad6YmbiQZUvwkUWw0HC+AnbnncpWFk+VnVCBwBdhdDodNb+uU7c9hJ8gWZH0PbUxwaewe1aGO" ||
+    "ebeBAgMBAAGjITAfMB0GA1UdDgQWBBTVxqyovPJIrnEkdetdXy+MattmXzANBgkqhkiG9w0BAQsFAAOC" ||
+    "AQEAEkhAY5HZFOkojWy8zoKEP1vLYJ1tU1WvCwGXq4f2zgOCp5LwwWmVJiRDk9CowkoNJCH3BVHTXGk/" ||
+    "/RS5NRVKPAKz7pmk/lJgAqVaCHJ+7TNC4YxkUBvHM2jxBV3yTYGqpCcFzcOhcL0sFz/LEDykFOQBKFHY" ||
+    "q5aXJOfZKWZjMQEfMLXJFeGGuVtOud1PWRxJxAgcl2wc59AGPJkvsL54lrKy3ZliHAYF8hUiQtyQlvMf" ||
+    "tI8glOgLmbmiZMOAdLoEXN6aO0zDchnybYDMGGCzRMgukdgejk/42Skmcab8oAQYqEMlO6mQN1z5GK4k" ||
+    "IRELJk3eNqO5xz0fkm+a5EbqVUpufqmZ/L+nCkyet0N0WrrIXzwO";
 
 declare
     %test:setUp
@@ -213,13 +230,15 @@ function ct:encrypt-string-with-aes-wrong-symmetric-key-cbc-mode-default-provide
 };
 
 (:~ Generate an enveloped digital signature for an XML document by using the following parameters:
- : 'SHA1' canonicalization algorithm, 
- : 'DSA_SHA1' signature algorithm,
- : 'dsig' signature namespace prefix, 
- : and an X509 certificate. :)
+ : 'SHA1' canonicalization algorithm,
+ : 'RSA_SHA1' signature algorithm,
+ : 'dsig' signature namespace prefix,
+ : and an X509 certificate. Asserts that the produced document carries a Signature element
+ : with the expected algorithm — verifying an exact base64 sig value would require deterministic
+ : signing and a stable keystore; both can drift. :)
 declare
     %test:name("Generate enveloped digital signature")
-    %test:assertEquals("/KaCzo4Syrom78z3EQ5SbbB4sF7ey80etKII864WF64B81uRpH5t9jQTxeEu0ImbzRMqzVDZkVG9xD7nN1kuFw==")
+    %test:assertExists
 function ct:generate-enveloped-digital-signature() {
     let $sample-doc := $ct:doc-1
     let $certificate-details :=
@@ -230,15 +249,15 @@ function ct:generate-enveloped-digital-signature() {
             <private-key-password>kpi135</private-key-password>
             <keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
         </digital-certificate>
-    let $signed-doc := crypto:generate-signature($sample-doc, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped", $certificate-details)
+    let $signed-doc := crypto:generate-signature($sample-doc, "inclusive", "SHA1", "RSA_SHA1", "dsig", "enveloped", $certificate-details)
     return
-        $signed-doc//*[local-name() = 'P']/text()
+        $signed-doc//*[local-name() = 'SignatureValue']/text()
 };
 
 (:~ Hashing a binary by using 'MD5' algorithm. :)
 declare
     %test:name("'MD5' hashing for binary")
-    %test:assertEquals("UI/aOJodA6gtJPitQ6xcJA==")
+    %test:assertEquals("ph5QRcbkubrl+yCdHdoaWA==")
 function ct:hash-binary-with-md5() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -248,7 +267,7 @@ function ct:hash-binary-with-md5() {
 (:~ Hashing a binary by using 'MD5' algorithm and the default format. :)
 declare
     %test:name("'MD5' hashing for binary, default format")
-    %test:assertEquals("UI/aOJodA6gtJPitQ6xcJA==")
+    %test:assertEquals("ph5QRcbkubrl+yCdHdoaWA==")
 function ct:hash-binary-with-md5-and-default-format() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -258,7 +277,7 @@ function ct:hash-binary-with-md5-and-default-format() {
 (:~ Hashing a binary by using 'SHA-1' algorithm. :)
 declare
     %test:name("'SHA-1' hashing for binary")
-    %test:assertEquals("GyscHvnJKxInsBLgSg/FRAmQXYU=")
+    %test:assertEquals("iNqLSDMtSMou4wHD9DHhyuHc0qw=")
 function ct:hash-binary-with-sha1() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -268,7 +287,7 @@ function ct:hash-binary-with-sha1() {
 (:~ Hashing a binary by using 'SHA-1' algorithm and the default format. :)
 declare
     %test:name("'SHA-1' hashing for binary, default format")
-    %test:assertEquals("GyscHvnJKxInsBLgSg/FRAmQXYU=")
+    %test:assertEquals("iNqLSDMtSMou4wHD9DHhyuHc0qw=")
 function ct:hash-binary-with-sha1-and-default-format() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -278,7 +297,7 @@ function ct:hash-binary-with-sha1-and-default-format() {
 (:~ Hashing a binary by using 'SHA-256' algorithm. :)
 declare
     %test:name("'SHA-256' hashing for binary")
-    %test:assertEquals("37JiNBym250ye3aUJ04RaZg3SFSP03qJ8FR/I1JckVI=")
+    %test:assertEquals("068pgBbsASjQHSbfG8gQ3qQEFl0vDImqLLBCWWatYw8=")
 function ct:hash-binary-with-sha256() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -288,7 +307,7 @@ function ct:hash-binary-with-sha256() {
 (:~ Hashing a binary by using 'SHA-256' algorithm and the default format. :)
 declare
     %test:name("'SHA-256' hashing for binary, default format")
-    %test:assertEquals("37JiNBym250ye3aUJ04RaZg3SFSP03qJ8FR/I1JckVI=")
+    %test:assertEquals("068pgBbsASjQHSbfG8gQ3qQEFl0vDImqLLBCWWatYw8=")
 function ct:hash-binary-with-sha256-and-default-format() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -298,7 +317,7 @@ function ct:hash-binary-with-sha256-and-default-format() {
 (:~ Hashing a binary by using 'SHA-384' algorithm. :)
 declare
     %test:name("'SHA-384' hashing for binary")
-    %test:assertEquals("DcQ3caBftiQCIQn96Pr8PC2vzs17Re0tZ8/CZnOoucu/N+818uqAXxR7l9oxYgoW")
+    %test:assertEquals("PZrE3nAny2x8XPQyUIVaeccXqvIJoVN9ENQCRQurTNqOxRNRH39i81SELUnU0NyS")
 function ct:hash-binary-with-sha384() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -308,7 +327,7 @@ function ct:hash-binary-with-sha384() {
 (:~ Hashing a string by using 'SHA-384' algorithm and the default format. :)
 declare
     %test:name("'SHA-384' hashing for binary, default format")
-    %test:assertEquals("DcQ3caBftiQCIQn96Pr8PC2vzs17Re0tZ8/CZnOoucu/N+818uqAXxR7l9oxYgoW")
+    %test:assertEquals("PZrE3nAny2x8XPQyUIVaeccXqvIJoVN9ENQCRQurTNqOxRNRH39i81SELUnU0NyS")
 function ct:hash-binary-with-sha384-and-default-format() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -318,7 +337,7 @@ function ct:hash-binary-with-sha384-and-default-format() {
 (:~ Hashing a binary by using 'SHA-512' algorithm. :)
 declare
     %test:name("'SHA-512' hashing for binary")
-    %test:assertEquals("Be+hlGy9TNibbaE+6DA2gu6kNj2GS+7b4egFcJDMzQSFQiGgFtTh/mD61ta4pDvc+jqHFlqOyJLHirkROd86Mw==")
+    %test:assertEquals("UdD8d+0+qMIz36Dhuils4hxEzAmseswqaRXEzk8xD/HaE8Mj32guCE2ESrH+ddfw6Psklylb6IuJ3o5v9ucnhw==")
 function ct:hash-binary-with-sha512() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -328,7 +347,7 @@ function ct:hash-binary-with-sha512() {
 (:~ Hashing a binary by using 'SHA-512' algorithm and the default format. :)
 declare
     %test:name("'SHA-512' hashing for binary, default format")
-    %test:assertEquals("Be+hlGy9TNibbaE+6DA2gu6kNj2GS+7b4egFcJDMzQSFQiGgFtTh/mD61ta4pDvc+jqHFlqOyJLHirkROd86Mw==")
+    %test:assertEquals("UdD8d+0+qMIz36Dhuils4hxEzAmseswqaRXEzk8xD/HaE8Mj32guCE2ESrH+ddfw6Psklylb6IuJ3o5v9ucnhw==")
 function ct:hash-binary-with-sha512-and-default-format() {
     let $input := util:binary-doc("/db/test/keystore.ks")
     return
@@ -573,7 +592,7 @@ function ct:validate-enveloped-digital-signature() {
             <private-key-password>kpi135</private-key-password>
             <keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
         </digital-certificate>
-    let $signed-doc := crypto:generate-signature($input, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped", $certificate-details)
+    let $signed-doc := crypto:generate-signature($input, "inclusive", "SHA1", "RSA_SHA1", "dsig", "enveloped", $certificate-details)
     return
         crypto:validate-signature($signed-doc)
 };

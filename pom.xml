@@ -252,6 +252,14 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>3.0.0-M5</version>
+				<configuration>
+					<!-- The xmldsig algorithms supported by crypto-java 1.8.0/1.9.0 (RSA_SHA1, DSA_SHA1)
+					     are all rejected by the JDK's default secureValidation policy. Disable for tests
+					     until the underlying library gains SHA256-based signature support. -->
+					<systemPropertyVariables>
+						<org.jcp.xml.dsig.secureValidation>false</org.jcp.xml.dsig.secureValidation>
+					</systemPropertyVariables>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
