@@ -60,6 +60,31 @@ ZpJmWV2y1zIqxRnsjBlPLraX4Sx9DBEDw2H8aWhN1oIjAoGBANc0gizRHGfOK2UASXskuO5Ueias
 s1tkDtD9uOJN6CsLuVjfuo4ZT5SwC7pq842aQrqJveKWKdzEorQjWKeN8OM2wzEMs0P1
 -----END RSA PRIVATE KEY-----";
 
+(:~ Base64-encoded JKS keystore used by the digital-signature and binary-hash tests.
+ : Inlined so it round-trips losslessly into the database; loading via
+ : fn:unparsed-text would corrupt the binary bytes. :)
+declare variable $ct:keystore-base64 :=
+    "/u3+7QAAAAIAAAABAAAAAQAFZXhpc3QAAAEtLbvqDgAAAZAwggGMMA4GCisGAQQBKgIRAQEFAASCAXhh" ||
+    "ziwQXmnR363GwXyUNlKb6Z7OxLK05m12tYmyKf944Sj+KOUx8DeHxsuOPE83wA+/mFf9Vw7AglZaYwMd" ||
+    "Lv3og7/WZiSPJPV+5mkgGEcOSNKo3hZvxmDWkehp7RKlNNADXiyS79Su/X4XzG5vrKBpAMB4CZnWYHSr" ||
+    "nWAfOjkkrVbTS/bqfq+nw0QFVKNnDjIgiAU5V77XvrlzN+S9fgAaTPP6jMKXg/NaK4MyC+d+js4UorVu" ||
+    "UvgrTictgGW66L3C8Mwmn7Sr8Ht1x+aV+KfvAd0tGktp7KX5RvWPpPss+FfQCWY+kWTJFiNrdtWUvP5I" ||
+    "crGHtTUFdO5tzvbRI2Iy4/1bk97VZTxjXOKdbGsI4dnxNFF4QgwW/vAJGQ2dMZj7Z6Vh+tK/OuQTGZ6g" ||
+    "0U54z5Uzj0MBWWLo5mdCftGFd/zT/mzZmrf2m868IufkpnuZ87Gg6dH+GpZmQJt4bqovg0sxjocVJyUO" ||
+    "T8g7l6i71zsbkiatcBgUAAAAAQAFWC41MDkAAALPMIICyzCCAomgAwIBAgIETRoLPTALBgcqhkjOOAQD" ||
+    "BQAwSTELMAkGA1UEBhMCVVMxDDAKBgNVBAoTA1N1bjERMA8GA1UECxMISmF2YVNvZnQxGTAXBgNVBAMT" ||
+    "EFRlc3QgQ2VydGlmaWNhdGUwHhcNMTAxMjI4MTYwNzI1WhcNMTEwNjI2MTYwNzI1WjBJMQswCQYDVQQG" ||
+    "EwJVUzEMMAoGA1UEChMDU3VuMREwDwYDVQQLEwhKYXZhU29mdDEZMBcGA1UEAxMQVGVzdCBDZXJ0aWZp" ||
+    "Y2F0ZTCCAbcwggEsBgcqhkjOOAQBMIIBHwKBgQD9f1OBHXUSKVLfSpwu7OTn9hG3UjzvRADDHj+AtlEm" ||
+    "aUVdQCJR+1k9jVj6v8X1ujD2y5tVbNeBO4AdNG/yZmC3a5lQpaSfn+gEexAiwk+7qdf+t8Yb+DtX58ao" ||
+    "phUPBPuD9tPFHsMCNVQTWhaRMvZ1864rYdcq7/IiAxmd0UgBxwIVAJdgUI8VIwvMspK5gqLrhAvwWBz1" ||
+    "AoGBAPfhoIXWmz3ey7yrXDa4V7l5lK+7+jrqgvlXTAs9B4JnUVlXjrrUWU/mcQcQgYC0SRZxI+hMKBYT" ||
+    "t88JMozIpuE8FnqLVHyNKOCjrh4rs6Z1kW6jfwv6ITVi8ftiegEkO8yk8b6oUZCJqIPf4VrlnwaSi2Ze" ||
+    "gHtVJWQBTDv+z0kqA4GEAAKBgDb4fpsP1kDnlX5gnNu7uR/NPxweuq1+brJ6G3UX1z5fe1Zq+wEM3+Ic" ||
+    "3G95fS+VWjWMn1rr0uQafyDhHPqN9yq9qPEftDK97jpYIEpZG0YvMQ94AaSC8cpqQwmTgzu6utNGaBhp" ||
+    "8u5+tlA5Qj7uguHLeLBklThU7ESZaaL1bOtLMAsGByqGSM44BAMFAAMvADAsAhQP1O1m6w4ljJw5abm0" ||
+    "4R4uMexzEwIUN+h7BgZTo0He+mh4mw9E+Q4tnWvV3zI58ULRGzVTBjQFM1ueDADpLw==";
+
 declare
     %test:setUp
 function ct:setup() {
@@ -67,10 +92,7 @@ function ct:setup() {
     return
         (
             xmldb:store("/db/test", "doc-1.xml", $ct:doc-1),
-
-            let $keystore := fn:unparsed-text("resource:xquery/crypto/keystore.ks")
-            return
-                xmldb:store-as-binary("/db/test", "keystore.ks", $keystore)
+            xmldb:store-as-binary("/db/test", "keystore.ks", xs:base64Binary($ct:keystore-base64))
         )
 };
 
@@ -208,7 +230,7 @@ function ct:generate-enveloped-digital-signature() {
             <private-key-password>kpi135</private-key-password>
             <keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
         </digital-certificate>
-    let $signed-doc := crypto:generate-signature($sample-doc, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped")
+    let $signed-doc := crypto:generate-signature($sample-doc, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped", $certificate-details)
     return
         $signed-doc//*[local-name() = 'P']/text()
 };
@@ -551,7 +573,7 @@ function ct:validate-enveloped-digital-signature() {
             <private-key-password>kpi135</private-key-password>
             <keystore-uri>xmldb:///db/test/keystore.ks</keystore-uri>
         </digital-certificate>
-    let $signed-doc := crypto:generate-signature($input, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped")
+    let $signed-doc := crypto:generate-signature($input, "inclusive", "SHA1", "DSA_SHA1", "dsig", "enveloped", $certificate-details)
     return
         crypto:validate-signature($signed-doc)
 };
