@@ -128,7 +128,7 @@ function ct:aws-rest-request() {
 c8fdb181845a4ca6b8fec737b3581d76
 text/html
 Thu, 17 Nov 2005 18:49:58 GMT
-x-amz-magic:password
+x-amz-magic:abracadabra
 x-amz-meta-author:foo@bar.com
 /quotes/nelson"
     let $private-key := "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"
@@ -160,7 +160,7 @@ declare
 function ct:decrypt-string-with-aes-symmetric-key-cbc-mode() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
-        crypto:decrypt("51-143-171-200-187-20-34-252-231-243-254-42-36-13-9-123-191-251-243-42-3-238-193-13-155-168-139-67-135-3-143-54", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, "SunJCE")
+        crypto:decrypt("M4+ryLsUIvzn8/4qJA0Je7/78yoD7sENm6iLQ4cDjzY=", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, "SunJCE")
 };
 
 (:~ Symmetric decryption of a string with AES/CBC/PKCS5Padding transformation, 128 bytes key, and default provider. :)
@@ -170,7 +170,7 @@ declare
 function ct:decrypt-string-with-aes-symmetric-key-cbc-mode-default-provider() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
-        crypto:decrypt("51-143-171-200-187-20-34-252-231-243-254-42-36-13-9-123-191-251-243-42-3-238-193-13-155-168-139-67-135-3-143-54", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, ())
+        crypto:decrypt("M4+ryLsUIvzn8/4qJA0Je7/78yoD7sENm6iLQ4cDjzY=", "symmetric", "1234567890123456", "AES/CBC/PKCS5Padding", $iv, ())
 };
 
 (:~ Symmetric decryption of a string with AES transformation (implicit ECB mode), and 128 bytes key. :)
@@ -178,13 +178,13 @@ declare
     %test:name("Symmetric decryption of string, AES")
     %test:assertEquals("Short string for tests.")
 function ct:decrypt-string-with-aes-symmetric-key-ecb-mode() {
-    crypto:decrypt("222-157-20-54-132-99-46-30-73-43-253-148-61-155-86-141-51-56-40-42-31-168-189-56-236-102-58-237-175-171-9-87", "symmetric", "1234567890123456", "AES", (), "SunJCE")
+    crypto:decrypt("3p0UNoRjLh5JK/2UPZtWjTM4KCofqL047GY67a+rCVc=", "symmetric", "1234567890123456", "AES", (), "SunJCE")
 };
 
 (:~ Symmetric encryption of a string with AES/CBC/PKCS5Padding transformation, and 128 bytes key. :)
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding")
-    %test:assertEquals("51-143-171-200-187-20-34-252-231-243-254-42-36-13-9-123-191-251-243-42-3-238-193-13-155-168-139-67-135-3-143-54")
+    %test:assertEquals("M4+ryLsUIvzn8/4qJA0Je7/78yoD7sENm6iLQ4cDjzY=")
 function ct:encrypt-string-with-aes-symmetric-key-cbc-mode() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
@@ -194,7 +194,7 @@ function ct:encrypt-string-with-aes-symmetric-key-cbc-mode() {
 (:~ Symmetric encryption of a string with AES/CBC/PKCS5Padding transformation, 128 bytes key, and default provider. :)
 declare
     %test:name("Symmetric encryption of string, AES/CBC/PKCS5Padding, default provider")
-    %test:assertEquals("51-143-171-200-187-20-34-252-231-243-254-42-36-13-9-123-191-251-243-42-3-238-193-13-155-168-139-67-135-3-143-54")
+    %test:assertEquals("M4+ryLsUIvzn8/4qJA0Je7/78yoD7sENm6iLQ4cDjzY=")
 function ct:encrypt-string-with-aes-symmetric-key-cbc-mode-default-provider() {
     let $iv := crypto:hash("initialization vector", "MD5", "base64")
     return
@@ -204,7 +204,7 @@ function ct:encrypt-string-with-aes-symmetric-key-cbc-mode-default-provider() {
 (:~ Symmetric encryption of a string with AES transformation (implicit ECB mode), and 128 bytes key. :)
 declare
     %test:name("Symmetric encryption of string, AES")
-    %test:assertEquals("222-157-20-54-132-99-46-30-73-43-253-148-61-155-86-141-51-56-40-42-31-168-189-56-236-102-58-237-175-171-9-87")
+    %test:assertEquals("3p0UNoRjLh5JK/2UPZtWjTM4KCofqL047GY67a+rCVc=")
 function ct:encrypt-string-with-aes-symmetric-key-ecb-mode() {
     crypto:encrypt("Short string for tests.", "symmetric", "1234567890123456", "AES", (), "SunJCE")
 };
