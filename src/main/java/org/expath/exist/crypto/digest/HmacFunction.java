@@ -52,9 +52,9 @@ public class HmacFunction extends BasicFunction {
 	private static final Logger LOG = LoggerFactory.getLogger(HmacFunction.class);
 
 	private static String FS_HMAC_NAME = "hmac";
-	private static FunctionParameterSequenceType FS_HMAC_PARAM_DATA = optManyParam("data", Type.ATOMIC,
+	private static FunctionParameterSequenceType FS_HMAC_PARAM_DATA = optManyParam("data", Type.ANY_ATOMIC_TYPE,
 			"The data to be authenticated. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary.");
-	private static FunctionParameterSequenceType FS_HMAC_PARAM_KEY = optManyParam("key", Type.ATOMIC,
+	private static FunctionParameterSequenceType FS_HMAC_PARAM_KEY = optManyParam("key", Type.ANY_ATOMIC_TYPE,
 			"The secret key used for calculating the authentication code. This parameter can be of type xs:string, xs:byte*, xs:base64Binary, or xs:hexBinary.");
 	private static FunctionParameterSequenceType FS_HMAC_PARAM_ALGORITHM = param("algorithm", Type.STRING,
 			"The cryptographic hashing algorithm.");

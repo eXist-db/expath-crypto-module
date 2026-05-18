@@ -170,11 +170,19 @@ public class GenerateSignatureFunction extends BasicFunction {
 
 			return new StringValue(output);
 		} else {
-			Serializer serializer = context.getBroker().getSerializer();
+			final org.exist.storage.DBBroker broker = context.getBroker();
+			final com.evolvedbinary.j8fu.function.ConsumerE<com.evolvedbinary.j8fu.function.ConsumerE<Serializer, IOException>, IOException> withSerializerFn = fn -> {
+				final Serializer serializer = broker.borrowSerializer();
+				try {
+					fn.accept(serializer);
+				} finally {
+					broker.returnSerializer(serializer);
+				}
+			};
 			NodeValue inputNode = (NodeValue) args[0].itemAt(0);
 			Document inputDOMDoc;
 
-			try (InputStream inputNodeStream = new NodeInputStream(context.getBroker().getBrokerPool(), serializer,
+			try (InputStream inputNodeStream = new NodeInputStream(broker.getBrokerPool(), withSerializerFn,
 					inputNode)) {
 				inputDOMDoc = inputStreamToDocument(inputNodeStream);
 			} catch (IOException e) {
