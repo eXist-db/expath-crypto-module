@@ -60,7 +60,7 @@ public class HashFunction extends BasicFunction {
 	public static final FunctionSignature FS_HASH[] = functionSignatures(FS_HASH_NAME,
 			"resulting hash value, as string.", returnsOptMany(Type.BYTE),
 			arities(arity(FS_HASH_PARAM_DATA, FS_HASH_PARAM_ALGORITHM),
-					arity(FS_HASH_PARAM_DATA, FS_HASH_PARAM_ALGORITHM, param("encoding", Type.STRING,
+					arity(FS_HASH_PARAM_DATA, FS_HASH_PARAM_ALGORITHM, optParam("encoding", Type.STRING,
 							"The encoding of the output. The legal values are \"hex\" and \"base64\". The default value is \"base64\"."))));
 
 	public HashFunction(final XQueryContext context, final FunctionSignature signature) {

@@ -236,7 +236,6 @@ public class GenerateSignatureFunction extends BasicFunction {
 				signatureString = GenerateXmlSignature.generate(inputDOMDoc, canonicalizationAlgorithm, digestAlgorithm,
 						signatureAlgorithm, signatureNamespacePrefix, signatureType, xpathExprString,
 						certificateDetails, keyStoreInputStream);
-				keyStoreInputStream.close();
 
 				signatureDocument = stringToDocument(signatureString);
 
