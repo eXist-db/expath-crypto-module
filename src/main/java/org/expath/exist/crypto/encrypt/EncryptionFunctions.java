@@ -59,7 +59,7 @@ public class EncryptionFunctions extends BasicFunction {
 
 	private static final String FS_ENCRYPT_NAME = "encrypt";
 	private static final String FS_DECRYPT_NAME = "decrypt";
-	private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_DATA = param("data", Type.ATOMIC,
+	private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_DATA = param("data", Type.ANY_ATOMIC_TYPE,
 			"The data to be encrypted or decrypted. This parameter can be of type xs:string, xs:base64Binary, or xs:hexBinary.");
 	private static final FunctionParameterSequenceType FS_ENCRYPT_PARAM_SECRET_KEY = param("secret-key", Type.STRING,
 			"The secret key used for encryption or decryption, as string.");

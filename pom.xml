@@ -93,7 +93,7 @@
 	<properties>
 		<package.title>EXPath Cryptographic Module Implementation</package.title>
 		<crypto.java.lib.version>1.8.0</crypto.java.lib.version>
-		<exist.version>5.3.0</exist.version>
+		<exist.version>7.0.0-SNAPSHOT</exist.version>
 		<crypto.module.ns>http://expath.org/ns/crypto</crypto.module.ns>
 		<crypto.module.java.class>org.expath.exist.crypto.ExistExpathCryptoModule</crypto.module.java.class>
 		<package-abbrev>crypto</package-abbrev>
@@ -357,8 +357,35 @@
 					</configuration>
 				  </execution>
 				</executions>
-			  </plugin>			
+			  </plugin>
 		</plugins>
 	</build>
+
+	<repositories>
+		<!-- GitHub Packages is the authoritative source for exist-core SNAPSHOT
+		     builds (deployed from develop by eXist-db/exist's ci-snapshots.yml).
+		     Listed first so Maven queries it before the stale snapshot at
+		     repo.exist-db.org. The id `github` matches the credentials block
+		     injected by setup-java in CI. -->
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages — eXist-db</name>
+			<url>https://maven.pkg.github.com/eXist-db/exist</url>
+			<releases><enabled>true</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+		<!-- Override the eXist-db repository URLs inherited from exist-apps-parent
+		     1.11.0, which still declares them as http:// — blocked by Maven
+		     3.8.1+'s default HTTP-mirror policy. Snapshots here are stale (the
+		     publish pipeline only pushes to GitHub Packages), so this is kept
+		     as a release-only source. -->
+		<repository>
+			<id>exist-db</id>
+			<name>eXist-db Releases</name>
+			<url>https://repo.exist-db.org/repository/exist-db/</url>
+			<releases><enabled>true</enabled></releases>
+			<snapshots><enabled>false</enabled></snapshots>
+		</repository>
+	</repositories>
 
 </project>
