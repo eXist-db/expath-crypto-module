@@ -357,8 +357,28 @@
 					</configuration>
 				  </execution>
 				</executions>
-			  </plugin>			
+			  </plugin>
 		</plugins>
 	</build>
+
+	<!-- Override the eXist-db repository URLs inherited from exist-apps-parent 1.11.0,
+	     which still declares them as http:// — blocked by Maven 3.8.1+'s
+	     default HTTP-mirror policy. -->
+	<repositories>
+		<repository>
+			<id>exist-db</id>
+			<name>eXist-db Releases</name>
+			<url>https://repo.exist-db.org/repository/exist-db/</url>
+			<releases><enabled>true</enabled></releases>
+			<snapshots><enabled>false</enabled></snapshots>
+		</repository>
+		<repository>
+			<id>exist-db-snapshots</id>
+			<name>eXist-db Snapshots</name>
+			<url>https://repo.exist-db.org/repository/exist-db-snapshots/</url>
+			<releases><enabled>false</enabled></releases>
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+	</repositories>
 
 </project>
