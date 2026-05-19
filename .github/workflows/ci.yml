@@ -9,11 +9,12 @@ on:
 jobs:
   build:
     name: Build and Test
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
         jdk: ['21']
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
 
@@ -23,27 +24,23 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.jdk }}
           cache: maven
+          # Auth for the GitHub Packages snapshot repository (id=github in pom.xml).
+          # exist-core SNAPSHOTs are published there from develop; without auth
+          # Maven gets 401 and falls back to the stale repo.exist-db.org snapshot.
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
-      # The published 7.0.0-SNAPSHOT at repo.exist-db.org is stale (predates
-      # the Type.ATOMIC -> Type.ANY_ATOMIC_TYPE rename and other recent API
-      # changes). Sister org repos (e.g. eXist-db/exist-http-client) work
-      # around this by extracting exist.uber.jar from the official Docker
-      # image and installing it locally as 7.0.0-SNAPSHOT. Remove once the
-      # maven snapshot publication pipeline is restored.
-      - name: Pull eXist-db image
-        run: docker pull existdb/existdb:latest
-
-      - name: Install exist-core from Docker image into local Maven repo
-        run: |
-          id=$(docker create existdb/existdb:latest)
-          docker cp "$id:/exist/lib/exist.uber.jar" /tmp/exist.uber.jar
-          docker rm "$id"
-          mvn install:install-file -Dfile=/tmp/exist.uber.jar \
-            -DgroupId=org.exist-db -DartifactId=exist-core \
-            -Dversion=7.0.0-SNAPSHOT -Dpackaging=jar -q
-
+      # -U forces a SNAPSHOT-metadata refresh. The maven cache (above) could
+      # otherwise hold a stale exist-core SNAPSHOT across runs.
       - name: Maven Build
-        run: mvn -V -B -DskipTests=true install
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -V -B -U -DskipTests=true install
 
       - name: Maven Test
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn -B verify
