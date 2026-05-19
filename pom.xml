@@ -270,6 +270,36 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<!-- SpotBugs + FindSecBugs static analysis. Crypto-focused via FindSecBugs
+				     plugin. Currently report-only; once findings are triaged, switch the
+				     <goal> in <executions> from "spotbugs" to "check" to fail the build. -->
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.8.6.6</version>
+				<configuration>
+					<effort>Max</effort>
+					<threshold>Low</threshold>
+					<failOnError>false</failOnError>
+					<xmlOutput>true</xmlOutput>
+					<sarifOutput>true</sarifOutput>
+					<plugins>
+						<plugin>
+							<groupId>com.h3xstream.findsecbugs</groupId>
+							<artifactId>findsecbugs-plugin</artifactId>
+							<version>1.13.0</version>
+						</plugin>
+					</plugins>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>spotbugs</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>com.ruleoftech</groupId>
 				<artifactId>markdown-page-generator-plugin</artifactId>
 				<version>2.3.0</version>
