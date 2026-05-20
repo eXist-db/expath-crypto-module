@@ -27,6 +27,9 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -35,7 +38,10 @@ jobs:
           queries: security-extended,security-and-quality
 
       - name: Build
-        run: mvn -B -DskipTests=true compile
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B -U -DskipTests=true compile
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3

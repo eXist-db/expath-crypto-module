@@ -23,9 +23,15 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
       - name: Run SpotBugs (+ FindSecBugs plugin)
-        run: mvn -B -DskipTests=true verify
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B -U -DskipTests=true verify
 
       - name: Upload SARIF to GitHub code scanning
         if: always()
