@@ -1,4 +1,5 @@
 [![CI](https://github.com/eXist-db/expath-crypto-module/workflows/CI/badge.svg)](https://github.com/eXist-db/expath-crypto-module/actions?query=workflow%3ACI)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/6700c245da044962938994fc59a2ebdc)](https://app.codacy.com/gh/eXist-db/expath-crypto-module/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 # eXist-db implementation for EXPath Cryptographic Module
 
