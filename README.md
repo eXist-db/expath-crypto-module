@@ -55,6 +55,11 @@ auditing it:
   outright (`disallow-doctype-decl=true`), which is the OWASP-recommended
   baseline. A strict `conf.xml` does not, on its own, protect callers of
   `crypto:generate-signature` or `crypto:validate-signature` against XXE.
+  The doctype gate is currently hardcoded — we're being conservative for
+  this hardening round — and is open to follow-on PRs that expose an
+  opt-out (for example, an extra parameter or a module-level toggle) for
+  callers who legitimately need to validate signed documents that carry a
+  DOCTYPE declaration.
 
 * **Signature algorithms are limited to SHA-1-based xmldsig methods**
   (`RSA_SHA1`, `DSA_SHA1`) by the underlying `crypto-java` library, which has
