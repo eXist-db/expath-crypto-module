@@ -320,7 +320,7 @@ public class GenerateSignatureFunction extends BasicFunction {
 			final DocumentBuilder db = dbf.newDocumentBuilder();
 			return db.parse(inputStream);
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
-			throw new XPathException(this, "Error parsing signed document: " + ex.getMessage());
+			throw new EXpathCryptoException(this, ex);
 		}
 	}
 }
