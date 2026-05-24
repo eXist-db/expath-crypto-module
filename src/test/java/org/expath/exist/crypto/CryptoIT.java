@@ -2,7 +2,7 @@
  * SPDX LGPL-2.1-or-later
  * Copyright (C) 2016 The eXist-db Authors
  */
-package xquery.maps;
+package org.expath.exist.crypto;
 
 import org.exist.test.runner.XSuite;
 import org.junit.runner.RunWith;
