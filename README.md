@@ -7,8 +7,8 @@ This is an eXist-db implementation of the [EXPath HTTP Crypto Module specificati
 ## Building from source
 
 Requires:
-* Java 1.8 or newer
-* Maven 3.6 or newer
+* Java 21 or newer
+* Maven 3.9 or newer
 
 ```bash
 $ git clone https://github.com/eXist-db/expath-crypto-module.git
@@ -16,7 +16,7 @@ $ cd expath-crypto-module
 $ mvn clean package
 ```
 
-This will create a "expath-crypto-module-<version>.xar" file in the target folder. The .xar file can be uploaded to any eXist-db version > 5.3.0 via the Dashboard.
+This will create a "expath-crypto-module-<version>.xar" file in the target folder. The .xar file can be uploaded to any eXist-db version > 7.0.0-SNAPSHOT via the Dashboard.
   
 ### Currently implemented functions
 
