@@ -176,6 +176,7 @@
 								<!-- files now authored by the EXPath project (see below) -->
 								<exclude>pom.xml</exclude>
 								<exclude>src/test/java/xquery/crypto/CryptoIT.java</exclude>
+								<exclude>src/main/java/org/expath/exist/crypto/utils/SecureXmlParsers.java</exclude>
 							</excludes>
 						</licenseSet>
 
@@ -185,6 +186,7 @@
 							<includes>
 								<include>pom.xml</include>
 								<include>src/test/java/xquery/crypto/CryptoIT.java</include>
+								<include>src/main/java/org/expath/exist/crypto/utils/SecureXmlParsers.java</include>
 								<!-- include>src/test/java/ro/kuberam/libs/java/crypto/TestUtils.java</include>
 								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashBinaryTest.java</include>
 								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashBinaryWithWrongAlgorithmTest.java</include>

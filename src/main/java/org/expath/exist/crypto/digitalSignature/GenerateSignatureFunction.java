@@ -46,6 +46,7 @@ import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.StringValue;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
+import org.expath.exist.crypto.utils.SecureXmlParsers;
 
 import com.evolvedbinary.j8fu.function.ConsumerE;
 
@@ -243,7 +244,7 @@ public class GenerateSignatureFunction extends BasicFunction {
 	private Document stringToDocument(final String signatureString) throws XPathException {
 		// process the output (signed) document from string to node()
 		try {
-			final SAXParserFactory factory = SAXParserFactory.newInstance();
+			final SAXParserFactory factory = SecureXmlParsers.newSAXParserFactory();
 			factory.setNamespaceAware(true);
 			final SAXParser parser = factory.newSAXParser();
 			final XMLReader xr = parser.getXMLReader();
@@ -312,24 +313,14 @@ public class GenerateSignatureFunction extends BasicFunction {
 		}
 	}
 
-	private Document inputStreamToDocument(final InputStream inputStream) {
-		// initialize the document builder
-		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
-		DocumentBuilder db = null;
+	private Document inputStreamToDocument(final InputStream inputStream) throws XPathException {
 		try {
-			db = dbf.newDocumentBuilder();
-		} catch (ParserConfigurationException ex) {
+			final DocumentBuilderFactory dbf = SecureXmlParsers.newDocumentBuilderFactory();
+			dbf.setNamespaceAware(true);
+			final DocumentBuilder db = dbf.newDocumentBuilder();
+			return db.parse(inputStream);
+		} catch (ParserConfigurationException | SAXException | IOException ex) {
+			throw new EXpathCryptoException(this, ex);
 		}
-
-		// convert data to DOM document
-		Document document = null;
-		try {
-			document = db.parse(inputStream);
-		} catch (SAXException | IOException ex) {
-			ex.getMessage();
-		}
-
-		return document;
 	}
 }

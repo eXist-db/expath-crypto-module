@@ -25,6 +25,7 @@ import org.exist.xquery.value.NodeValue;
 import org.exist.xquery.value.Sequence;
 import org.exist.xquery.value.Type;
 import org.expath.exist.crypto.EXpathCryptoException;
+import org.expath.exist.crypto.utils.SecureXmlParsers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -83,11 +84,11 @@ public class ValidateSignatureFunction extends BasicFunction {
 			LOG.error(ex.getMessage(), ex);
 		}
 
-		// initialize the document builder
-		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
+		// initialize the document builder (XXE-hardened)
 		DocumentBuilder db = null;
 		try {
+			final DocumentBuilderFactory dbf = SecureXmlParsers.newDocumentBuilderFactory();
+			dbf.setNamespaceAware(true);
 			db = dbf.newDocumentBuilder();
 		} catch (final ParserConfigurationException ex) {
 			LOG.error(ex.getMessage(), ex);
