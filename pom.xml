@@ -187,17 +187,6 @@
 								<include>pom.xml</include>
 								<include>src/test/java/xquery/crypto/CryptoIT.java</include>
 								<include>src/main/java/org/expath/exist/crypto/utils/SecureXmlParsers.java</include>
-								<!-- include>src/test/java/ro/kuberam/libs/java/crypto/TestUtils.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashBinaryTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashBinaryWithWrongAlgorithmTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashLargeBinaryTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashLargeStringTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashStringTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HashStringWithWrongAlgorithmTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HMACBinaryTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HMACLargeBinaryTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HMACLargeStringTest.java</include>
-								<include>src/test/java/ro/kuberam/libs/java/crypto/digest/HMACStringTest.java</include -->
 							</includes>
 						</licenseSet>
 					</licenseSets>
@@ -206,7 +195,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.5.0</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -229,7 +217,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.5.5</version>
 				<configuration>
 					<!-- The xmldsig algorithms supported by crypto-java 1.8.0/1.9.0 (RSA_SHA1, DSA_SHA1)
 					     are all rejected by the JDK's default secureValidation policy. Disable for tests
