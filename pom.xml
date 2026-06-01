@@ -211,6 +211,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.5.6</version>
 				<configuration>
 					<!-- The xmldsig algorithms supported by crypto-java 1.8.0/1.9.0 (RSA_SHA1, DSA_SHA1)
 					     are all rejected by the JDK's default secureValidation policy. Disable for tests
