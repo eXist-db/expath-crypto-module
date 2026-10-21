@@ -1,0 +1,21 @@
+xar-assembly.xml
+  s_c292e5b13c6905::t_4217d9292f5a90 24,39-52
+pom.xml
+  s_c292e5b13c6905::t_2d337a70917512 264-289
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "30425bb26443f5c14601ba50463ea3c99f4cf345",
+  "prompts": {},
+  "sessions": {
+    "s_c292e5b13c6905": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "32a8b4b6-84c8-4621-82ce-96c1a9c0a2a3",
+        "model": "default"
+      },
+      "human_author": "duncdrum <d.paterson@me.com>"
+    }
+  }
+}
