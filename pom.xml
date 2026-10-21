@@ -261,6 +261,32 @@
 						<ignoredUnusedDeclaredDependency>org.junit.jupiter:junit-jupiter</ignoredUnusedDeclaredDependency>
 					</ignoredUnusedDeclaredDependencies>
 				</configuration>
+				<executions>
+					<!--
+						Stage crypto-java for xar-assembly.xml fileSets. kuberam-expath-plugin
+						0.6.3's make-xar resolves dependencySets with empty remoteRepos;
+						Maven 3.10 then fails with "present, but unavailable" / from [].
+						Resolving here uses the normal project RepositorySystemSession.
+					-->
+					<execution>
+						<id>copy-xar-libs</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.expath.crypto</groupId>
+									<artifactId>crypto-java</artifactId>
+									<version>${crypto.java.lib.version}</version>
+									<outputDirectory>${project.build.directory}/xar-libs</outputDirectory>
+									<destFileName>crypto-java-lib-${crypto.java.lib.version}.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<!-- SpotBugs + FindSecBugs static analysis. Crypto-focused via FindSecBugs
