@@ -21,17 +21,12 @@
 	<category id="exist">eXist extensions</category>
 	<dependency processor="http://exist-db.org" semver-min="${exist.version}" />
 	<dependencySets>
+		<!-- Project jar resolves from the reactor (no remote repos needed). -->
 		<dependencySet>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>${project.artifactId}</artifactId>
 			<version>${project.version}</version>
 			<outputFileNameMapping>${project.artifactId}-exist-java-lib-${project.version}.jar</outputFileNameMapping>
-		</dependencySet>
-		<dependencySet>
-			<groupId>org.expath.crypto</groupId>
-			<artifactId>crypto-java</artifactId>
-			<version>${crypto.java.lib.version}</version>
-			<outputFileNameMapping>crypto-java-lib-${crypto.java.lib.version}.jar</outputFileNameMapping>
 		</dependencySet>
 	</dependencySets>
 	<components>
@@ -41,6 +36,20 @@
 		</resource>
 	</components>
 	<fileSets>
+		<!--
+			crypto-java is staged by maven-dependency-plugin (see pom.xml).
+			kuberam-expath-plugin 0.6.3 resolves dependencySets with an empty
+			remoteRepos list; under Maven 3.10 that rejects locally cached
+			artifacts as "present, but unavailable" (verifying from []).
+			fileSets avoid that resolver path. Jars still land under content/.
+		-->
+		<fileSet>
+			<directory>${project.build.directory}/xar-libs</directory>
+			<outputDirectory>content</outputDirectory>
+			<includes>
+				<include>crypto-java-lib-${crypto.java.lib.version}.jar</include>
+			</includes>
+		</fileSet>
 		<fileSet>
 			<directory>${project.build.directory}/html</directory>
 			<outputDirectory>/</outputDirectory>
